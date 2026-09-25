@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#2a2a3a}canvas{image-rendering:pixelated}</style></head><body>
+<canvas id="c"></canvas>
+<script src="../js/config.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/rig.js"></script>
+<script src="../js/clips.js"></script>
+<script src="../js/art-heroes.js"></script>
+<script src="../js/art-enemies.js"></script>
+<script src="../js/art-bosses.js"></script>
+<script>
+/* Галерея поз: ?skins=mage,warrior&shots=idle:0,run:0.12&cell=80x72&scale=4 */
+const q = new URLSearchParams(location.search);
+const ids = (q.get('skins') || 'mage,warrior,samurai').split(',');
+const shots = (q.get('shots') || 'idle:0,run:0,run:0.12,run:0.24,jump:0.3,fall:0.3,land:0,dash:0,channel:0.4,melee:0.2,cast:0.1,hurt:0,stagger:0').split(',');
+const [cellW, cellH] = (q.get('cell') || '80x72').split('x').map(Number), S = +(q.get('scale') || 4);
+const cv = document.getElementById('c'); cv.width = cellW * shots.length * S; cv.height = cellH * ids.length * S;
+const ctx = cv.getContext('2d'); ctx.imageSmoothingEnabled = false; ctx.scale(S, S);
+ids.forEach((id, row) => {
+  const skin = SKINS[id], skel = skin.skel ? SKELS[skin.skel] : Rig.humanoid(skin.scale || 1), clips = clipsFor(id);
+  shots.forEach((sh, col) => {
+    const [name, t] = sh.split(':');
+    ctx.fillStyle = '#3a3a4a'; ctx.fillRect(col * cellW, row * cellH, cellW - 1, cellH - 1);
+    const clip = clips[name]; if (!clip) return;
+    const a = new Actor(skin, skel, clips); a.play(name); a.t = +t; a.life = +t;
+    const x = col * cellW + cellW / 2, y = row * cellH + cellH - 8;
+    ctx.fillStyle = '#556'; ctx.fillRect(col * cellW, y, cellW, 1);
+    a.draw(ctx, x, y, { flip: q.get('flip') === '1' });
+    ctx.fillStyle = '#ccc'; ctx.font = '5px monospace'; ctx.fillText(sh, col * cellW + 2, row * cellH + 6);
+  });
+});
+</script></body></html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fastcast</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="hud" id="hud" hidden>
+    <div class="who"><b id="hudClass">—</b><span class="eyebrow" id="hudLevel">Уровень 1</span></div>
+    <div class="bars">
+      <div class="bar hp"><span class="lbl">HP</span><div class="track"><div class="fill" id="hpFill"></div></div><span class="val" id="hpVal"></span></div>
+      <div class="bar res"><span class="lbl" id="resLbl">MP</span><div class="track"><div class="fill" id="resFill"></div></div><span class="val" id="resVal"></span></div>
+      <div class="bar xp"><span class="lbl">XP</span><div class="track"><div class="fill" id="xpFill"></div></div><span class="val" id="xpVal"></span></div>
+    </div>
+    <div class="unlocks"><span id="unDouble">2× прыжок</span><span id="unDash">долгий рывок</span></div>
+    <div class="focus" id="focusRow" hidden>Фокус <span id="focusDots"></span></div>
+    <button id="btnUpgrade">Умения <kbd>U</kbd> <span id="spBadge"></span></button>
+  </header>
+
+  <section class="screen" id="screenTitle">
+    <div class="title-head">
+      <span class="eyebrow">Прототип · typing combat metroidvania</span>
+      <h1>Fastcast</h1>
+      <p>Шесть земель от изумрудного леса до алого предела, трое стражей на пути. Способности кастуются набором слов: чем быстрее и чище напечатано слово, тем сильнее удар (множитель ×0.5–×2.0). Опечатка срывает приём, и чем дальше вы продвинулись в слове, тем больнее расплата. Выберите героя.</p>
+    </div>
+    <div class="classes" id="classCards"></div>
+    <div class="howto">
+      <div><b>Движение</b> <kbd>A</kbd>/<kbd>D</kbd> или стрелки — бег, <kbd>Space</kbd> — прыжок, <kbd>Shift</kbd> — рывок (один в воздухе). Костры лечат и запоминают точку возрождения.</div>
+      <div><b>Бой</b> Коснитесь врага — бой начнётся на месте. Первая буква слова выбирает способность, дальше просто печатайте.</div>
+      <div><b>Усиление</b> Прокачанная способность получает суффикс. Допечатали базу — <kbd>Space</kbd> выпускает обычную версию, допечатали суффикс — усиленную.</div>
+      <div><b>Стражи</b> Победа над боссом открывает дорогу дальше и новое движение: двойной прыжок, затем долгий рывок через провал. <kbd>Esc</kbd> в бою — отмена набора.</div>
+    </div>
+  </section>
+
+  <section id="screenGame" hidden>
+    <div class="game no-panel" id="gameGrid">
+      <div class="stage">
+        <canvas id="cv" width="480" height="270"></canvas>
+        <div class="hint" id="worldHint">A/D — бег · Space — прыжок · Shift — рывок · U — умения</div>
+        <div class="pad padL" id="padL"><button data-dir="left">◀</button><button data-dir="right">▶</button></div>
+        <div class="pad" id="padR"><button data-act="dash">⇢</button><button data-act="jump">▲</button></div>
+      </div>
+      <aside class="combat" id="combatPanel" hidden>
+        <div class="enemy-head">
+          <div class="row"><b id="enName">Враг</b><span class="mono" id="enHpVal"></span></div>
+          <div class="track"><div class="fill" id="enHpFill"></div></div>
+        </div>
+        <div class="enemy-timer">
+          <div class="row"><span>Атака врага</span><span id="enTimerVal"></span></div>
+          <div class="track"><div class="fill" id="enTimerFill"></div></div>
+        </div>
+        <div class="typing">
+          <div class="speed"><span>Скорость</span><div class="track"><div class="fill" id="speedFill" style="width:0"></div></div><b id="speedVal">×—</b></div>
+          <div class="current" id="currentWord"></div>
+        </div>
+        <ul class="abilities" id="abilityList"></ul>
+        <div class="mobile-tools">
+          <button id="btnKeyboard">Клавиатура</button>
+          <button id="btnRelease">Выпустить</button>
+          <button id="btnAbort">Отмена</button>
+        </div>
+        <div class="log" id="battleLog"></div>
+        <input id="mobileInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Ввод комбинации">
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen result" id="screenResult" hidden>
+    <h2 id="resTitle">Победа</h2>
+    <div id="resLevelUp" class="lvlup" hidden></div>
+    <div class="lines" id="resLines"></div>
+    <div class="actions">
+      <button class="primary" id="btnContinue">Продолжить</button>
+      <button id="btnResultUpgrade" hidden>Потратить очки умений</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screenUpgrade" hidden>
+    <span class="eyebrow">Прокачка</span>
+    <h2 style="font-size:20px">Умения</h2>
+    <p class="notice">Каждое улучшение стоит 1 очко умений. Слово удлиняется суффиксом: базу можно выпустить пробелом (×1), допечатанный суффикс даёт ×1.6, затем ×2.4. Ошибка в конце длинного слова карается сильнее всего.</p>
+    <p class="notice" id="spInfo"></p>
+    <div class="upg-grid" id="upgGrid"></div>
+    <div class="actions"><button class="primary" id="btnUpgBack">Вернуться</button></div>
+  </section>
+
+</div>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/combat-math.js"></script>
+<script src="js/typing-parser.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/rig.js"></script>
+<script src="js/clips.js"></script>
+<script src="js/art-heroes.js"></script>
+<script src="js/art-enemies.js"></script>
+<script src="js/art-bosses.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/anim.js"></script>
+<script src="js/biomes.js"></script>
+<script src="js/world.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/progression.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
