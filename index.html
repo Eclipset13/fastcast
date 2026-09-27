@@ -90,8 +90,21 @@
       </section>
 
       <dialog id="upgrade-dialog" class="upgrade-dialog panel">
-        <div class="dialog-heading"><div><span class="eyebrow">Spellcraft</span><h2>Extend your words</h2></div><button id="close-upgrades" aria-label="Close">×</button></div>
-        <p>Spend skill points to append a suffix. Release at any completed segment, or finish the longer word for more power.</p>
+        <i class="upgrade-frame-rune" aria-hidden="true"></i>
+        <div class="dialog-heading upgrade-heading">
+          <div class="upgrade-title-copy">
+            <span class="eyebrow">Spellcraft</span>
+            <h2>Extend your words</h2>
+          </div>
+          <div class="upgrade-heading-actions">
+            <div class="upgrade-sp-badge" aria-label="Available skill points">
+              <i aria-hidden="true"></i>
+              <span id="upgrade-skill-points">0 SP</span>
+            </div>
+            <button id="close-upgrades" aria-label="Close">×</button>
+          </div>
+        </div>
+        <p class="upgrade-intro">Spend skill points to append a suffix and strengthen your spells.</p>
         <div id="upgrade-list" class="upgrade-list"></div>
       </dialog>
       <div id="toast" class="toast" aria-live="polite"></div>

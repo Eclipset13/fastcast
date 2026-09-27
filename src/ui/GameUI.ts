@@ -10,6 +10,11 @@ import { canUpgrade, createPlayerState, upgradeAbility } from '../game/systems/P
 import type { ClassDefinition, PlayerState } from '../game/types';
 
 const CLASS_LABELS = { mage: 'Mage', warrior: 'Warrior', samurai: 'Samurai' } as const;
+const ABILITY_GLYPHS: Record<string, string> = {
+  zap: 'ϟ', fireball: '◆', icespike: '◇', mend: '+',
+  hit: '✦', slash: '╱', cleave: '⌁', guard: '▣',
+  cut: '╱', iaido: '⌁', flurry: '≋', zen: '◉',
+};
 const HEART_COUNT = 8;
 const RESOURCE_ORB_COUNT = 8;
 
@@ -197,12 +202,40 @@ export class GameUI {
   private renderUpgrades(): void {
     const player = gameStore.player;
     if (!player) return;
+
+    required('#upgrade-skill-points').textContent = `${player.skillPoints} SP`;
     required('#upgrade-list').innerHTML = player.classDef.abilities.map((ability) => {
       const level = player.abilityLevels[ability.id];
+      const maxRank = ability.suffixes.length + 1;
       const word = buildWord(ability, level);
       const next = ability.suffixes[level - 1];
-      return `<article><div><span class="eyebrow">Rank ${level} / ${ability.suffixes.length + 1}</span><strong>${ability.name}</strong></div><code>${word.segments.join('<b>·</b>')}${next ? `<i>·${next}</i>` : ''}</code><p>${ability.description}</p><button data-upgrade="${ability.id}" ${canUpgrade(player, ability) ? '' : 'disabled'}>${next ? `Add “${next}” · 1 SP` : 'Mastered'}</button></article>`;
+      const mastered = !next;
+      const rankPips = Array.from({ length: maxRank }, (_, index) =>
+        `<i class="${index < level ? 'filled' : ''}" aria-hidden="true"></i>`
+      ).join('');
+      const spellColor = `#${ability.color.toString(16).padStart(6, '0')}`;
+      const glyph = ABILITY_GLYPHS[ability.id] ?? '✦';
+
+      return `
+        <article class="upgrade-card ${mastered ? 'mastered' : ''}" data-ability-card="${ability.id}">
+          <div class="upgrade-card-top">
+            <span class="spell-icon" style="--spell-color:${spellColor}" aria-hidden="true"><i>${glyph}</i></span>
+            <div class="upgrade-card-main">
+              <div class="upgrade-card-title">
+                <strong>${ability.name}</strong>
+                <span class="rank-pips">${rankPips}</span>
+              </div>
+              <span class="upgrade-rank">Rank ${level} / ${maxRank}</span>
+              <code>${word.segments.join('<b>·</b>')}${next ? `<i>·${next}</i>` : ''}</code>
+              <p>${ability.description}</p>
+            </div>
+          </div>
+          <button data-upgrade="${ability.id}" ${canUpgrade(player, ability) ? '' : 'disabled'}>
+            ${next ? `Add “${next}” · 1 SP` : 'Mastered'}
+          </button>
+        </article>`;
     }).join('');
+
     document.querySelectorAll<HTMLButtonElement>('[data-upgrade]').forEach((button) => button.addEventListener('click', () => {
       const ability = player.classDef.abilities.find((item) => item.id === button.dataset.upgrade);
       if (ability && upgradeAbility(player, ability)) {
