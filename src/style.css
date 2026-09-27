@@ -177,6 +177,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   outline: 0;
   color: #e8f1e7;
   background: transparent url('/assets/ui/spellcraft/spellcraft-frame.png') center / 100% 100% no-repeat;
+  box-shadow: none;
   filter: drop-shadow(0 22px 30px rgba(0, 4, 2, .62));
   image-rendering: pixelated;
 }
