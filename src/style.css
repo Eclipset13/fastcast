@@ -282,7 +282,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  margin: 8px 230px 18px 0;
+  margin: 8px 230px 42px 0;
   color: #a8b9ad;
   font: 400 14px/1.35 Outfit, sans-serif;
   letter-spacing: .01em;
@@ -505,6 +505,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
     padding: 82px 64px 58px;
   }
   .dialog-heading h2 { font-size: 24px; }
+  .upgrade-intro { margin-bottom: 24px; }
   .upgrade-card-top { grid-template-columns: 78px minmax(0,1fr); }
   .spell-icon { width: 78px; height: 78px; }
   .upgrade-card-title strong { font-size: 16px; }
