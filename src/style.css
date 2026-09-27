@@ -165,268 +165,337 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   --upgrade-gold: #d7bc52;
   --upgrade-lime: #d1f985;
   --upgrade-green: #6dc977;
-  --upgrade-line: #315d48;
   position: relative;
-  color: var(--ink);
-  width: min(920px, calc(100vw - 40px));
-  max-height: calc(100dvh - 44px);
-  margin: auto 22px auto auto;
-  padding: 28px 30px 30px;
+  box-sizing: border-box;
+  width: min(960px, 62vw);
+  min-height: 640px;
+  max-height: calc(100dvh - 36px);
+  margin: auto 20px auto auto;
+  padding: 64px 58px 52px;
   overflow: visible;
-  border: 1px solid #55765d;
-  background:
-    linear-gradient(rgba(4, 19, 14, .965), rgba(3, 15, 12, .975)),
-    radial-gradient(circle at 50% 0, rgba(109, 201, 119, .08), transparent 52%);
-  box-shadow:
-    0 18px 70px rgba(0, 0, 0, .52),
-    inset 0 0 0 2px rgba(16, 48, 35, .95),
-    inset 0 0 0 4px rgba(113, 148, 109, .14);
-  clip-path: polygon(10px 0, calc(100% - 10px) 0, calc(100% - 10px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 10px, 100% 10px, 100% calc(100% - 10px), calc(100% - 4px) calc(100% - 10px), calc(100% - 4px) calc(100% - 4px), calc(100% - 10px) calc(100% - 4px), calc(100% - 10px) 100%, 10px 100%, 10px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 10px), 0 calc(100% - 10px), 0 10px, 4px 10px, 4px 4px, 10px 4px);
+  border: 0;
+  outline: 0;
+  color: #e8f1e7;
+  background: transparent url('/assets/ui/spellcraft/spellcraft-frame.png') center / 100% 100% no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 22px 30px rgba(0, 4, 2, .62));
+  image-rendering: pixelated;
 }
-.upgrade-dialog::backdrop { background: rgba(2, 8, 5, .28); backdrop-filter: blur(1px); }
-.upgrade-dialog::before, .upgrade-dialog::after {
-  content: '';
-  position: absolute;
+.upgrade-dialog::backdrop {
+  background: rgba(1, 8, 5, .28);
+  backdrop-filter: blur(1.5px);
+}
+.upgrade-dialog::before,
+.upgrade-dialog::after,
+.upgrade-frame-rune { display: none; }
+
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.upgrade-heading {
+  position: relative;
   z-index: 2;
-  width: 86px;
-  height: 86px;
-  pointer-events: none;
-  background: url('./ui/assets/vine-corner.svg') center / contain no-repeat;
-  filter: brightness(1.05) saturate(.85);
-  opacity: .78;
+  min-height: 58px;
 }
-.upgrade-dialog::before { left: -12px; top: -12px; }
-.upgrade-dialog::after { right: -12px; bottom: -12px; transform: rotate(180deg); }
-.upgrade-frame-rune {
-  position: absolute;
-  left: 50%;
-  top: -19px;
-  z-index: 3;
-  width: 44px;
-  height: 44px;
-  transform: translateX(-50%) rotate(45deg);
-  border: 2px solid #56785e;
-  background: #071a13;
-  box-shadow: inset 0 0 0 4px #0d2a1e, 0 0 18px rgba(156, 227, 134, .18);
-}
-.upgrade-frame-rune::before, .upgrade-frame-rune::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  background: var(--upgrade-lime);
-  box-shadow: 0 0 8px rgba(209, 249, 133, .45);
-}
-.upgrade-frame-rune::before { width: 4px; height: 24px; transform: translate(-50%, -50%); }
-.upgrade-frame-rune::after { width: 24px; height: 4px; transform: translate(-50%, -50%); }
-.dialog-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
-.upgrade-heading { position: relative; z-index: 4; }
 .upgrade-title-copy { min-width: 0; }
-.upgrade-title-copy .eyebrow { color: #8db69a; font-size: 10px; letter-spacing: .2em; }
-.dialog-heading h2 {
-  margin: 6px 0 0;
-  color: #f0f3de;
-  font: 700 clamp(19px, 2vw, 26px)/1.1 Silkscreen, monospace;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  text-shadow: 2px 2px 0 #06130e;
+.upgrade-title-copy .eyebrow {
+  color: #9bdb7a;
+  font: 400 10px/1 Silkscreen, monospace;
+  letter-spacing: .22em;
+  text-shadow: 1px 2px 0 #062b32;
 }
-.upgrade-heading-actions { display: flex; align-items: flex-start; gap: 14px; flex-shrink: 0; }
+.dialog-heading h2 {
+  margin: 8px 0 0;
+  color: #f0f3de;
+  font: 700 27px/1.08 Silkscreen, monospace;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+  text-shadow: 2px 3px 0 #062b32;
+}
+.upgrade-heading-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  z-index: 5;
+}
 .upgrade-sp-badge {
-  min-width: 152px;
-  min-height: 48px;
+  width: 214px;
+  height: 66px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 8px 15px;
-  border: 1px solid #54725a;
-  background: rgba(6, 27, 20, .92);
+  gap: 11px;
+  padding: 8px 22px;
+  border: 0;
+  background: transparent url('/assets/ui/spellcraft/badge-frame.png') center / 100% 100% no-repeat;
+  box-shadow: none;
   color: #f0d36b;
-  font: 400 16px Silkscreen, monospace;
-  box-shadow: inset 0 0 0 2px rgba(31, 66, 52, .6);
-  clip-path: polygon(7px 0, calc(100% - 7px) 0, calc(100% - 7px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 7px) calc(100% - 2px), calc(100% - 7px) 100%, 7px 100%, 7px calc(100% - 2px), 0 calc(100% - 2px), 0 2px, 7px 2px);
+  font: 400 16px/1 Silkscreen, monospace;
+  text-shadow: 1px 2px 0 #30270b;
+  image-rendering: pixelated;
 }
 .upgrade-sp-badge > i {
-  width: 13px;
-  height: 17px;
-  background: #e4bd4f;
+  width: 12px;
+  height: 16px;
+  flex: 0 0 12px;
+  background: #e8bd45;
   clip-path: polygon(40% 0,60% 0,60% 20%,80% 20%,80% 40%,100% 40%,100% 60%,80% 60%,80% 80%,60% 80%,60% 100%,40% 100%,40% 80%,20% 80%,20% 60%,0 60%,0 40%,20% 40%,20% 20%,40% 20%);
-  box-shadow: 0 0 8px rgba(228, 189, 79, .28);
+  filter: drop-shadow(0 0 4px rgba(240, 211, 107, .6));
 }
 .dialog-heading > .upgrade-heading-actions > button {
+  position: absolute;
+  top: -38px;
+  right: -36px;
   width: 42px;
   height: 42px;
   padding: 0;
   display: grid;
   place-items: center;
-  border: 1px solid #d6ba59;
-  background: #0b241a;
-  color: #dfe8c9;
-  font: 400 22px/1 Silkscreen, monospace;
-  box-shadow: inset 0 0 0 3px #163c2c;
+  border: 2px solid #d8bb56;
+  background: #092219;
+  color: #eef2dc;
+  font: 400 19px/1 Silkscreen, monospace;
+  box-shadow: inset 0 0 0 3px #173d2c, 2px 2px 0 rgba(0,0,0,.45);
+  cursor: pointer;
+  image-rendering: pixelated;
 }
-.dialog-heading > .upgrade-heading-actions > button:hover { background: #173526; border-color: #f0d772; color: #fff5b4; }
+.dialog-heading > .upgrade-heading-actions > button:hover {
+  border-color: #d1f985;
+  background: #133a26;
+  color: #fff7bd;
+  filter: brightness(1.12);
+}
 .upgrade-intro {
   position: relative;
-  z-index: 4;
-  margin: 10px 0 20px;
-  color: #a6baac;
-  font-size: 14px;
+  z-index: 2;
+  margin: 8px 230px 18px 0;
+  color: #a8b9ad;
+  font: 400 14px/1.35 Outfit, sans-serif;
   letter-spacing: .01em;
 }
 .upgrade-list {
   position: relative;
-  z-index: 4;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 14px 16px;
 }
 .upgrade-card {
   position: relative;
-  min-height: 210px;
+  min-height: 198px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  border: 1px solid #315c48;
-  background:
-    linear-gradient(145deg, rgba(8, 31, 22, .98), rgba(4, 19, 14, .985));
-  box-shadow: inset 0 0 0 2px rgba(18, 57, 40, .6), 0 5px 0 rgba(0, 8, 5, .45);
-  clip-path: polygon(7px 0, calc(100% - 7px) 0, calc(100% - 7px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 7px) calc(100% - 2px), calc(100% - 7px) 100%, 7px 100%, 7px calc(100% - 2px), 0 calc(100% - 2px), 0 2px, 7px 2px);
+  gap: 10px;
+  padding: 15px 15px 12px;
+  border: 1px solid #49775a;
+  background: rgba(3, 20, 16, .82);
+  box-shadow:
+    inset 0 0 0 2px rgba(25, 86, 73, .38),
+    inset 0 -28px 40px rgba(1, 10, 8, .25);
 }
-.upgrade-card::before, .upgrade-card::after {
+.upgrade-card::before,
+.upgrade-card::after {
   content: '';
   position: absolute;
-  width: 8px;
-  height: 8px;
-  border-color: #4d775b;
-  opacity: .7;
+  width: 13px;
+  height: 13px;
+  pointer-events: none;
 }
-.upgrade-card::before { left: 7px; top: 7px; border-left: 2px solid; border-top: 2px solid; }
-.upgrade-card::after { right: 7px; bottom: 7px; border-right: 2px solid; border-bottom: 2px solid; }
+.upgrade-card::before {
+  top: -2px;
+  left: -2px;
+  border-top: 2px solid #9bdb7a;
+  border-left: 2px solid #9bdb7a;
+  box-shadow: 4px 4px 0 -3px #d1f985;
+}
+.upgrade-card::after {
+  right: -2px;
+  bottom: -2px;
+  border-right: 2px solid #9bdb7a;
+  border-bottom: 2px solid #9bdb7a;
+  box-shadow: -4px -4px 0 -3px #d1f985;
+}
 .upgrade-card.mastered {
-  border-color: #a38d45;
-  box-shadow: inset 0 0 0 2px rgba(109, 90, 35, .45), 0 5px 0 rgba(0, 8, 5, .45);
+  border-color: #9f8c43;
+  box-shadow:
+    inset 0 0 0 2px rgba(130, 108, 41, .24),
+    inset 0 -28px 40px rgba(1, 10, 8, .25);
 }
-.upgrade-card-top { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 15px; align-items: start; }
+.upgrade-card.mastered::before,
+.upgrade-card.mastered::after { border-color: #d7bc52; }
+
+.upgrade-card-top {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
 .spell-icon {
   --spell-color: #d1f985;
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 82px;
+  height: 82px;
   display: grid;
   place-items: center;
-  flex: 0 0 64px;
-  border: 1px solid color-mix(in srgb, var(--spell-color) 72%, #203a2d);
-  background: #071812;
-  box-shadow:
-    inset 0 0 0 3px #10291e,
-    inset 0 0 20px color-mix(in srgb, var(--spell-color) 18%, transparent),
-    0 0 12px color-mix(in srgb, var(--spell-color) 16%, transparent);
-  clip-path: polygon(6px 0, calc(100% - 6px) 0, calc(100% - 6px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 6px) calc(100% - 2px), calc(100% - 6px) 100%, 6px 100%, 6px calc(100% - 2px), 0 calc(100% - 2px), 0 2px, 6px 2px);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--spell-color) 65%, #294c3b);
+  background: #061713;
+  box-shadow: inset 0 0 0 3px #10291e;
+  image-rendering: pixelated;
 }
-.spell-icon::before {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 1px solid color-mix(in srgb, var(--spell-color) 42%, #254533);
-  opacity: .85;
+.spell-icon.has-asset {
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
-.spell-icon i {
-  position: relative;
-  z-index: 1;
+.spell-icon-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--spell-color) 35%, transparent));
+  user-select: none;
+}
+.spell-icon-fallback {
   color: var(--spell-color);
-  font: 700 31px/1 Silkscreen, monospace;
+  font: 700 30px/1 Silkscreen, monospace;
   font-style: normal;
-  text-shadow: 0 0 8px color-mix(in srgb, var(--spell-color) 60%, transparent);
+  text-shadow: 0 0 7px color-mix(in srgb, var(--spell-color) 55%, transparent);
 }
-.upgrade-card-main { min-width: 0; }
-.upgrade-card-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.upgrade-card-title strong { color: #eef2dc; font: 700 17px/1.2 Silkscreen, monospace; }
+.upgrade-card-main { min-width: 0; padding-top: 2px; }
+.upgrade-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.upgrade-card-title strong {
+  color: #f1f2df;
+  font: 700 17px/1.15 Silkscreen, monospace;
+  text-shadow: 1px 2px 0 #061613;
+}
 .upgrade-rank {
   display: block;
   margin-top: 4px;
-  color: #7fa58d;
-  font: 400 9px Silkscreen, monospace;
+  color: #8eb78c;
+  font: 400 9px/1.2 Silkscreen, monospace;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
-.rank-pips { display: flex; gap: 6px; flex-shrink: 0; }
+.rank-pips {
+  display: flex;
+  gap: 7px;
+  margin-right: 3px;
+  flex-shrink: 0;
+}
 .rank-pips i {
   width: 10px;
   height: 10px;
-  border: 1px solid #526f59;
+  border: 1px solid #4f715c;
   transform: rotate(45deg);
-  background: #081b14;
+  background: #061713;
 }
 .rank-pips i.filled {
-  border-color: #e4bd4f;
-  background: #e4bd4f;
-  box-shadow: 0 0 6px rgba(228, 189, 79, .26);
+  border-color: #f0c852;
+  background: #f0c852;
+  box-shadow: 0 0 7px rgba(240, 200, 82, .38);
 }
 .upgrade-card code {
   display: block;
-  margin-top: 12px;
-  color: #dce7df;
-  font: 500 14px/1.35 'JetBrains Mono', monospace;
+  margin-top: 10px;
+  color: #e3ebe4;
+  font: 500 14px/1.25 'JetBrains Mono', monospace;
   overflow-wrap: anywhere;
 }
-.upgrade-card code b { color: #5f7868; font-weight: 500; }
-.upgrade-card code i { color: #e4c45d; font-style: normal; }
+.upgrade-card code b { color: #526f60; font-weight: 500; }
+.upgrade-card code i { color: #e5c65b; font-style: normal; }
 .upgrade-card p {
-  margin: 7px 0 0;
-  color: #8fa497;
-  font-size: 13px;
-  line-height: 1.35;
+  margin: 6px 0 0;
+  color: #9aaca0;
+  font: 400 13px/1.3 Outfit, sans-serif;
 }
 .upgrade-card > button {
   width: 100%;
-  min-height: 46px;
+  height: 56px;
+  min-height: 56px;
   margin-top: auto;
-  padding: 8px 12px;
-  border: 1px solid #88a85f;
-  background: linear-gradient(#173822, #0d281b);
-  color: #dcf0a4;
-  font: 500 14px/1 'Outfit', sans-serif;
-  letter-spacing: .01em;
-  box-shadow: inset 0 0 0 2px #1d4b2e;
-  clip-path: polygon(6px 0, calc(100% - 6px) 0, calc(100% - 6px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 6px) calc(100% - 2px), calc(100% - 6px) 100%, 6px 100%, 6px calc(100% - 2px), 0 calc(100% - 2px), 0 2px, 6px 2px);
+  padding: 5px 28px 7px;
+  border: 0;
+  background: transparent url('/assets/ui/spellcraft/button-frame.png') center / 100% 100% no-repeat;
+  box-shadow: none;
+  color: #e4f1b3;
+  font: 500 15px/1 Outfit, sans-serif;
+  text-shadow: 1px 2px 0 #082015;
+  cursor: pointer;
+  image-rendering: pixelated;
 }
 .upgrade-card > button:hover:not(:disabled) {
-  border-color: var(--upgrade-lime);
-  background: linear-gradient(#24512f, #123522);
-  color: #efffc2;
-  filter: brightness(1.08);
+  border: 0;
+  background: transparent url('/assets/ui/spellcraft/button-frame.png') center / 100% 100% no-repeat;
+  color: #f2ffc8;
+  filter: brightness(1.22) drop-shadow(0 0 5px rgba(209, 249, 133, .22));
+  transform: translateY(-1px);
 }
+.upgrade-card > button:active:not(:disabled) { transform: translateY(1px); }
 .upgrade-card > button:disabled {
   cursor: not-allowed;
   opacity: .42;
-  border-color: #405548;
-  background: #0c1e16;
-  color: #87958b;
-  box-shadow: inset 0 0 0 2px #172a20;
+  border: 0;
+  background: transparent url('/assets/ui/spellcraft/button-frame.png') center / 100% 100% no-repeat;
+  color: #98a29a;
+  filter: grayscale(.5) brightness(.75);
 }
 .upgrade-card.mastered > button:disabled {
-  opacity: .58;
-  color: #b4b7a4;
-  border-color: #665d3b;
+  opacity: .48;
+  color: #b6b8a7;
+  filter: grayscale(.65) brightness(.72);
+}
+
+@media (max-width: 1320px) {
+  .upgrade-dialog {
+    width: min(900px, calc(100vw - 34px));
+    min-height: 600px;
+    padding: 60px 52px 48px;
+  }
+  .dialog-heading h2 { font-size: 24px; }
+  .upgrade-card { min-height: 185px; }
+  .upgrade-card-top { grid-template-columns: 72px minmax(0,1fr); }
+  .spell-icon { width: 72px; height: 72px; }
 }
 @media (max-width: 900px) {
-  .upgrade-dialog { width: calc(100vw - 24px); margin: auto 12px; padding: 24px 18px; max-height: calc(100dvh - 24px); overflow-y: auto; }
-  .upgrade-heading { align-items: flex-start; }
-  .upgrade-sp-badge { min-width: 116px; min-height: 42px; font-size: 12px; }
-  .dialog-heading > .upgrade-heading-actions > button { width: 38px; height: 38px; }
-  .upgrade-card-top { grid-template-columns: 54px minmax(0, 1fr); }
-  .spell-icon { width: 54px; height: 54px; }
-  .spell-icon i { font-size: 25px; }
+  .upgrade-dialog {
+    width: calc(100vw - 18px);
+    min-height: 0;
+    max-height: calc(100dvh - 18px);
+    margin: auto 9px;
+    padding: 58px 42px 46px;
+    overflow-y: auto;
+    background-size: 100% 100%;
+  }
+  .upgrade-list { grid-template-columns: 1fr; }
+  .upgrade-intro { margin-right: 0; }
+  .upgrade-sp-badge { width: 170px; height: 56px; font-size: 13px; }
+  .dialog-heading > .upgrade-heading-actions > button { top: -34px; right: -27px; width: 38px; height: 38px; }
 }
-@media (max-width: 600px) {
-  .upgrade-heading { flex-direction: column; }
-  .upgrade-heading-actions { width: 100%; justify-content: space-between; }
-  .upgrade-title-copy { order: 1; }
-  .upgrade-heading-actions { order: 2; }
+@media (max-width: 560px) {
+  .upgrade-dialog { padding: 54px 28px 42px; }
+  .dialog-heading h2 { font-size: 19px; }
+  .upgrade-title-copy .eyebrow { font-size: 8px; }
+  .upgrade-heading { min-height: 92px; }
+  .upgrade-heading-actions { top: 50px; left: 0; right: auto; }
+  .upgrade-sp-badge { width: 150px; height: 50px; }
+  .dialog-heading > .upgrade-heading-actions > button { left: calc(100vw - 92px); right: auto; top: -48px; }
+  .upgrade-card-top { grid-template-columns: 64px minmax(0,1fr); }
+  .spell-icon { width: 64px; height: 64px; }
+  .upgrade-card-title strong { font-size: 14px; }
 }
+
 .toast { position: fixed; left: 50%; bottom: 22px; z-index: 20; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #081b12; border: 1px solid #54785f; color: #e4edbd; padding: 8px 13px; font: 400 9px Silkscreen, monospace; transition: .2s; box-shadow: 0 8px 30px #000; }.toast.visible { opacity: 1; transform: translate(-50%, 0); }
 .touch-controls { display: none; position: absolute; inset: auto 10px 10px; z-index: 6; justify-content: space-between; pointer-events: none; }.touch-controls > div { display: flex; gap: 6px; }.touch-controls button { pointer-events: auto; width: 44px; height: 44px; border: 1px solid rgba(170, 216, 181, .5); background: rgba(5, 20, 13, .72); color: #d7e7d6; touch-action: none; }
 

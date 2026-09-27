@@ -15,6 +15,12 @@ const ABILITY_GLYPHS: Record<string, string> = {
   hit: '✦', slash: '╱', cleave: '⌁', guard: '▣',
   cut: '╱', iaido: '⌁', flurry: '≋', zen: '◉',
 };
+const ABILITY_ICON_ASSETS: Partial<Record<string, string>> = {
+  zap: '/assets/ui/spellcraft/spell-zap.png',
+  fireball: '/assets/ui/spellcraft/spell-fireball.png',
+  icespike: '/assets/ui/spellcraft/spell-ice-spike.png',
+  mend: '/assets/ui/spellcraft/spell-mend.png',
+};
 const HEART_COUNT = 8;
 const RESOURCE_ORB_COUNT = 8;
 
@@ -215,11 +221,15 @@ export class GameUI {
       ).join('');
       const spellColor = `#${ability.color.toString(16).padStart(6, '0')}`;
       const glyph = ABILITY_GLYPHS[ability.id] ?? '✦';
+      const iconAsset = ABILITY_ICON_ASSETS[ability.id];
+      const iconMarkup = iconAsset
+        ? `<img class="spell-icon-image" src="${iconAsset}" alt="" draggable="false">`
+        : `<i class="spell-icon-fallback">${glyph}</i>`;
 
       return `
         <article class="upgrade-card ${mastered ? 'mastered' : ''}" data-ability-card="${ability.id}">
           <div class="upgrade-card-top">
-            <span class="spell-icon" style="--spell-color:${spellColor}" aria-hidden="true"><i>${glyph}</i></span>
+            <span class="spell-icon ${iconAsset ? 'has-asset' : ''}" style="--spell-color:${spellColor}" aria-hidden="true">${iconMarkup}</span>
             <div class="upgrade-card-main">
               <div class="upgrade-card-title">
                 <strong>${ability.name}</strong>
