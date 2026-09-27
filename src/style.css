@@ -240,7 +240,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   gap: 11px;
   padding: 8px 22px;
   border: 0;
-  background: transparent url('/assets/ui/spellcraft/badge-frame.png') center / 100% 100% no-repeat;
+  background: transparent url('/assets/ui/spellcraft/badge-frame.png') center / 104% 130% no-repeat;
   box-shadow: none;
   color: #f0d36b;
   font: 400 16px/1 Silkscreen, monospace;
@@ -290,11 +290,11 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .upgrade-list {
   position: relative;
   z-index: 2;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 235px);
   gap: 14px 16px;
 }
 .upgrade-card {
@@ -345,7 +345,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 
 .upgrade-card-top {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: 92px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
   min-height: 0;
@@ -353,8 +353,8 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .spell-icon {
   --spell-color: #d1f985;
   position: relative;
-  width: 88px;
-  height: 88px;
+  width: 92px;
+  height: 92px;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -374,6 +374,8 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   height: 100%;
   display: block;
   object-fit: contain;
+  transform: scale(1.12);
+  transform-origin: center;
   image-rendering: pixelated;
   filter: drop-shadow(0 0 5px color-mix(in srgb, var(--spell-color) 35%, transparent));
   user-select: none;
@@ -459,8 +461,8 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: transparent url('/assets/ui/spellcraft/button-frame.png') center / 100% 100% no-repeat;
-  opacity: .98;
+  background: transparent url('/assets/ui/spellcraft/button-frame.png') center / 108% 141% no-repeat;
+  opacity: .96;
   image-rendering: pixelated;
 }
 .upgrade-card > button:hover:not(:disabled) {
@@ -484,16 +486,16 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   text-shadow: 1px 2px 0 #07140f;
 }
 .upgrade-card > button:disabled::before {
-  opacity: .76;
-  filter: grayscale(.22) brightness(.78);
+  opacity: .88;
+  filter: grayscale(.14) brightness(.82);
 }
 .upgrade-card.mastered > button:disabled {
   opacity: 1;
   color: #9ca59d;
 }
 .upgrade-card.mastered > button:disabled::before {
-  opacity: .72;
-  filter: sepia(.18) saturate(.7) brightness(.72);
+  opacity: .84;
+  filter: sepia(.12) saturate(.78) brightness(.78);
 }
 
 @media (max-width: 1320px) {
@@ -506,6 +508,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   }
   .dialog-heading h2 { font-size: 24px; }
   .upgrade-intro { margin-bottom: 24px; }
+  .upgrade-list { grid-template-rows: repeat(2, 220px); }
   .upgrade-card-top { grid-template-columns: 78px minmax(0,1fr); }
   .spell-icon { width: 78px; height: 78px; }
   .upgrade-card-title strong { font-size: 16px; }
