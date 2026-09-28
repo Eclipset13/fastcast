@@ -166,16 +166,16 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   --upgrade-lime: #d1f985;
   --upgrade-green: #6dc977;
   position: fixed;
-  inset: 0 0 auto auto;
+  inset: 50% 12px auto auto;
   box-sizing: border-box;
-  width: min(60vw, 1160px);
-  height: 81.5dvh;
-  max-height: 900px;
-  margin: 10.5dvh 20px 0 0;
-  padding:
-    clamp(100px, 11vh, 124px)
-    clamp(72px, 4.7vw, 90px)
-    clamp(66px, 7.4vh, 82px);
+  width: min(61vw, calc(84dvh * 16 / 9), 1120px);
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  /* Keep all interactive content inside the clear centre of the painted frame. */
+  padding: 6.5% 8.5% 10.25%;
   overflow: visible;
   border: 0;
   outline: 0;
@@ -183,6 +183,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   background: transparent url('/assets/ui/spellcraft/spellcraft-frame.png') center / 100% 100% no-repeat;
   box-shadow: none;
   filter: drop-shadow(0 22px 30px rgba(0, 4, 2, .62));
+  transform: translateY(-50%);
   image-rendering: pixelated;
 }
 .upgrade-dialog[open] {
@@ -190,8 +191,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   flex-direction: column;
 }
 .upgrade-dialog::backdrop {
-  background: rgba(1, 8, 5, .28);
-  backdrop-filter: blur(1.5px);
+  background: rgba(1, 8, 5, .14);
 }
 .upgrade-dialog::before,
 .upgrade-dialog::after,
@@ -206,10 +206,10 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .upgrade-heading {
   position: relative;
   z-index: 2;
-  min-height: 58px;
+  min-height: 48px;
   flex: 0 0 auto;
 }
-.upgrade-title-copy { min-width: 0; }
+.upgrade-title-copy { min-width: 0; padding-right: 210px; }
 .upgrade-title-copy .eyebrow {
   color: #9bdb7a;
   font: 400 10px/1 Silkscreen, monospace;
@@ -217,10 +217,10 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   text-shadow: 1px 2px 0 #062b32;
 }
 .dialog-heading h2 {
-  margin: 8px 0 0;
+  margin: 7px 0 0;
   color: #f0f3de;
-  font: 700 27px/1.08 Silkscreen, monospace;
-  letter-spacing: .035em;
+  font: 700 27px/1.1 Silkscreen, monospace;
+  letter-spacing: .06em;
   text-transform: uppercase;
   text-shadow: 2px 3px 0 #062b32;
 }
@@ -232,18 +232,16 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   z-index: 5;
 }
 .upgrade-sp-badge {
-  width: 214px;
-  height: 66px;
+  width: 200px;
+  height: 54px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 11px;
-  padding: 8px 22px;
+  justify-content: right;
+  gap: 9px;
+  padding: 7px 20px;
   border: 0;
-  background: transparent url('/assets/ui/spellcraft/badge-frame.png') center / 104% 130% no-repeat;
   box-shadow: none;
   color: #f0d36b;
-  font: 400 16px/1 Silkscreen, monospace;
+  font: 400 14px/1 Silkscreen, monospace;
   text-shadow: 1px 2px 0 #30270b;
   image-rendering: pixelated;
 }
@@ -257,17 +255,17 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 }
 .dialog-heading > .upgrade-heading-actions > button {
   position: absolute;
-  top: -38px;
-  right: -36px;
-  width: 42px;
-  height: 42px;
+  top: -48px;
+  right: -38px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   display: grid;
   place-items: center;
   border: 2px solid #d8bb56;
   background: #092219;
   color: #eef2dc;
-  font: 400 19px/1 Silkscreen, monospace;
+  font: 400 16px/1 Silkscreen, monospace;
   box-shadow: inset 0 0 0 3px #173d2c, 2px 2px 0 rgba(0,0,0,.45);
   cursor: pointer;
   image-rendering: pixelated;
@@ -282,9 +280,9 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  margin: 8px 230px 42px 0;
+  margin: 4px 210px 12px 0;
   color: #a8b9ad;
-  font: 400 14px/1.35 Outfit, sans-serif;
+  font: 400 15px/1.3 Outfit, sans-serif;
   letter-spacing: .01em;
 }
 .upgrade-list {
@@ -294,8 +292,10 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(2, 235px);
-  gap: 14px 16px;
+  grid-template-rows: repeat(2, 136px);
+  gap: 14px;
+  align-content: start;
+  transform: translateY(-18px);
 }
 .upgrade-card {
   position: relative;
@@ -303,58 +303,36 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  padding: 14px 14px 12px;
+  gap: 4px;
+  padding: 6px 10px;
   overflow: hidden;
-  border: 1px solid #49775a;
+  border: 1px solid #95ae55;
   background: rgba(3, 20, 16, .84);
   box-shadow:
     inset 0 0 0 2px rgba(25, 86, 73, .36),
     inset 0 -28px 40px rgba(1, 10, 8, .22);
 }
-.upgrade-card::before,
-.upgrade-card::after {
-  content: '';
-  position: absolute;
-  width: 13px;
-  height: 13px;
-  pointer-events: none;
-}
-.upgrade-card::before {
-  top: -2px;
-  left: -2px;
-  border-top: 2px solid #9bdb7a;
-  border-left: 2px solid #9bdb7a;
-  box-shadow: 4px 4px 0 -3px #d1f985;
-}
-.upgrade-card::after {
-  right: -2px;
-  bottom: -2px;
-  border-right: 2px solid #9bdb7a;
-  border-bottom: 2px solid #9bdb7a;
-  box-shadow: -4px -4px 0 -3px #d1f985;
-}
+
 .upgrade-card.mastered {
   border-color: #9f8c43;
   box-shadow:
     inset 0 0 0 2px rgba(130, 108, 41, .24),
     inset 0 -28px 40px rgba(1, 10, 8, .22);
 }
-.upgrade-card.mastered::before,
-.upgrade-card.mastered::after { border-color: #d7bc52; }
 
 .upgrade-card-top {
+  --spell-summary-size: 84px;
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: var(--spell-summary-size) minmax(0, 1fr);
+  gap: 12px;
   align-items: start;
-  min-height: 0;
+  min-height: var(--spell-summary-size);
 }
 .spell-icon {
   --spell-color: #d1f985;
   position: relative;
-  width: 92px;
-  height: 92px;
+  width: var(--spell-summary-size);
+  height: var(--spell-summary-size);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -364,29 +342,31 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   image-rendering: pixelated;
 }
 .spell-icon.has-asset {
-  overflow: visible;
+  overflow: hidden;
   border: 0;
   background: transparent;
   box-shadow: none;
 }
 .spell-icon-image {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  width: 133.333%;
+  height: 133.333%;
+  left: -16.667%;
+  top: -16.667%;
   display: block;
   object-fit: contain;
-  transform: scale(1.12);
-  transform-origin: center;
   image-rendering: pixelated;
-  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--spell-color) 35%, transparent));
   user-select: none;
 }
+.upgrade-card[data-ability-card="fireball"] .spell-icon-image { width: 145.833%; height: 145.833%; left: -26.042%; top: -25%; }
+.upgrade-card[data-ability-card="icespike"] .spell-icon-image { width: 127.083%; height: 127.083%; left: -13.542%; top: -15.625%; }
 .spell-icon-fallback {
   color: var(--spell-color);
   font: 700 30px/1 Silkscreen, monospace;
   font-style: normal;
   text-shadow: 0 0 7px color-mix(in srgb, var(--spell-color) 55%, transparent);
 }
-.upgrade-card-main { min-width: 0; padding-top: 2px; }
+.upgrade-card-main { min-width: 0; min-height: var(--spell-summary-size); padding-top: 1px; }
 .upgrade-card-title {
   display: flex;
   align-items: center;
@@ -395,7 +375,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 }
 .upgrade-card-title strong {
   color: #f1f2df;
-  font: 700 18px/1.15 Silkscreen, monospace;
+  font: 600 21px/1.1 Outfit, sans-serif;
   text-shadow: 1px 2px 0 #061613;
 }
 .upgrade-rank {
@@ -408,13 +388,13 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 }
 .rank-pips {
   display: flex;
-  gap: 7px;
+  gap: 6px;
   margin-right: 3px;
   flex-shrink: 0;
 }
 .rank-pips i {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border: 1px solid #4f715c;
   transform: rotate(45deg);
   background: #061713;
@@ -426,29 +406,28 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 }
 .upgrade-card code {
   display: block;
-  margin-top: 10px;
+  margin-top: 7px;
   color: #e3ebe4;
-  font: 500 14px/1.25 'JetBrains Mono', monospace;
+  font: 500 15px/1.2 'JetBrains Mono', monospace;
   overflow-wrap: anywhere;
 }
 .upgrade-card code b { color: #526f60; font-weight: 500; }
 .upgrade-card code i { color: #e5c65b; font-style: normal; }
 .upgrade-card p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #9aaca0;
-  font: 400 13px/1.3 Outfit, sans-serif;
+  font: 400 14px/1.25 Outfit, sans-serif;
 }
 .upgrade-card > button {
   position: relative;
-  isolation: isolate;
   width: 100%;
-  height: 58px;
-  min-height: 58px;
-  margin-top: auto;
-  padding: 5px 30px 7px;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  height: 32px;
+  min-height: 32px;
+  margin-top: 1px;
+  padding: 7px 18px;
+  border: 1px solid #d4b85d;
+  background: linear-gradient(180deg, rgba(12, 26, 20, .96), rgba(6, 17, 14, .96));
+  box-shadow: inset 0 0 0 2px rgba(24, 62, 54, .7), 0 2px 0 rgba(1, 8, 6, .78);
   color: #e4f1b3;
   font: 500 15px/1 Outfit, sans-serif;
   text-shadow: 1px 2px 0 #082015;
@@ -458,93 +437,103 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .upgrade-card > button::before {
   content: '';
   position: absolute;
-  inset: 0;
-  z-index: -1;
+  inset: 3px;
+  border: 1px solid rgba(210, 197, 110, .7);
   pointer-events: none;
-  background: transparent url('/assets/ui/spellcraft/button-frame.png') center / 108% 141% no-repeat;
-  opacity: .96;
-  image-rendering: pixelated;
 }
 .upgrade-card > button:hover:not(:disabled) {
-  border: 0;
-  background: transparent;
+  border-color: #e9d680;
+  background: linear-gradient(180deg, rgba(19, 34, 27, 1), rgba(8, 21, 17, 1));
   color: #f2ffc8;
-  filter: none;
   transform: translateY(-1px);
 }
 .upgrade-card > button:hover:not(:disabled)::before {
-  filter: brightness(1.24) drop-shadow(0 0 5px rgba(209, 249, 133, .25));
+  border-color: rgba(233, 214, 128, .95);
 }
 .upgrade-card > button:active:not(:disabled) { transform: translateY(1px); }
 .upgrade-card > button:disabled {
   cursor: not-allowed;
   opacity: 1;
-  border: 0;
-  background: transparent;
-  color: #77877e;
-  filter: none;
+  border-color: #5f6f5e;
+  background: linear-gradient(180deg, rgba(16, 24, 19, .9), rgba(10, 18, 14, .94));
+  color: #bcc99a;
+  box-shadow: inset 0 0 0 2px rgba(30, 41, 34, .8);
   text-shadow: 1px 2px 0 #07140f;
 }
 .upgrade-card > button:disabled::before {
-  opacity: .88;
-  filter: grayscale(.14) brightness(.82);
+  border-color: rgba(110, 124, 110, .7);
 }
 .upgrade-card.mastered > button:disabled {
   opacity: 1;
   color: #9ca59d;
 }
 .upgrade-card.mastered > button:disabled::before {
-  opacity: .84;
-  filter: sepia(.12) saturate(.78) brightness(.78);
+  filter: saturate(.28) brightness(.68);
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 1500px) {
   .upgrade-dialog {
-    width: min(72vw, 900px);
-    height: 82dvh;
-    max-height: none;
-    margin-top: 9dvh;
-    padding: 82px 64px 58px;
+    width: min(76vw, calc(86dvh * 16 / 9), 1000px);
+    padding: 6.5% 8.5% 10.25%;
   }
+  .upgrade-heading { min-height: 44px; }
   .dialog-heading h2 { font-size: 24px; }
-  .upgrade-intro { margin-bottom: 24px; }
-  .upgrade-list { grid-template-rows: repeat(2, 220px); }
-  .upgrade-card-top { grid-template-columns: 78px minmax(0,1fr); }
-  .spell-icon { width: 78px; height: 78px; }
-  .upgrade-card-title strong { font-size: 16px; }
+  .upgrade-title-copy { padding-right: 190px; }
+  .upgrade-sp-badge { width: 184px; height: 50px; font-size: 13px; }
+  .upgrade-intro { margin: 3px 190px 10px 0; font-size: 14px; }
+  .upgrade-list { grid-template-rows: repeat(2, 136px); gap: 14px; }
+  .upgrade-card { padding: 6px 10px; }
+  .upgrade-card-top { --spell-summary-size: 80px; gap: 12px; }
+  .upgrade-card-title strong { font-size: 19px; }
+  .upgrade-card code { font-size: 14px; }
+  .upgrade-card p { font-size: 13px; }
+  .upgrade-card > button { height: 32px; min-height: 32px; font-size: 14px; }
+}
+@media (max-width: 1100px) {
+  .upgrade-dialog {
+    width: min(calc(100vw - 24px), calc(88dvh * 16 / 9));
+    right: 12px;
+  }
 }
 @media (max-width: 900px) {
   .upgrade-dialog {
-    inset: 0 0 auto 0;
+    inset: 9px 0 auto 0;
     width: calc(100vw - 18px);
+    max-width: calc(100vw - 18px);
     height: calc(100dvh - 18px);
+    aspect-ratio: auto;
     max-height: none;
-    margin: 9px auto 0;
-    padding: 72px 42px 54px;
+    margin: 0 auto;
+    padding: 72px 42px 64px;
     overflow-y: auto;
-    background-size: 100% 100%;
+    overflow-x: hidden;
+    transform: none;
   }
   .upgrade-list {
     flex: none;
     grid-template-columns: 1fr;
     grid-template-rows: none;
-    grid-auto-rows: minmax(190px, auto);
+    grid-auto-rows: 136px;
+    transform: none;
   }
   .upgrade-intro { margin-right: 0; }
   .upgrade-sp-badge { width: 170px; height: 56px; font-size: 13px; }
   .dialog-heading > .upgrade-heading-actions > button { top: -34px; right: -27px; width: 38px; height: 38px; }
 }
 @media (max-width: 560px) {
-  .upgrade-dialog { padding: 62px 28px 44px; }
-  .dialog-heading h2 { font-size: 19px; }
+  .upgrade-dialog { padding: 56px 22px 42px; }
+  .dialog-heading h2 { font-size: 20px; }
+  .upgrade-title-copy { padding-right: 0; }
   .upgrade-title-copy .eyebrow { font-size: 8px; }
-  .upgrade-heading { min-height: 92px; }
-  .upgrade-heading-actions { top: 50px; left: 0; right: auto; }
-  .upgrade-sp-badge { width: 150px; height: 50px; }
-  .dialog-heading > .upgrade-heading-actions > button { left: calc(100vw - 92px); right: auto; top: -48px; }
-  .upgrade-card-top { grid-template-columns: 64px minmax(0,1fr); }
-  .spell-icon { width: 64px; height: 64px; }
-  .upgrade-card-title strong { font-size: 14px; }
+  .upgrade-heading { min-height: 128px; }
+  .upgrade-heading-actions { top: 74px; left: 0; right: 0; }
+  .upgrade-sp-badge { width: 150px; height: 44px; }
+  .dialog-heading > .upgrade-heading-actions > button { left: auto; right: 0; top: -74px; width: 32px; height: 32px; }
+  .upgrade-card-top { --spell-summary-size: 72px; }
+  .upgrade-card-title strong { font-size: 18px; }
+  .upgrade-card-top { gap: 12px; }
+  .rank-pips { gap: 5px; }
+  .rank-pips i { width: 8px; height: 8px; }
 }
 
 .toast { position: fixed; left: 50%; bottom: 22px; z-index: 20; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #081b12; border: 1px solid #54785f; color: #e4edbd; padding: 8px 13px; font: 400 9px Silkscreen, monospace; transition: .2s; box-shadow: 0 8px 30px #000; }.toast.visible { opacity: 1; transform: translate(-50%, 0); }
