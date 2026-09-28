@@ -12,19 +12,16 @@
   position: fixed;
   inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
-  width: min(1120px, 92vw);
-  height: min(760px, 88dvh);
+  width: min(1120px, 92vw, calc(88dvh * 4 / 3));
+  height: auto;
+  aspect-ratio: 4 / 3;
   max-width: none;
   max-height: none;
   margin: 0;
   padding: 72px 64px 56px;
   overflow: hidden;
-  border: 48px solid transparent;
-  border-image-source: url('/assets/ui/spellcraft/spellcraft-frame.png');
-  border-image-slice: 120 fill;
-  border-image-width: 48px;
-  border-image-repeat: stretch;
-  background: #08141d;
+  border: 0;
+  background: #08141d url('/assets/ui/spellcraft/spellcraft-frame.png') center / 100% 100% no-repeat;
   color: var(--sc-text);
   box-shadow: 0 24px 70px rgba(0, 0, 0, .62);
   image-rendering: pixelated;
@@ -76,7 +73,7 @@
 
 #upgrade-dialog .upgrade-sp-badge {
   width: 150px;
-  height: 44px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -488,11 +485,10 @@
 
 @media (max-width: 1050px) {
   #upgrade-dialog.upgrade-dialog {
-    width: 94vw;
-    height: 90dvh;
+    width: min(94vw, calc(90dvh * 4 / 3));
+    height: auto;
+    aspect-ratio: 4 / 3;
     padding: 62px 46px 48px;
-    border-width: 38px;
-    border-image-width: 38px;
   }
   #upgrade-dialog .reserve-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -501,9 +497,9 @@
   #upgrade-dialog.upgrade-dialog {
     width: 97vw;
     height: 94dvh;
+    aspect-ratio: auto;
     padding: 52px 28px 40px;
-    border-width: 28px;
-    border-image-width: 28px;
+    background-size: 100% 100%;
   }
   #upgrade-dialog .upgrade-title-copy h2 { font-size: 20px; }
   #upgrade-dialog .upgrade-sp-badge { width: 120px; height: 38px; font-size: 10px; }
@@ -519,8 +515,6 @@
 @media (max-width: 500px) {
   #upgrade-dialog.upgrade-dialog {
     padding: 46px 18px 30px;
-    border-width: 20px;
-    border-image-width: 20px;
   }
   #upgrade-dialog .upgrade-heading-actions { gap: 6px; }
   #upgrade-dialog .upgrade-sp-badge { width: 100px; }
