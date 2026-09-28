@@ -115,15 +115,20 @@ export class BattlePresentation {
     this.burst(x, y, color, 14, radius);
   }
 
-  cast(ability: AbilityDefinition, enemy: Enemy): void {
+  cast(ability: AbilityDefinition, enemy: Enemy, onImpact: () => void = () => {}): void {
     const color = ability.color;
     const powerful = ['judgment', 'nova', 'soulflame'].includes(ability.id);
     this.burst(this.player.x, this.player.y - 10, color, 8, 12);
     if (['heal', 'guard', 'focus'].includes(ability.kind) || ability.id === 'ascend') {
       this.halo(this.player.x, this.player.y - 6, color);
+      onImpact();
       return;
     }
-    if (ability.kind === 'utility') { this.halo(enemy.x, enemy.y - 6, color); return; }
+    if (ability.kind === 'utility') {
+      this.halo(enemy.x, enemy.y - 6, color);
+      onImpact();
+      return;
+    }
     if (ability.kind === 'hybrid') this.halo(this.player.x, this.player.y - 6, color);
     const hit = () => {
       this.halo(enemy.x, enemy.y - 8, color, powerful ? 27 : 18);
@@ -132,6 +137,7 @@ export class BattlePresentation {
         this.later(85, () => { if (enemy.active) enemy.clearTint(); });
       }
       this.scene.cameras.main.shake(powerful ? 100 : 65, powerful ? 0.0035 : 0.0018);
+      onImpact();
     };
     if (ability.kind === 'melee') {
       const slash = this.keep(this.scene.add.rectangle(enemy.x, enemy.y - 9, 3, 34, color).setDepth(45).setRotation(-0.7));
