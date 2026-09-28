@@ -203,31 +203,41 @@ export class CombatController {
     this.state.resource -= ability.cost;
     const rank = Math.max(0, (this.state.abilityLevels[ability.id] ?? 1) - 1);
     const power = Math.max(0, Math.round(abilityPower(ability, tier, stats.multiplier, this.state)));
-    this.presentation.cast(ability, this.enemy);
+    this.presentation.cast(ability, this.enemy, () => {
+      if (!this.active || this.ending) return;
+      this.applySpellEffect(ability, rank, power);
+      events.emit(GameEvents.playerChanged, this.state);
+      this.emitChange();
+      if (this.enemy.hp <= 0) this.finish(true);
+    });
+    if (ability.id === 'blood-crescent') {
+      const amount = Math.min(this.state.hp - 1, [4, 5, 6][rank] ?? 4);
+      this.state.hp -= amount;
+      this.presentation.floatText(this.player.x, this.player.y - 28, '-' + amount, 0xff6572);
+    }
+    // Mana and self-cost update immediately; projectile damage lands with the visual impact.
+    events.emit(GameEvents.playerChanged, this.state);
+    this.emitChange();
+  }
+
+  private applySpellEffect(ability: AbilityDefinition, rank: number, power: number): void {
     if (ability.id === 'hourglass') this.delayAttack([1.8, 2.6, 3.5][rank] ?? 1.8);
     else if (ability.id === 'ascend') this.delayAttack([1, 1.8][rank] ?? 1);
     else if (ability.kind === 'heal') this.heal(power, ability.color);
     else if (ability.kind === 'guard') {
       const values = ability.id === 'phase' ? [0.6, 0.85] : [0.45, 0.62, 0.78];
       this.guard = values[rank] ?? values.at(-1)!;
-      this.presentation.floatText(this.player.x, this.player.y - 28, 'WARD', ability.color);
+      this.presentation.floatText(this.player.x, this.player.y - 28, ability.id === 'phase' ? 'PHASE' : 'WARD', ability.color);
     } else if (ability.kind === 'focus') {
       this.state.focus = Math.min(5, this.state.focus + 2);
-      this.state.resource = Math.min(this.state.maxResource, this.state.resource + this.state.maxResource * [0.35, 0.55, 0.8][Math.min(rank, 2)]);
+      this.state.resource = Math.min(this.state.maxResource,
+        this.state.resource + this.state.maxResource * [0.35, 0.55, 0.8][Math.min(rank, 2)]);
     } else {
       this.enemy.takeDamage(power);
       this.presentation.floatText(this.enemy.x, this.enemy.y - 28, '-' + power, ability.color);
       if (ability.kind === 'hybrid') this.heal(power, ability.color);
       this.secondary(ability, rank);
     }
-    if (ability.id === 'blood-crescent') {
-      const amount = Math.min(this.state.hp - 1, [4, 5, 6][rank] ?? 4);
-      this.state.hp -= amount;
-      this.presentation.floatText(this.player.x, this.player.y - 28, '-' + amount, 0xff6572);
-    }
-    events.emit(GameEvents.playerChanged, this.state);
-    this.emitChange(); // Paint the completed word before battleEnded clears the prompt.
-    if (this.enemy.hp <= 0) this.finish(true);
   }
 
   private heal(amount: number, color: number): void {
