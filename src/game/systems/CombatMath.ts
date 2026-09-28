@@ -4,7 +4,8 @@ import type { AbilityDefinition, PlayerState, WordDefinition } from '../types';
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export function buildWord(ability: AbilityDefinition, level: number): WordDefinition {
-  const explicit = ability.words?.[Math.max(0, Math.min(level - 1, ability.words.length - 1))];
+  const words = ability.words;
+  const explicit = words?.[Math.max(0, Math.min(level - 1, words.length - 1))];
   if (explicit) return { segments: [explicit], full: explicit, boundaries: [explicit.length] };
 
   const segments = [ability.trigger, ...ability.suffixes.slice(0, Math.max(0, level - 1))];
