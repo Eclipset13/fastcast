@@ -42,7 +42,7 @@ export class RunestoneInteraction {
     this.promptHost = scene.game.canvas.closest<HTMLElement>('.stage') ?? scene.game.canvas.parentElement!;
     this.prompt = document.createElement('div');
     this.prompt.className = 'runestone-prompt';
-    this.prompt.textContent = '[E] UPGRADE SPELLS';
+    this.prompt.textContent = '[E] SPELLCRAFT';
     this.prompt.hidden = true;
     this.promptHost.append(this.prompt);
 
