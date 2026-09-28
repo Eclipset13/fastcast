@@ -1,0 +1,148 @@
+import type { AbilityDefinition } from '../types';
+
+const mageAsset = (name: string) => `/assets/moves/mage/${name}.png`;
+
+export const MAGE_SPELLS: AbilityDefinition[] = [
+  {
+    id: 'spark', name: 'Spark', trigger: 'zap', suffixes: [], words: ['zap', 'zapis', 'zapstorm'],
+    cost: 0, basePower: 10, rankPowers: [10, 14, 19], kind: 'ranged', color: 0xffd54a,
+    description: 'A fast lightning bolt with almost no commitment.',
+    rankDescriptions: ['10 damage.', '14 damage.', '19 damage and a stronger lightning burst.'],
+    assetPath: mageAsset('spark'), starter: true, unlockCost: 0, upgradeCosts: [1, 2],
+  },
+  {
+    id: 'fireball', name: 'Fireball', trigger: 'ignis', suffixes: [], words: ['ignis', 'ignisflare', 'ignisinferno'],
+    cost: 14, basePower: 15, rankPowers: [15, 21, 29], kind: 'ranged', color: 0xff6a32,
+    description: 'A heavy ember projectile with high single-target damage.',
+    rankDescriptions: ['15 damage.', '21 damage.', '29 damage with the strongest impact.'],
+    assetPath: mageAsset('fireball'), starter: true, unlockCost: 0, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'ice-spike', name: 'Ice Spike', trigger: 'glac', suffixes: [], words: ['glac', 'glacies', 'glacieslance'],
+    cost: 12, basePower: 13, rankPowers: [13, 18, 24], kind: 'ranged', color: 0x70cfff,
+    description: 'A piercing ice shard that delays the enemy strike.',
+    rankDescriptions: ['13 damage; delays 0.8s.', '18 damage; delays 1.2s.', '24 damage; delays 1.7s.'],
+    assetPath: mageAsset('ice-spike'), starter: true, unlockCost: 0, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'mend', name: 'Mend', trigger: 'vita', suffixes: [], words: ['vita', 'vitae', 'vitaemajor'],
+    cost: 16, basePower: 14, rankPowers: [14, 22, 32], kind: 'heal', color: 0x72ed8d,
+    description: 'Restores health instead of damaging the enemy.',
+    rankDescriptions: ['Restore 14 HP.', 'Restore 22 HP.', 'Restore 32 HP.'],
+    assetPath: mageAsset('mend'), starter: true, unlockCost: 0, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'void-rift', name: 'Void Rift', trigger: 'rift', suffixes: [], words: ['rift', 'riftvoid', 'riftvoidcore'],
+    cost: 18, basePower: 8, rankPowers: [8, 13, 19], kind: 'ranged', color: 0x9a5cff,
+    description: 'Tears open a void that damages and stalls the enemy.',
+    rankDescriptions: ['8 damage; delays 0.7s.', '13 damage; delays 1.0s.', '19 damage; delays 1.4s.'],
+    assetPath: mageAsset('void-rift'), unlockCost: 4, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'moon-slice', name: 'Moon Slice', trigger: 'luna', suffixes: [], words: ['luna', 'lunaris', 'lunablade'],
+    cost: 8, basePower: 12, rankPowers: [12, 17, 23], kind: 'melee', color: 0xe8f1ff,
+    description: 'A quick crescent slash with low mana cost.',
+    rankDescriptions: ['12 damage.', '17 damage.', '23 damage.'],
+    assetPath: mageAsset('moon-slice'), unlockCost: 2, upgradeCosts: [1, 2],
+  },
+  {
+    id: 'arc-volley', name: 'Arc Volley', trigger: 'arc', suffixes: [], words: ['arc', 'arcus', 'arcvolley'],
+    cost: 13, basePower: 15, rankPowers: [15, 20, 30], kind: 'ranged', color: 0xf6d8a0,
+    description: 'A fan of arcane arrows; reliable mid-power pressure.',
+    rankDescriptions: ['3 arrows, 15 total damage.', '4 arrows, 20 total damage.', '5 arrows, 30 total damage.'],
+    assetPath: mageAsset('arc-volley'), unlockCost: 3, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'aegis', name: 'Aegis', trigger: 'ward', suffixes: [], words: ['ward', 'wardis', 'wardismajor'],
+    cost: 9, basePower: 0, rankPowers: [0, 0, 0], kind: 'guard', color: 0x83c9ff,
+    description: 'Creates a ward that absorbs part of the next enemy strike.',
+    rankDescriptions: ['Absorb 45%.', 'Absorb 62%.', 'Absorb 78%.'],
+    assetPath: mageAsset('aegis'), starter: true, unlockCost: 0, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'hourglass', name: 'Hourglass', trigger: 'tempus', suffixes: [], words: ['tempus', 'tempusbind', 'tempusaeterna'],
+    cost: 20, basePower: 0, rankPowers: [0, 0, 0], kind: 'utility', color: 0xeac45c,
+    description: 'Warps time and pushes the enemy attack timer backward.',
+    rankDescriptions: ['Delay 1.8s.', 'Delay 2.6s.', 'Delay 3.5s.'],
+    assetPath: mageAsset('hourglass'), unlockCost: 5, upgradeCosts: [3, 4],
+  },
+  {
+    id: 'ascend', name: 'Ascend', trigger: 'soar', suffixes: [], words: ['soar', 'ascendra'],
+    cost: 11, basePower: 0, rankPowers: [0, 0], kind: 'utility', color: 0xa9e8ff,
+    description: 'A mobility spell that buys time during combat.',
+    rankDescriptions: ['Delay the enemy 1.0s.', 'Delay the enemy 1.8s.'],
+    assetPath: mageAsset('ascend'), unlockCost: 4, upgradeCosts: [3],
+  },
+  {
+    id: 'blood-crescent', name: 'Blood Crescent', trigger: 'crimson', suffixes: [], words: ['crimson', 'crimsonedge', 'crimsonluna'],
+    cost: 10, basePower: 22, rankPowers: [22, 31, 42], kind: 'melee', color: 0xff4d5e,
+    description: 'A brutal blood slash that trades a little health for damage.',
+    rankDescriptions: ['22 damage; costs 4 HP.', '31 damage; costs 5 HP.', '42 damage; costs 6 HP.'],
+    assetPath: mageAsset('blood-crescent'), unlockCost: 6, upgradeCosts: [3, 5],
+  },
+  {
+    id: 'venom', name: 'Venom', trigger: 'poison', suffixes: [], words: ['poison', 'poisonis', 'poisonmortis'],
+    cost: 12, basePower: 10, rankPowers: [10, 14, 18], kind: 'ranged', color: 0x7ee83d,
+    description: 'Poisons the target; damage continues after the initial hit.',
+    rankDescriptions: ['10 impact + 6 poison.', '14 impact + 10 poison.', '18 impact + 16 poison.'],
+    assetPath: mageAsset('venom'), unlockCost: 3, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'arcane-bind', name: 'Arcane Bind', trigger: 'knot', suffixes: [], words: ['knot', 'knotarc', 'knotarcana'],
+    cost: 15, basePower: 5, rankPowers: [5, 8, 12], kind: 'ranged', color: 0xbb71ff,
+    description: 'Arcane chains restrain the enemy and delay its next strike.',
+    rankDescriptions: ['5 damage; delay 1.0s.', '8 damage; delay 1.7s.', '12 damage; delay 2.5s.'],
+    assetPath: mageAsset('arcane-bind'), unlockCost: 4, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'nova', name: 'Nova', trigger: 'nova', suffixes: [], words: ['nova', 'novara', 'novaburst'],
+    cost: 19, basePower: 17, rankPowers: [17, 24, 33], kind: 'ranged', color: 0xffb44f,
+    description: 'Detonates a bright arcane burst around the target.',
+    rankDescriptions: ['17 damage.', '24 damage.', '33 damage.'],
+    assetPath: mageAsset('nova'), unlockCost: 5, upgradeCosts: [3, 4],
+  },
+  {
+    id: 'gale', name: 'Gale', trigger: 'bora', suffixes: [], words: ['bora', 'boralis', 'boralisrex'],
+    cost: 10, basePower: 10, rankPowers: [10, 16, 23], kind: 'ranged', color: 0xbdeaff,
+    description: 'A cutting wind that damages and disrupts enemy timing.',
+    rankDescriptions: ['10 damage; delay 0.5s.', '16 damage; delay 0.9s.', '23 damage; delay 1.3s.'],
+    assetPath: mageAsset('gale'), starter: true, unlockCost: 0, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'frost-shards', name: 'Frost Shards', trigger: 'frost', suffixes: [], words: ['frost', 'frostbite', 'frostshards'],
+    cost: 14, basePower: 15, rankPowers: [15, 24, 35], kind: 'ranged', color: 0x65bfff,
+    description: 'Launches a close spread of razor-sharp ice fragments.',
+    rankDescriptions: ['3 shards, 15 total damage.', '4 shards, 24 total damage.', '5 shards, 35 total damage.'],
+    assetPath: mageAsset('frost-shards'), unlockCost: 3, upgradeCosts: [2, 3],
+  },
+  {
+    id: 'phase', name: 'Phase', trigger: 'drift', suffixes: [], words: ['drift', 'driftstep'],
+    cost: 13, basePower: 0, rankPowers: [0, 0], kind: 'guard', color: 0xa779ff,
+    description: 'Phases out of danger, greatly reducing the next hit.',
+    rankDescriptions: ['Absorb 60% of the next hit.', 'Absorb 85% of the next hit.'],
+    assetPath: mageAsset('phase'), unlockCost: 5, upgradeCosts: [4],
+  },
+  {
+    id: 'judgment', name: 'Judgment', trigger: 'judex', suffixes: [], words: ['judex', 'judexlux', 'judexdivine'],
+    cost: 24, basePower: 24, rankPowers: [24, 34, 48], kind: 'ranged', color: 0xffe290,
+    description: 'Calls down a slow, devastating pillar of light.',
+    rankDescriptions: ['24 damage.', '34 damage.', '48 damage.'],
+    assetPath: mageAsset('judgment'), unlockCost: 7, upgradeCosts: [4, 6],
+  },
+  {
+    id: 'soulflame', name: 'Soulflame', trigger: 'ember', suffixes: [], words: ['ember', 'embersoul', 'embersoulflame'],
+    cost: 20, basePower: 16, rankPowers: [16, 23, 31], kind: 'ranged', color: 0xb75cff,
+    description: 'Purple soul-fire burns after the first impact.',
+    rankDescriptions: ['16 impact + 6 burn.', '23 impact + 10 burn.', '31 impact + 16 burn.'],
+    assetPath: mageAsset('soulflame'), unlockCost: 6, upgradeCosts: [4, 5],
+  },
+  {
+    id: 'astral-bloom', name: 'Astral Bloom', trigger: 'heaven', suffixes: [], words: ['heaven', 'heavenbloom', 'heavenastral'],
+    cost: 25, basePower: 10, rankPowers: [10, 16, 24], kind: 'hybrid', color: 0xff8fda,
+    description: 'An astral flower that harms the enemy while restoring health.',
+    rankDescriptions: ['10 damage + 10 HP.', '16 damage + 16 HP.', '24 damage + 24 HP.'],
+    assetPath: mageAsset('astral-bloom'), unlockCost: 7, upgradeCosts: [4, 6],
+  },
+];
+
+export const MAGE_STARTER_DECK = ['spark', 'fireball', 'ice-spike', 'mend', 'aegis', 'gale'] as const;
