@@ -19,7 +19,7 @@
           <span><kbd>A</kbd><kbd>D</kbd> move</span>
           <span><kbd>Space</kbd> jump</span>
           <span><kbd>Shift</kbd> dash</span>
-          <span><kbd>E</kbd> upgrades at shrine</span>
+          <span><kbd>E</kbd> spellcraft at runestone</span>
         </div>
       </section>
 
@@ -89,21 +89,26 @@
         </div>
       </section>
 
-      <dialog id="upgrade-dialog" class="upgrade-dialog panel">
-        <i class="upgrade-frame-rune" aria-hidden="true"></i>
+      <dialog id="upgrade-dialog" class="upgrade-dialog panel" aria-labelledby="spellcraft-title">
         <div class="dialog-heading upgrade-heading">
           <div class="upgrade-title-copy">
-            <span class="eyebrow">Spellcraft</span>
+            <span class="eyebrow">Runestone workshop</span>
+            <h2 id="spellcraft-title">Spellcraft</h2>
           </div>
           <div class="upgrade-heading-actions">
             <div class="upgrade-sp-badge" aria-label="Available skill points">
               <i aria-hidden="true"></i>
               <span id="upgrade-skill-points">0 SP</span>
             </div>
-            <button id="close-upgrades" aria-label="Close">×</button>
+            <button id="close-upgrades" aria-label="Close spellcraft">×</button>
           </div>
         </div>
-        <div id="upgrade-list" class="upgrade-list"></div>
+        <nav class="spellcraft-tabs" role="tablist" aria-label="Spellcraft sections">
+          <button type="button" role="tab" data-spellcraft-tab="deck" class="active" aria-selected="true">Deck</button>
+          <button type="button" role="tab" data-spellcraft-tab="learn" aria-selected="false">Learn</button>
+          <button type="button" role="tab" data-spellcraft-tab="upgrade" aria-selected="false">Upgrade</button>
+        </nav>
+        <div id="upgrade-list" class="upgrade-list spellcraft-content"></div>
       </dialog>
       <div id="toast" class="toast" aria-live="polite"></div>
     </main>
