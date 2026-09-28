@@ -4,6 +4,7 @@ import type { EnemyDefinition } from '../types';
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   hp: number;
   defeated = false;
+  combatLocked = false;
   private direction = -1;
   private readonly homeX: number;
 
@@ -17,7 +18,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(): void {
-    if (this.defeated || !this.body?.enable) return;
+    if (this.defeated || this.combatLocked || !this.body?.enable) return;
     if (this.x < this.homeX - 45) this.direction = 1;
     if (this.x > this.homeX + 45) this.direction = -1;
     this.setVelocityX(this.direction * 20).setFlipX(this.direction > 0);
@@ -26,8 +27,15 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   takeDamage(amount: number): void {
     this.hp = Math.max(0, this.hp - amount);
-    this.setTintFill(0xffffff);
-    this.scene.time.delayedCall(80, () => this.clearTint());
+  }
+
+  setCombatLocked(locked: boolean, playerX: number): void {
+    this.combatLocked = locked;
+    this.setVelocity(0, 0);
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(!locked);
+    body.moves = !locked;
+    if (locked) this.setFlipX(playerX > this.x);
   }
 
   defeat(): void {

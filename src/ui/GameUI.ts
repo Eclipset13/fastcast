@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { BattleUI } from './BattleUI';
 import type { BattleSnapshot } from '../game/combat/CombatController';
 import { xpForLevel } from '../game/config/constants';
 import { CLASSES } from '../game/data/classes';
@@ -38,7 +39,7 @@ const required = <T extends HTMLElement>(selector: string): T => {
 const maxRank = (ability: AbilityDefinition) => ability.words?.length ?? ability.suffixes.length + 1;
 
 export class GameUI {
-  private game: Phaser.Game | null = null;
+  private readonly battleUI = new BattleUI();
   private toastTimer = 0;
   private battleActive = false;
   private previousHp: number | null = null;
@@ -75,32 +76,30 @@ export class GameUI {
     required('#title-screen').hidden = true;
     required('#game-screen').hidden = false;
     this.updateHud(gameStore.player);
-    this.game = this.startGame(classDef);
+    this.startGame(classDef);
   }
 
   private bindEvents(): void {
     events.on(GameEvents.playerChanged, (player: PlayerState) => {
       this.updateHud(player);
-      this.renderUpgrades();
+      if (required<HTMLDialogElement>('#upgrade-dialog').open) this.renderUpgrades();
     });
     events.on(GameEvents.battleStarted, (snapshot: BattleSnapshot) => {
       this.battleActive = true;
-      required('#combat-panel').hidden = false;
-      this.updateBattle(snapshot);
-      this.refreshScale();
+      this.battleUI.start(snapshot);
     });
     events.on(GameEvents.battleChanged, (snapshot: BattleSnapshot) => {
-      this.updateBattle(snapshot);
+      this.battleUI.update(snapshot);
       if (gameStore.player) this.updateResourceDisplay(gameStore.player);
     });
     events.on(GameEvents.battleEnded, ({ victory, xp, levels }: { victory: boolean; xp: number; levels: number[] }) => {
-      this.battleActive = false;
-      window.setTimeout(() => {
-        required('#combat-panel').hidden = true;
-        this.refreshScale();
-      }, 420);
+      this.battleUI.end();
       if (victory) this.showToast(`VICTORY · +${xp} XP${levels.length ? ` · LEVEL ${levels.at(-1)}` : ''}`);
       else this.showToast('DEFEAT · RETURNED TO THE WAYSTONE');
+    });
+    events.on(GameEvents.battleExited, () => {
+      this.battleActive = false;
+      this.battleUI.clear();
     });
     events.on(GameEvents.upgradeRequested, () => {
       if (!this.battleActive && gameStore.player) this.openUpgrades();
@@ -109,13 +108,6 @@ export class GameUI {
   }
 
   private bindControls(): void {
-    required<HTMLButtonElement>('#release-button').addEventListener('click', () => {
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' }));
-    });
-    required<HTMLButtonElement>('#abort-button').addEventListener('click', () => {
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape' }));
-    });
-
     const upgradeDialog = required<HTMLDialogElement>('#upgrade-dialog');
     required<HTMLButtonElement>('#close-upgrades').addEventListener('click', () => upgradeDialog.close());
     upgradeDialog.addEventListener('close', () => events.emit(GameEvents.upgradeMenuClosed));
@@ -213,29 +205,6 @@ export class GameUI {
     void element.offsetWidth;
     element.classList.add(className);
     window.setTimeout(() => element.classList.remove(className), 480);
-  }
-
-  private updateBattle(snapshot: BattleSnapshot): void {
-    required('#enemy-name').textContent = snapshot.enemyName;
-    required('#enemy-hp-value').textContent = `${Math.ceil(snapshot.enemyHp)} / ${snapshot.enemyMaxHp}`;
-    required<HTMLElement>('#enemy-hp-fill').style.width = `${(snapshot.enemyHp / snapshot.enemyMaxHp) * 100}%`;
-    required('#enemy-timer').textContent = `${snapshot.timer.toFixed(1)}s`;
-    required<HTMLElement>('#enemy-timer-fill').style.width = `${(snapshot.timer / snapshot.timerMax) * 100}%`;
-    required('#speed-value').textContent = `×${snapshot.speedMultiplier.toFixed(2)}`;
-    required('#ability-list').innerHTML = snapshot.candidates.map((candidate) => {
-      const active = candidate.word.full === snapshot.activeWord;
-      const segments = candidate.word.segments
-        .map((segment, index) => `<span class="${index ? 'suffix' : ''}">${segment}</span>`).join('');
-      return `<div class="ability ${active ? 'active' : ''} ${candidate.affordable ? '' : 'poor'}">
-        <div><strong>${candidate.ability.name}</strong><span class="spell-word">${segments}</span></div>
-        <em>${candidate.ability.cost || 'free'}${candidate.ability.cost ? gameStore.player!.classDef.resource.short : ''}</em>
-      </div>`;
-    }).join('');
-
-    const word = required('#current-word');
-    if (!snapshot.activeWord) word.innerHTML = '<span>Type a spell word</span>';
-    else word.innerHTML = `<b>${snapshot.activeWord.slice(0, snapshot.typed)}</b><u>${snapshot.activeWord[snapshot.typed] ?? ''}</u><i>${snapshot.activeWord.slice(snapshot.typed + 1)}</i>`;
-    required('#battle-log').innerHTML = snapshot.logs.map((log) => `<p class="${log.tone}">${log.text}</p>`).join('');
   }
 
   private openUpgrades(): void {
@@ -449,7 +418,4 @@ export class GameUI {
     this.toastTimer = window.setTimeout(() => toast.classList.remove('visible'), 2600);
   }
 
-  private refreshScale(): void {
-    window.setTimeout(() => this.game?.scale.refresh(), 40);
-  }
 }

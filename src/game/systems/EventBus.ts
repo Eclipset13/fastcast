@@ -7,6 +7,7 @@ export const GameEvents = {
   battleStarted: 'battle:started',
   battleChanged: 'battle:changed',
   battleEnded: 'battle:ended',
+  battleExited: 'battle:exited',
   upgradeRequested: 'upgrade:requested',
   upgradePurchased: 'upgrade:purchased',
   upgradeMenuClosed: 'upgrade:menu-closed',

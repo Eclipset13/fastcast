@@ -17,6 +17,20 @@ export const MOVEMENT = {
 } as const;
 
 export const COMBAT_TUNING = {
+  encounterDistance: 142,
+  encounterHeight: 24,
+  minimumSpacing: 100,
+  cameraDuration: 380,
+  revealDelay: 300,
+  inputDelay: 450,
+  nextSpellDelay: 280,
+  miscastDelay: 380,
+  endDelay: 300,
+  defenseWarningDuration: 1,
+  perfectWindow: 0.2,
+  criticalMultiplier: 1.7,
+  miscastBase: 0.05,
+  miscastProgress: 0.08,
   slowCps: 2,
   fastCps: 7,
   minMultiplier: 0.5,

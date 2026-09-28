@@ -56,6 +56,10 @@ export interface EnemyDefinition {
   hp: number;
   attack: number;
   interval: number;
+  /** Combat timing in seconds; omitted values use COMBAT_TUNING defaults. */
+  defenseWarningDuration?: number;
+  perfectWindow?: number;
+  criticalMultiplier?: number;
   xp: number;
   color: number;
   accent: number;

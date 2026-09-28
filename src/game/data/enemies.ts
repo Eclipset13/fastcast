@@ -3,6 +3,7 @@ import type { EnemyDefinition } from '../types';
 export const FOREST_WRAITH: EnemyDefinition = {
   id: 'forest-wraith', name: 'Briar Wraith', hp: 58, attack: 9, interval: 3.4, xp: 42,
   color: 0x173e30, accent: 0x87e89d,
+  defenseWarningDuration: 1, perfectWindow: 0.2,
 };
 
 export const BOSS_SCAFFOLDS: EnemyDefinition[] = [

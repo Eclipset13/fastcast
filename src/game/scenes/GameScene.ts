@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { CombatController } from '../combat/CombatController';
-import { GAME_HEIGHT, GROUND_Y, WORLD_WIDTH } from '../config/constants';
+import { COMBAT_TUNING, GAME_HEIGHT, GROUND_Y, WORLD_WIDTH } from '../config/constants';
 import { BIOMES } from '../data/biomes';
 import { FOREST_WRAITH } from '../data/enemies';
 import { Enemy } from '../entities/Enemy';
@@ -123,7 +123,7 @@ export class GameScene extends Phaser.Scene {
     this.createTerrain();
 
     const query = new URLSearchParams(window.location.search);
-    const startX = query.has('battle') ? 680 : Number(query.get('x')) || 110;
+    const startX = query.has('battle') ? 625 : Number(query.get('x')) || 110;
     this.player = new Player(this, startX, GROUND_Y - 18, state);
     this.physics.add.collider(this.player, this.terrain);
     this.cameras.main.startFollow(this.player, true, 0.075, 0.075, -80, 12);
@@ -138,8 +138,15 @@ export class GameScene extends Phaser.Scene {
       this.runestone,
       () => !this.combat.active,
     );
-    this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
+    const handleKey = (event: KeyboardEvent) => {
       if (this.combat.handleKey(event)) event.preventDefault();
+    };
+    // Combat consumes each native keydown once, immediately. Phaser's queued movement
+    // keys remain independent and are reset before exploration control returns.
+    window.addEventListener('keydown', handleKey);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      window.removeEventListener('keydown', handleKey);
+      this.combat.destroy();
     });
     events.emit(GameEvents.playerChanged, state);
     events.emit(GameEvents.toast, 'The canopy breathes. Something watches ahead.');
@@ -149,7 +156,10 @@ export class GameScene extends Phaser.Scene {
     const seconds = Math.min(delta / 1000, 0.05);
     this.biomeRenderer.update(seconds);
     this.player.update(this.time.now);
-    if (!this.combat.active) for (const enemy of this.enemies) enemy.update();
+    if (!this.combat.active) {
+      for (const enemy of this.enemies) enemy.update();
+      this.checkEncounters();
+    }
     this.combat.update(seconds);
     this.runestoneInteraction.update();
     if (this.player.y > GAME_HEIGHT + 20) this.respawn();
@@ -159,7 +169,37 @@ export class GameScene extends Phaser.Scene {
     const enemy = new Enemy(this, x, y, FOREST_WRAITH);
     this.enemies.push(enemy);
     this.physics.add.collider(enemy, this.terrain);
-    this.physics.add.overlap(this.player, enemy, () => this.combat?.start(enemy));
+  }
+
+  private checkEncounters(): void {
+    if (document.querySelector<HTMLDialogElement>('#upgrade-dialog')?.open) return;
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    if (!body.blocked.down && !body.touching.down) return;
+    for (const enemy of this.enemies) {
+      if (enemy.defeated) continue;
+      const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
+      if (!enemyBody.blocked.down && !enemyBody.touching.down) continue;
+      const distance = Math.abs(enemy.x - this.player.x);
+      if (distance > COMBAT_TUNING.encounterDistance || Math.abs(body.bottom - enemyBody.bottom) > COMBAT_TUNING.encounterHeight) continue;
+      // A landing directly beside an enemy must not start an overlapping duel.
+      // Find a supported horizontal position on the same surface; never change Y.
+      if (distance < COMBAT_TUNING.minimumSpacing) {
+        const side = this.player.x <= enemy.x ? -1 : 1;
+        const x = enemy.x + side * COMBAT_TUNING.minimumSpacing;
+        const supported = this.terrain.getChildren().some((object) => {
+          const surface = object.body as Phaser.Physics.Arcade.StaticBody;
+          return x - 6 >= surface.left && x + 6 <= surface.right && Math.abs(surface.top - body.bottom) < 5;
+        });
+        if (!supported || x < 12 || x > WORLD_WIDTH - 12) continue;
+        this.player.setX(x);
+        body.updateFromGameObject();
+      }
+      this.combat.start(enemy);
+      if (this.combat.active) {
+        for (const other of this.enemies) if (other !== enemy) other.setVelocityX(0);
+        break;
+      }
+    }
   }
 
   private finishBattle(victory: boolean): void {
@@ -170,7 +210,6 @@ export class GameScene extends Phaser.Scene {
       events.emit(GameEvents.playerChanged, state);
       events.emit(GameEvents.toast, 'The forest returns you to the waystone.');
     } else events.emit(GameEvents.toast, 'Wraith dispersed · experience gained');
-    this.player.setControl(true);
   }
 
   private respawn(): void {

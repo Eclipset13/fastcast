@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600&display=swap');
 
+@font-face { font-family: Silkscreen; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/silkscreen-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: Silkscreen; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/silkscreen-latin-700-normal.woff2') format('woff2'); }
+
 :root {
   color-scheme: dark;
   --ink: #e8f1e7; --muted: #8ca698; --panel: rgba(7, 18, 14, .94); --line: #294c3b;
@@ -36,7 +39,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 
 /* The world keeps the full viewport when an encounter opens. */
 .game-screen, .play-layout { width: 100%; height: 100vh; height: 100dvh; }
-.play-layout { --combat-top: 170px; position: relative; isolation: isolate; overflow: hidden; }
+.play-layout { position: relative; isolation: isolate; overflow: hidden; }
 .game-screen .stage { border: 0; }
 .stage { position: relative; width: 100%; height: 100%; overflow: hidden; min-width: 0; background: #06110c; }
 #game { position: absolute; inset: 0; overflow: hidden; }
@@ -126,8 +129,8 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .xp-track b { display: block; width: 0; height: 100%; background: #c7a749; box-shadow: inset 0 2px #ecce71, inset 0 4px #dabb5b, inset 0 -2px #8e7232; transition: width .35s steps(12); }
 .hud-sp { display: flex; align-items: center; justify-content: center; gap: 10px; color: #e0bf56; font: 400 16px Silkscreen, monospace; white-space: nowrap; }
 .hud-sp i { width: 12px; height: 16px; background: #c6a044; clip-path: polygon(40% 0, 60% 0, 60% 20%, 80% 20%, 80% 40%, 100% 40%, 100% 60%, 80% 60%, 80% 80%, 60% 80%, 60% 100%, 40% 100%, 40% 80%, 20% 80%, 20% 60%, 0 60%, 0 40%, 20% 40%, 20% 20%, 40% 20%); }
-.combat-actions button, .upgrade-dialog button { border: 1px solid #426551; background: #11291d; padding: 7px 10px; cursor: pointer; }
-.combat-actions button:hover, .upgrade-dialog button:hover:not(:disabled) { border-color: #a9c585; background: #243b26; }
+.upgrade-dialog button { border: 1px solid #426551; background: #11291d; padding: 7px 10px; cursor: pointer; }
+.upgrade-dialog button:hover:not(:disabled) { border-color: #a9c585; background: #243b26; }
 .hud-objective { display: flex; align-items: center; gap: 12px; max-width: 380px; padding: 9px 14px; border-block: 1px solid rgba(92, 128, 101, .4); background: rgba(3, 20, 19, .58); text-transform: uppercase; }
 .hud-objective i { width: 12px; height: 12px; flex: 0 0 12px; border: 2px solid #d7bc52; transform: rotate(45deg); box-shadow: inset 0 0 0 2px #17291b; }
 .hud-objective strong { overflow: hidden; color: #c9d39a; font: 400 11px Silkscreen, monospace; letter-spacing: .02em; text-overflow: ellipsis; white-space: nowrap; }
@@ -142,24 +145,6 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .hud-pop { display: inline-block; animation: hud-pop .42s steps(4); }
 .hud-progress.level-up { animation: level-up .46s steps(4); }
 .xp-track.xp-gain { animation: xp-gain .36s steps(3); }
-
-.combat-panel {
-  position: absolute; z-index: 6; top: var(--combat-top); right: 24px; width: 340px;
-  max-height: calc(100% - var(--combat-top) - 24px); overflow-y: auto; overscroll-behavior: contain;
-  padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
-  border-color: #4c705c; background: rgba(4, 20, 18, .94);
-  box-shadow: 0 4px 0 rgba(0, 9, 7, .6), inset 0 0 0 3px rgba(27, 55, 44, .5);
-  scrollbar-width: thin; scrollbar-color: #4c705c #081b16;
-}
-.combat-panel > * { flex-shrink: 0; }
-.combat-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }.combat-heading > div { display: flex; flex-direction: column; }.combat-heading strong { font: 700 12px Silkscreen, monospace; color: #d7efcf; }.combat-heading > span, .threat em { font: 500 10px 'JetBrains Mono', monospace; color: #a7b8ac; font-style: normal; }
-.enemy-meter { height: 8px; background: #030907; border: 1px solid #2c4939; }.enemy-meter b { display: block; width: 100%; height: 100%; background: linear-gradient(90deg, #4c9265, #82d289); transition: width .15s steps(8); }.enemy-meter.timer b { background: linear-gradient(90deg, #e4bf63, #d5535e); transition: none; }
-.threat { display: flex; justify-content: space-between; color: #8ba092; font-size: 11px; }
-.typing-box { margin-top: 4px; background: #030a07; border: 1px solid #274638; padding: 10px; }.speed { display: flex; justify-content: space-between; color: #7f9989; font: 400 8px Silkscreen, monospace; }.speed strong { color: var(--gold); }
-.current-word { min-height: 36px; display: flex; align-items: center; margin-top: 5px; font: 700 21px 'JetBrains Mono', monospace; overflow-wrap: anywhere; }.current-word span { color: #667c6d; font: 400 12px Outfit, sans-serif; }.current-word b { color: #8fe3a1; }.current-word u { color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 4px; }.current-word i { color: #596e60; font-style: normal; }
-.ability-list { display: flex; flex-direction: column; gap: 5px; }.ability { display: flex; justify-content: space-between; align-items: center; border: 1px solid #263f33; background: #0b1c13; padding: 7px 8px; }.ability.active { border-color: #d0bd68; box-shadow: inset 2px 0 #d0bd68; }.ability.poor { opacity: .4; }.ability > div { display: flex; flex-direction: column; }.ability strong { font-size: 12px; }.ability em { font: 500 9px 'JetBrains Mono', monospace; color: #849a8c; font-style: normal; }.spell-word { font: 500 12px 'JetBrains Mono', monospace; color: #c9ddd0; }.spell-word .suffix { color: #d2bd6c; }.spell-word .suffix::before { content: '·'; color: #586e5f; }
-.battle-log { min-height: 66px; max-height: 82px; overflow: hidden; }.battle-log p { font-size: 11px; color: #899d90; margin: 2px 0; }.battle-log .good { color: #83cf92; }.battle-log .bad { color: #ed7a83; }
-.combat-actions { display: flex; gap: 6px; margin-top: auto; }.combat-actions button { flex: 1; font-size: 11px; }
 
 .upgrade-dialog {
   --upgrade-gold: #d7bc52;
@@ -541,10 +526,10 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .touch-controls { display: none; position: absolute; inset: auto 10px 10px; z-index: 6; justify-content: space-between; pointer-events: none; }.touch-controls > div { display: flex; gap: 6px; }.touch-controls button { pointer-events: auto; width: 44px; height: 44px; border: 1px solid rgba(170, 216, 181, .5); background: rgba(5, 20, 13, .72); color: #d7e7d6; touch-action: none; }
 
 /* Match the reference proportions at desktop resolutions; never shrink just for combat. */
-@media (min-width: 1800px) { .game-hud { --hud-scale: 1.12; --hud-edge: 32px; top: 30px; } .play-layout { --combat-top: 188px; } }
+@media (min-width: 1800px) { .game-hud { --hud-scale: 1.12; --hud-edge: 32px; top: 30px; } }
 @media (max-width: 1600px) { .game-hud { --hud-scale: .88; --hud-edge: 24px; top: 22px; } }
-@media (max-width: 1500px) { .game-hud { --hud-scale: .76; } .play-layout { --combat-top: 144px; } }
-@media (max-width: 1280px) { .game-hud { --hud-scale: .66; --hud-edge: 20px; top: 20px; } .play-layout { --combat-top: 132px; } }
+@media (max-width: 1500px) { .game-hud { --hud-scale: .76; } }
+@media (max-width: 1280px) { .game-hud { --hud-scale: .66; --hud-edge: 20px; top: 20px; } }
 @media (max-width: 1100px) { .game-hud { --hud-scale: .58; --hud-edge: 18px; top: 18px; } }
 @media (max-width: 1000px) { .game-hud { --hud-scale: .53; } }
 @media (pointer: coarse) { .touch-controls { display: flex; } }
@@ -552,7 +537,6 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   .game-hud { --hud-scale: .72; --hud-edge: 16px; top: 16px; flex-wrap: wrap; gap: 14px; }
   .hud-right-cluster { margin-left: auto; gap: 10px; }
   .hud-right-row { min-height: 44px; }
-  .combat-panel { top: 156px; right: 16px; width: min(310px, calc(100% - 32px)); max-height: calc(100% - 172px); }
   .class-list { grid-template-columns: 1fr; }
   .class-card { min-height: 150px; }
   .screen { align-content: start; }
@@ -561,7 +545,6 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 @media (max-width: 720px) { .game-hud { --hud-scale: .56; --hud-edge: 14px; } }
 @media (max-width: 560px) {
   .game-hud { --hud-scale: .42; --hud-edge: 12px; top: 14px; }
-  .combat-panel { top: 120px; max-height: calc(100% - 136px); }
   .controls-card { gap: 12px; }
 }
 @media (max-width: 420px) { .game-hud { --hud-scale: .38; --hud-edge: 10px; } }

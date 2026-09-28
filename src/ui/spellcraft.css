@@ -21,15 +21,14 @@
   padding: 72px 64px 56px;
   overflow: hidden;
   border: 0;
-  background: #08141d url('/assets/ui/spellcraft/spellcraft-frame.png') center / 100% 100% no-repeat;
   color: var(--sc-text);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, .62);
   image-rendering: pixelated;
 }
 
 #upgrade-dialog.upgrade-dialog[open] {
   display: flex;
   flex-direction: column;
+  padding: 110px 80px 80px;
 }
 
 #upgrade-dialog::backdrop {
@@ -79,9 +78,8 @@
   justify-content: center;
   gap: 9px;
   border: 0;
-  background: transparent url('/assets/ui/spellcraft/badge-frame.png') center / contain no-repeat;
   color: #f1d56d;
-  font: 400 13px/1 Silkscreen, monospace;
+  font: 400 20px/1 Silkscreen, monospace;
   image-rendering: pixelated;
 }
 
@@ -102,9 +100,22 @@
   border: 1px solid #7995a2;
   background: #0c1a23;
   color: #e9efeb;
-  font: 700 18px/1 Silkscreen, monospace;
+  font-size: 0;
   box-shadow: inset 0 0 0 2px rgba(132, 171, 188, .16);
 }
+
+#upgrade-dialog #close-upgrades::before,
+#upgrade-dialog #close-upgrades::after {
+  content: '';
+  position: absolute;
+  width: 17px;
+  height: 2px;
+  background: currentColor;
+  box-shadow: 0 0 4px rgba(233, 239, 235, .22);
+}
+
+#upgrade-dialog #close-upgrades::before { transform: rotate(45deg); }
+#upgrade-dialog #close-upgrades::after { transform: rotate(-45deg); }
 
 #upgrade-dialog #close-upgrades:hover {
   border-color: #d5e4e8;
@@ -150,7 +161,8 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 6px 4px 0;
+  padding: 0 6px 4px;
+  scrollbar-gutter: stable both-edges;
   scrollbar-width: thin;
   scrollbar-color: #547383 #0a1820;
 }
@@ -192,7 +204,7 @@
   position: relative;
   min-height: 104px;
   display: grid;
-  grid-template-columns: 30px 70px minmax(0, 1fr) auto;
+  grid-template-columns: 10px 80px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
@@ -241,19 +253,20 @@
 
 #upgrade-dialog .spellcraft-icon {
   position: relative;
-  width: 68px;
-  height: 68px;
+  width: 80px;
+  height: 80px;
   flex: 0 0 68px;
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: #06121a;
   image-rendering: pixelated;
 }
 
 #upgrade-dialog .spellcraft-icon img {
-  width: 58px;
-  height: 58px;
+  position: relative;
+  z-index: 1;
+  width: 52px;
+  height: 52px;
   display: block;
   object-fit: cover;
   image-rendering: pixelated;
@@ -261,7 +274,8 @@
 
 #upgrade-dialog .spellcraft-icon > i {
   position: absolute;
-  inset: 0;
+  z-index: 0;
+  inset: -38%;
   pointer-events: none;
   background: url('/assets/ui/spellcraft/spell-border.png') center / contain no-repeat;
   image-rendering: pixelated;
@@ -336,8 +350,8 @@
 }
 
 #upgrade-dialog .reserve-spell .spellcraft-icon img {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
 }
 
 #upgrade-dialog .reserve-spell code {
@@ -520,6 +534,6 @@
   #upgrade-dialog .upgrade-sp-badge { width: 100px; }
   #upgrade-dialog .deck-slot { grid-template-columns: 24px 58px minmax(0, 1fr); }
   #upgrade-dialog .deck-slot .spellcraft-icon { width: 58px; height: 58px; }
-  #upgrade-dialog .deck-slot .spellcraft-icon img { width: 50px; height: 50px; }
+  #upgrade-dialog .deck-slot .spellcraft-icon img { width: 44px; height: 44px; }
   #upgrade-dialog .deck-slot .quiet-button { grid-column: 3; }
 }
