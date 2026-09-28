@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import './style.css';
+import './ui/spellcraft.css';
 import { createGameConfig } from './game/config/createGameConfig';
 import type { ClassDefinition } from './game/types';
 import { GameUI } from './ui/GameUI';

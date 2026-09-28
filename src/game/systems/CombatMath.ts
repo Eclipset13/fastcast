@@ -4,6 +4,10 @@ import type { AbilityDefinition, PlayerState, WordDefinition } from '../types';
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export function buildWord(ability: AbilityDefinition, level: number): WordDefinition {
+  const words = ability.words;
+  const explicit = words?.[Math.max(0, Math.min(level - 1, words.length - 1))];
+  if (explicit) return { segments: [explicit], full: explicit, boundaries: [explicit.length] };
+
   const segments = [ability.trigger, ...ability.suffixes.slice(0, Math.max(0, level - 1))];
   let length = 0;
   const boundaries = segments.map((segment) => (length += segment.length));
@@ -23,5 +27,8 @@ export function speedMultiplier(cps: number | null): number {
 }
 
 export function abilityPower(ability: AbilityDefinition, tier: number, speed: number, player: PlayerState): number {
-  return ability.basePower * COMBAT_TUNING.tierMultiplier[tier] * speed * (1 + COMBAT_TUNING.levelDamageBonus * (player.level - 1));
+  const level = player.abilityLevels[ability.id] ?? 1;
+  const rankedPower = ability.rankPowers?.[Math.max(0, level - 1)];
+  const base = rankedPower ?? ability.basePower * COMBAT_TUNING.tierMultiplier[tier];
+  return base * speed * (1 + COMBAT_TUNING.levelDamageBonus * (player.level - 1));
 }

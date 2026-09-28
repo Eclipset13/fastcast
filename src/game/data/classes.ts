@@ -1,16 +1,13 @@
 import type { ClassDefinition, ClassId } from '../types';
+import { MAGE_SPELLS, MAGE_STARTER_DECK } from './mageSpells';
 
 export const CLASSES: Record<ClassId, ClassDefinition> = {
   mage: {
     id: 'mage', name: 'Runesinger', hp: 82,
-    tagline: 'Long elemental words, high power, fragile footing.',
+    tagline: 'Build a six-spell deck and trade typing length for stronger magic.',
     resource: { name: 'Mana', short: 'MP', max: 60, regen: 4.5, color: '#66b9ff' },
-    abilities: [
-      { id: 'zap', name: 'Spark', trigger: 'zap', suffixes: [], cost: 0, basePower: 7, kind: 'ranged', color: 0xffe76a, description: 'A quick free bolt.' },
-      { id: 'fireball', name: 'Fireball', trigger: 'fireball', suffixes: ['ignis', 'nova'], cost: 14, basePower: 24, kind: 'ranged', color: 0xff7a45, description: 'A heavy ember projectile.' },
-      { id: 'icespike', name: 'Ice Spike', trigger: 'icespike', suffixes: ['glacies', 'aeterna'], cost: 12, basePower: 18, kind: 'ranged', color: 0x8fdcff, description: 'Delays the enemy strike.' },
-      { id: 'mend', name: 'Mend', trigger: 'mend', suffixes: ['vitae', 'lux'], cost: 16, basePower: 20, kind: 'heal', color: 0x78edaa, description: 'Restores health.' },
-    ],
+    abilities: MAGE_SPELLS,
+    starterDeck: [...MAGE_STARTER_DECK],
   },
   warrior: {
     id: 'warrior', name: 'Berserker', hp: 132,

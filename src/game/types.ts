@@ -1,5 +1,5 @@
 export type ClassId = 'mage' | 'warrior' | 'samurai';
-export type AbilityKind = 'ranged' | 'melee' | 'heal' | 'guard' | 'focus';
+export type AbilityKind = 'ranged' | 'melee' | 'heal' | 'guard' | 'focus' | 'utility' | 'hybrid';
 export type BiomeId = 'forest' | 'cave' | 'crystal' | 'deadwood' | 'sakura' | 'arena';
 
 export interface AbilityDefinition {
@@ -7,11 +7,20 @@ export interface AbilityDefinition {
   name: string;
   trigger: string;
   suffixes: string[];
+  /** Explicit spell forms by rank. When present, these replace trigger+suffix word building. */
+  words?: string[];
   cost: number;
   basePower: number;
+  /** Exact base power by rank before typing-speed and player-level multipliers. */
+  rankPowers?: number[];
   kind: AbilityKind;
   color: number;
   description: string;
+  rankDescriptions?: string[];
+  assetPath?: string;
+  starter?: boolean;
+  unlockCost?: number;
+  upgradeCosts?: number[];
 }
 
 export interface ClassDefinition {
@@ -21,6 +30,8 @@ export interface ClassDefinition {
   hp: number;
   resource: { name: string; short: string; max: number; regen: number; color: string };
   abilities: AbilityDefinition[];
+  /** Up to six abilities that begin equipped in combat. */
+  starterDeck?: string[];
 }
 
 export interface PlayerState {
@@ -34,6 +45,8 @@ export interface PlayerState {
   maxResource: number;
   focus: number;
   abilityLevels: Record<string, number>;
+  learnedAbilityIds: string[];
+  deckAbilityIds: string[];
   unlocks: { doubleJump: boolean; longDash: boolean };
 }
 
