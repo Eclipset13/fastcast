@@ -10,6 +10,10 @@ export const MOVEMENT = {
   dashDuration: 165,
   dashCooldown: 520,
   gravity: 850,
+  jumpAnticipation: 80,
+  jumpBuffer: 110,
+  landingRecovery: 170,
+  landingSpeedFactor: 0.6,
 } as const;
 
 export const COMBAT_TUNING = {

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { ClassId, EnemyDefinition } from '../types';
+import { MAGE_JUMP_SPRITE, MAGE_RUN_SPRITE, MAGE_SPRITE } from './mageSprite';
 
 const colors: Record<ClassId, { cloak: string; accent: string; skin: string }> = {
   mage: { cloak: '#4a4a9b', accent: '#92c8ff', skin: '#e9bea2' },
@@ -17,6 +18,33 @@ function canvas(scene: Phaser.Scene, key: string, width: number, height: number,
 }
 
 export function createHeroTextures(scene: Phaser.Scene, classId: ClassId): void {
+  if (classId === 'mage' && scene.textures.exists(MAGE_SPRITE.key)) {
+    if (scene.textures.exists(MAGE_JUMP_SPRITE.key)) {
+      const jump = MAGE_JUMP_SPRITE;
+      const texture = scene.textures.get(jump.key);
+      for (let frame = 0; frame < 8; frame += 1) {
+        const row = Math.floor(frame / 4);
+        if (!texture.has(String(frame))) texture.add(frame, 0, (frame % 4) * jump.cellWidth,
+          row * jump.cellHeight + jump.rowOffsets[row], jump.frameWidth, jump.frameHeight);
+      }
+    }
+    if (scene.textures.exists(MAGE_RUN_SPRITE.key) && !scene.anims.exists(MAGE_RUN_SPRITE.animation)) {
+      const run = MAGE_RUN_SPRITE;
+      const texture = scene.textures.get(run.key);
+      for (let frame = 0; frame < 8; frame += 1) {
+        const row = Math.floor(frame / 4);
+        texture.add(frame, 0, (frame % 4) * run.cellWidth + run.cropX,
+          row * run.cellHeight + run.cropY[row], run.frameWidth, run.frameHeight);
+      }
+      scene.anims.create({
+        key: run.animation,
+        frames: scene.anims.generateFrameNumbers(run.key, { start: 0, end: 7 }),
+        frameRate: run.frameRate,
+        repeat: -1,
+      });
+    }
+    return;
+  }
   const palette = colors[classId];
   ['idle', 'run-a', 'run-b', 'jump', 'dash'].forEach((pose, index) => {
     canvas(scene, `hero-${classId}-${pose}`, 18, 30, (ctx) => {

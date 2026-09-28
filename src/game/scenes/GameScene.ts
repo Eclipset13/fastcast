@@ -5,6 +5,7 @@ import { BIOMES } from '../data/biomes';
 import { FOREST_WRAITH } from '../data/enemies';
 import { Enemy } from '../entities/Enemy';
 import { Player } from '../entities/Player';
+import { MAGE_JUMP_SPRITE, MAGE_RUN_SPRITE, MAGE_SPRITE } from '../entities/mageSprite';
 import { createEnemyTexture, createFxTextures, createHeroTextures } from '../entities/createTextures';
 import { GameEvents, events } from '../systems/EventBus';
 import { gameStore } from '../systems/GameStore';
@@ -86,6 +87,14 @@ export class GameScene extends Phaser.Scene {
   constructor() { super('gameplay'); }
 
   preload(): void {
+    if (gameStore.player?.classDef.id === 'mage') {
+      this.load.image(MAGE_RUN_SPRITE.key, MAGE_RUN_SPRITE.path);
+      this.load.image(MAGE_JUMP_SPRITE.key, MAGE_JUMP_SPRITE.path);
+      this.load.spritesheet(MAGE_SPRITE.key, MAGE_SPRITE.path, {
+        frameWidth: MAGE_SPRITE.frameWidth,
+        frameHeight: MAGE_SPRITE.frameHeight,
+      });
+    }
     this.load.image('forest-bg-far', '/assets/biomes/emerald-forest/bg-far.png');
     this.load.image('forest-bg-mid', '/assets/biomes/emerald-forest/bg-mid.png');
     this.load.image('forest-bg-near', '/assets/biomes/emerald-forest/bg-near.png');
