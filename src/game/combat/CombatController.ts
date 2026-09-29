@@ -40,6 +40,8 @@ export class CombatController {
   private pendingDelay = 0;
   private defense: DefenseTiming | null = null;
   private defenseClearAt = 0;
+  private defenseResolution: Exclude<DefenseResult, 'pending'> | null = null;
+  private attackImpactReached = false;
   private spellState: BattleSnapshot['spellState'] = 'waiting';
   private spellId = 0;
   private previousSpell: string | null = null;
@@ -71,6 +73,8 @@ export class CombatController {
     this.nextSpellAt = this.enteredAt + T.revealDelay;
     this.nextAttackAt = this.enteredAt + T.inputDelay + enemy.definition.interval * 1000;
     this.defense = null;
+    this.defenseResolution = null;
+    this.attackImpactReached = false;
     this.pendingDelay = this.guard = this.dotTicks = 0;
     this.previousSpell = null;
     this.feedback = 'none';
@@ -169,12 +173,29 @@ export class CombatController {
     if (!this.defense && now >= this.nextAttackAt - warning) {
       this.defense = new DefenseTiming(String(Phaser.Math.Between(0, 9)), this.nextAttackAt, warning,
         (this.enemy.definition.perfectWindow ?? T.perfectWindow) * 1000);
+      this.defenseResolution = null;
+      this.attackImpactReached = false;
+      this.enemy.prepareAttack(this.nextAttackAt, () => this.reachAttackImpact());
     }
     if (this.defense?.result === 'pending' && this.defense.update(now) === 'failed') this.resolveDefense('failed');
   }
 
   private resolveDefense(result: DefenseResult): void {
-    if (result === 'pending') return;
+    if (result === 'pending' || this.defenseResolution) return;
+    this.defenseResolution = result;
+    if (this.attackImpactReached) this.applyDefenseResolution();
+  }
+
+  private reachAttackImpact(): void {
+    if (!this.active || this.ending) return;
+    this.attackImpactReached = true;
+    if (this.defenseResolution) this.applyDefenseResolution();
+  }
+
+  private applyDefenseResolution(): void {
+    const result = this.defenseResolution;
+    if (!result) return;
+    this.defenseResolution = null;
     this.defenseClearAt = this.scene.time.now + 430;
     this.nextAttackAt = this.scene.time.now + this.enemy.definition.interval * 1000 + this.pendingDelay;
     this.pendingDelay = 0;
@@ -290,6 +311,8 @@ export class CombatController {
     this.victory = victory;
     this.endAt = this.scene.time.now + T.endDelay;
     this.defense = null;
+    this.defenseResolution = null;
+    this.enemy.cancelAttack();
     this.parser.reset();
     this.dotTicks = 0;
     this.nextAttackAt = this.nextSpellAt = Infinity;
@@ -307,7 +330,8 @@ export class CombatController {
   private emitChange(): void { events.emit(GameEvents.battleChanged, this.snapshot()); }
   destroy(): void {
     this.active = false;
-    this.parser.reset(); this.defense = null; this.dotTicks = 0;
+    this.parser.reset(); this.defense = null; this.defenseResolution = null; this.dotTicks = 0;
+    if (this.enemy) this.enemy.cancelAttack();
     this.presentation.destroy();
     events.emit(GameEvents.battleExited);
   }

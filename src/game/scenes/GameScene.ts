@@ -2,11 +2,16 @@ import Phaser from 'phaser';
 import { CombatController } from '../combat/CombatController';
 import { COMBAT_TUNING, GAME_HEIGHT, GROUND_Y, WORLD_WIDTH } from '../config/constants';
 import { BIOMES } from '../data/biomes';
-import { FOREST_WRAITH } from '../data/enemies';
+import { FOREST_SAVAGE } from '../data/enemies';
 import { Enemy } from '../entities/Enemy';
 import { Player } from '../entities/Player';
 import { MAGE_JUMP_SPRITE, MAGE_RUN_SPRITE, MAGE_SPRITE } from '../entities/mageSprite';
-import { createEnemyTexture, createFxTextures, createHeroTextures } from '../entities/createTextures';
+import { createFxTextures, createHeroTextures } from '../entities/createTextures';
+import {
+  createForestSavageAnimations,
+  FOREST_SAVAGE_VISUAL,
+  preloadForestSavage,
+} from '../entities/enemies/forestSavageSprite';
 import { GameEvents, events } from '../systems/EventBus';
 import { gameStore } from '../systems/GameStore';
 import { BiomeRenderer } from '../world/BiomeRenderer';
@@ -98,6 +103,7 @@ export class GameScene extends Phaser.Scene {
         frameHeight: MAGE_SPRITE.frameHeight,
       });
     }
+    preloadForestSavage(this);
     this.load.image('forest-bg-far', '/assets/biomes/emerald-forest/bg-far.png');
     this.load.image('forest-bg-mid', '/assets/biomes/emerald-forest/bg-mid.png');
     this.load.image('forest-bg-near', '/assets/biomes/emerald-forest/bg-near.png');
@@ -126,7 +132,9 @@ export class GameScene extends Phaser.Scene {
     this.biomeRenderer = new BiomeRenderer(this, BIOMES.forest);
     this.biomeRenderer.create();
     createEmeraldForestTreeDecorations(this);
-    createHeroTextures(this, state.classDef.id); createEnemyTexture(this, FOREST_WRAITH); createFxTextures(this);
+    createHeroTextures(this, state.classDef.id);
+    createForestSavageAnimations(this);
+    createFxTextures(this);
     this.terrain = this.physics.add.staticGroup();
     this.createTerrain();
 
@@ -204,7 +212,7 @@ export class GameScene extends Phaser.Scene {
   };
 
   private spawnEnemy(x: number, y: number): void {
-    const enemy = new Enemy(this, x, y, FOREST_WRAITH);
+    const enemy = new Enemy(this, x, y, FOREST_SAVAGE, FOREST_SAVAGE_VISUAL);
     this.enemies.push(enemy);
     this.physics.add.collider(enemy, this.terrain);
   }
@@ -248,7 +256,7 @@ export class GameScene extends Phaser.Scene {
       events.emit(GameEvents.playerChanged, state);
       events.emit(GameEvents.toast, 'The forest returns you to the waystone.');
     } else {
-      events.emit(GameEvents.toast, 'Wraith dispersed · experience gained');
+      events.emit(GameEvents.toast, 'Forest Savage defeated · experience gained');
       if (this.enemies.every((enemy) => enemy.defeated)) this.exitPortal.activate();
     }
   }

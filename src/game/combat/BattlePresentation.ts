@@ -169,8 +169,8 @@ export class BattlePresentation {
   }
 
   parry(): void {
-    this.halo(this.player.x, this.player.y - 5, 0xb9faff, 25);
-    this.player.setTintFill(0xd9ffff);
+    this.halo(this.player.x, this.player.y - 5, 0xffe8a3, 18);
+    this.player.setTintFill(0xffffdf);
     this.later(65, () => this.player.clearTint());
     this.scene.cameras.main.shake(65, 0.002);
     this.hitPause();
@@ -187,7 +187,12 @@ export class BattlePresentation {
   }
 
   death(enemy: Enemy): void {
-    const ghost = this.keep(this.scene.add.image(enemy.x, enemy.y, enemy.texture.key).setDepth(25).setTint(0xc8fff0));
+    const ghost = this.keep(this.scene.add.image(enemy.x, enemy.y, enemy.texture.key, enemy.frame.name)
+      .setOrigin(enemy.originX, enemy.originY)
+      .setScale(enemy.scaleX, enemy.scaleY)
+      .setFlip(enemy.flipX, enemy.flipY)
+      .setDepth(25)
+      .setTint(0xc8fff0));
     this.burst(enemy.x, enemy.y - 6, enemy.definition.accent, 24, 32);
     this.scene.tweens.add({ targets: ghost, alpha: 0, y: enemy.y - 12, scaleY: 0.3, duration: 290, onComplete: () => ghost.destroy() });
   }
