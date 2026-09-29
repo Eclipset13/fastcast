@@ -314,6 +314,10 @@ export class CombatController {
       this.enemy.defeat();
       levels = gainXp(this.state, this.enemy.definition.xp);
       if (this.enemy.definition.unlock) this.state.unlocks[this.enemy.definition.unlock] = true;
+    } else {
+      // A lost duel is a clean rematch: restore enemy HP and clear any interrupted
+      // attack state/timers so animation + defense timing behave exactly like first contact.
+      this.enemy.resetAfterPlayerDefeat();
     }
     events.emit(GameEvents.playerChanged, this.state);
     events.emit(GameEvents.battleEnded, { victory, xp: victory ? this.enemy.definition.xp : 0, levels });

@@ -65,7 +65,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.faceDirection(playerX < this.x ? -1 : 1);
     } else {
       this.cancelAttack();
-      this.showIdle();
+      // A defeated player can interrupt the attack before animationcomplete fires.
+      // Force a real idle reset so the next encounter can start a fresh attack/QTE.
+      this.showIdle(true);
     }
   }
 
@@ -111,6 +113,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   cancelAttack(): void {
+    const wasAttacking = this.visualState === 'attacking';
     this.attackStartTimer?.remove(false);
     this.attackImpactTimer?.remove(false);
     this.attackStartTimer = undefined;
@@ -120,7 +123,27 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     const attack = this.visual?.attack;
     if (attack && this.attackCompleteHandler) this.off(`animationcomplete-${attack.animation}`, this.attackCompleteHandler);
     this.attackCompleteHandler = undefined;
-    if (this.visualState === 'attacking' || this.anims.currentAnim?.key === attack?.animation) this.anims.stop();
+    if (wasAttacking || this.anims.currentAnim?.key === attack?.animation) this.anims.stop();
+
+    // If an attack was interrupted (most importantly by player death), do not leave
+    // the enemy permanently in the "attacking" state. prepareAttack() rejects that
+    // state, which previously froze both enemy animation and the next defense QTE.
+    if (wasAttacking && !this.defeated) {
+      this.visualState = 'idle';
+      if (this.visual) this.applyPose(this.visual.idle);
+    }
+  }
+
+  resetAfterPlayerDefeat(): void {
+    if (this.defeated) return;
+    this.cancelAttack();
+    this.hurtTimer?.remove(false);
+    this.hurtTimer = undefined;
+    this.clearTint();
+    this.hp = this.definition.hp;
+    this.visualState = 'idle';
+    this.setVelocity(0, 0);
+    this.showIdle(true);
   }
 
   defeat(): void {
