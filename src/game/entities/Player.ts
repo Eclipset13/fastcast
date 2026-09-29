@@ -45,7 +45,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.applyMageLayout(MAGE_SPRITE);
     } else body.setSize(12, 26).setOffset(3, 3);
     this.cursors = scene.input.keyboard!.createCursorKeys();
-    this.keys = scene.input.keyboard!.addKeys({ left: 'A', right: 'D', jump: 'W', dash: 'SHIFT' }) as Record<string, Phaser.Input.Keyboard.Key>;
+    this.keys = scene.input.keyboard!.addKeys({ left: 'A', right: 'D', jump: 'W', dash: 'Q' }) as Record<string, Phaser.Input.Keyboard.Key>;
   }
 
   setControl(enabled: boolean): void {
@@ -170,7 +170,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const touchJump = inputBridge.consumeJump();
     if (keyboardJump || touchJump) this.jumpBufferedUntil = time + MOVEMENT.jumpBuffer;
     // Dash is a rising-edge action, never a held-key action. Keeping our own edge
-    // state avoids repeat/sticky Shift dashes even if a browser loses a keyup event.
+    // state avoids repeated/sticky dashes even if a browser loses a keyup event.
     const dashDown = this.keys.dash.isDown;
     const keyboardDash = dashDown && !this.dashWasDown;
     this.dashWasDown = dashDown;
