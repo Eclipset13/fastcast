@@ -169,11 +169,20 @@ export class GameScene extends Phaser.Scene {
     const handleKey = (event: KeyboardEvent) => {
       if (this.combat.handleKey(event)) event.preventDefault();
     };
-    // Combat consumes each native keydown once, immediately. Phaser's queued movement
-    // keys remain independent and are reset before exploration control returns.
+    const resetKeyboardState = () => this.player.resetInputState();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') resetKeyboardState();
+    };
+    // Combat consumes each native keydown once, immediately. If the tab/window loses
+    // focus while Shift/A/D is held, browsers can miss keyup; explicitly clear Phaser
+    // and touch input so movement/dash can never remain latched after focus returns.
     window.addEventListener('keydown', handleKey);
+    window.addEventListener('blur', resetKeyboardState);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       window.removeEventListener('keydown', handleKey);
+      window.removeEventListener('blur', resetKeyboardState);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       events.off(GameEvents.upgradeRequested, this.handleSpellcraftOpened);
       events.off(GameEvents.upgradeMenuClosed, this.handleSpellcraftClosed);
       this.physics.world.resume();
