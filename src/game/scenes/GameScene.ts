@@ -9,9 +9,9 @@ import { MAGE_JUMP_SPRITE, MAGE_RUN_SPRITE, MAGE_SPRITE } from '../entities/mage
 import { createFxTextures, createHeroTextures } from '../entities/createTextures';
 import {
   createForestSavageAnimations,
-  FOREST_SAVAGE_VISUAL,
   preloadForestSavage,
 } from '../entities/enemies/forestSavageSprite';
+import type { EnemyVisualConfig } from '../entities/enemies/EnemyVisualConfig';
 import { GameEvents, events } from '../systems/EventBus';
 import { gameStore } from '../systems/GameStore';
 import { BiomeRenderer } from '../world/BiomeRenderer';
@@ -90,6 +90,7 @@ export class GameScene extends Phaser.Scene {
   private runestone!: Phaser.GameObjects.Image;
   private runestoneInteraction!: RunestoneInteraction;
   private exitPortal!: ForestPortal;
+  private forestSavageVisual!: EnemyVisualConfig;
   private spellcraftOpen = false;
 
   constructor() { super('gameplay'); }
@@ -133,7 +134,7 @@ export class GameScene extends Phaser.Scene {
     this.biomeRenderer.create();
     createEmeraldForestTreeDecorations(this);
     createHeroTextures(this, state.classDef.id);
-    createForestSavageAnimations(this);
+    this.forestSavageVisual = createForestSavageAnimations(this);
     createFxTextures(this);
     this.terrain = this.physics.add.staticGroup();
     this.createTerrain();
@@ -212,7 +213,7 @@ export class GameScene extends Phaser.Scene {
   };
 
   private spawnEnemy(x: number, y: number): void {
-    const enemy = new Enemy(this, x, y, FOREST_SAVAGE, FOREST_SAVAGE_VISUAL);
+    const enemy = new Enemy(this, x, y, FOREST_SAVAGE, this.forestSavageVisual);
     this.enemies.push(enemy);
     this.physics.add.collider(enemy, this.terrain);
   }
