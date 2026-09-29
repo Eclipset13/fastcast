@@ -26,9 +26,10 @@ export function speedMultiplier(cps: number | null): number {
   return COMBAT_TUNING.minMultiplier + (COMBAT_TUNING.maxMultiplier - COMBAT_TUNING.minMultiplier) * position;
 }
 
-export function abilityPower(ability: AbilityDefinition, tier: number, speed: number, player: PlayerState): number {
-  const level = player.abilityLevels[ability.id] ?? 1;
-  const rankedPower = ability.rankPowers?.[Math.max(0, level - 1)];
+export function abilityPower(ability: AbilityDefinition, tier: number, speed: number, player: PlayerState, rank?: number): number {
+  const unlocked = player.abilityLevels[ability.id] ?? 1;
+  const activeRank = Math.max(1, Math.min(rank ?? unlocked, unlocked));
+  const rankedPower = ability.rankPowers?.[activeRank - 1];
   const base = rankedPower ?? ability.basePower * COMBAT_TUNING.tierMultiplier[tier];
   return base * speed * (1 + COMBAT_TUNING.levelDamageBonus * (player.level - 1));
 }
