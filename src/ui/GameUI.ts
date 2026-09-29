@@ -47,6 +47,8 @@ export class GameUI {
   private previousLevel: number | null = null;
   private previousSkillPoints: number | null = null;
   private spellcraftTab: SpellcraftTab = 'deck';
+  private spellcraftRenderKey = '';
+  private readonly preloadedIcons = new Map<string, HTMLImageElement>();
 
   constructor(private readonly startGame: (classDef: ClassDefinition) => Phaser.Game) {
     this.renderClassCards();
@@ -77,6 +79,10 @@ export class GameUI {
     required('#game-screen').hidden = false;
     this.updateHud(gameStore.player);
     this.startGame(classDef);
+    // Warm only the small set of assets that the default Deck tab needs.
+    // The full 20-spell archive stays lazy so opening Spellcraft never decodes
+    // every large source PNG at once.
+    window.setTimeout(() => this.preloadSpellcraftAssets(gameStore.player!), 0);
   }
 
   private bindEvents(): void {
@@ -216,7 +222,7 @@ export class GameUI {
 
   private abilityIcon(ability: AbilityDefinition): string {
     if (ability.assetPath) {
-      return `<span class="spellcraft-icon"><img src="${ability.assetPath}" alt="" draggable="false"><i aria-hidden="true"></i></span>`;
+      return `<span class="spellcraft-icon"><img src="${ability.assetPath}" alt="" draggable="false" loading="lazy" decoding="async" fetchpriority="low" width="52" height="52"><i aria-hidden="true"></i></span>`;
     }
     return `<span class="spellcraft-icon spellcraft-icon-fallback" aria-hidden="true">${ABILITY_GLYPHS[ability.id] ?? '✦'}<i></i></span>`;
   }
@@ -238,12 +244,49 @@ export class GameUI {
       button.setAttribute('aria-selected', String(active));
     });
 
+    // player:changed is also used by HP/XP/resource updates. Rebuilding the entire
+    // Spellcraft DOM (and re-decoding large spell PNGs) for those unrelated events
+    // was the main source of menu hitching. Only rebuild when Spellcraft state changed.
+    const renderKey = this.getSpellcraftRenderKey(player);
+    if (renderKey === this.spellcraftRenderKey) return;
+
     const list = required<HTMLDivElement>('#upgrade-list');
     if (this.spellcraftTab === 'deck') list.innerHTML = this.renderDeck(player);
     else if (this.spellcraftTab === 'learn') list.innerHTML = this.renderLearn(player);
     else list.innerHTML = this.renderUpgradeList(player);
 
+    this.spellcraftRenderKey = renderKey;
     this.bindSpellcraftActions(player);
+  }
+
+  private getSpellcraftRenderKey(player: PlayerState): string {
+    const levels = player.classDef.abilities.map((ability) => `${ability.id}:${player.abilityLevels[ability.id] ?? 1}`).join(',');
+    return [
+      this.spellcraftTab,
+      player.skillPoints,
+      player.learnedAbilityIds.join(','),
+      player.deckAbilityIds.join(','),
+      levels,
+    ].join('|');
+  }
+
+  private preloadSpellcraftAssets(player: PlayerState): void {
+    const urls = [
+      '/assets/ui/spellcraft/spellcraft-frame.png',
+      '/assets/ui/spellcraft/spell-border.png',
+      ...player.deckAbilityIds
+        .map((id) => player.classDef.abilities.find((ability) => ability.id === id)?.assetPath)
+        .filter((path): path is string => Boolean(path)),
+    ];
+
+    for (const url of new Set(urls)) {
+      if (this.preloadedIcons.has(url)) continue;
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = url;
+      this.preloadedIcons.set(url, image);
+      void image.decode().catch(() => undefined);
+    }
   }
 
   private renderDeck(player: PlayerState): string {
