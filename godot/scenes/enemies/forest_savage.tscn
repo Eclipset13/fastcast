@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/forest_savage.gd" id="1_enemy_script"]
+[ext_resource type="Texture2D" path="res://assets/characters/enemies/forest-savage/idle.png" id="2_idle"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(14, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_encounter"]
+size = Vector2(284, 48)
+
+[node name="ForestSavage" type="CharacterBody2D"]
+script = ExtResource("1_enemy_script")
+floor_stop_on_slope = true
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture = ExtResource("2_idle")
+position = Vector2(0, -6)
+scale = Vector2(0.0780911, 0.0780911)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="EncounterArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EncounterArea"]
+shape = SubResource("RectangleShape2D_encounter")
+position = Vector2(0, 0)

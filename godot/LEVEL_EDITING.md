@@ -27,3 +27,15 @@ Platform root position is the center of its walkable surface. This keeps visual 
 Keep gameplay logic inside reusable scenes/scripts. Keep level-specific positions inside this `.tscn` file so visual edits made in Godot remain the source of truth.
 
 After changing the map, save the scene, commit and push it. The updated node positions and properties can then be read directly from Git.
+
+
+## Enemies
+
+Enemies under `Enemies` are regular scene instances. Forest Savage uses
+`scenes/enemies/forest_savage.tscn`.
+
+- Drag an enemy in the 2D viewport to change its spawn/home position.
+- Duplicate it with `Ctrl+D`.
+- Patrol Distance and Patrol Speed are editable in the Inspector.
+- Combat stats are exposed in the Inspector too, but normally keep those consistent unless intentionally tuning balance.
+- The encounter area is already part of the reusable enemy scene; future combat code will connect to it without storing enemy positions in code.
