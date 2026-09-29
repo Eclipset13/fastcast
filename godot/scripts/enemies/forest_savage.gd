@@ -16,8 +16,10 @@ const WALK_FPS := 10.0
 const ATTACK_FPS := 10.0
 const ATTACK_IMPACT_FRAME := 5
 
+static var _idle_frame_cache: Dictionary = {}
 static var _walk_frames_cache: Array = []
 static var _attack_frames_cache: Array = []
+static var _idle_scale_cache: float = 0.0
 static var _walk_scale_cache: float = 0.0
 static var _attack_scale_cache: float = 0.0
 
@@ -49,8 +51,10 @@ var _attacking: bool = false
 var _attack_time: float = 0.0
 var _attack_frame: int = -1
 var _impact_emitted: bool = false
+var _idle_frame: Dictionary = {}
 var _walk_frames: Array = []
 var _attack_frames: Array = []
+var _idle_scale: float = 0.0
 var _walk_scale: float = 0.0
 var _attack_scale: float = 0.0
 
@@ -59,13 +63,16 @@ func _ready() -> void:
 	hp = max_hp
 	_home_x = global_position.x
 	_direction = -1.0 if starts_facing_left else 1.0
+
+	if not Engine.is_editor_hint():
+		_prepare_animation_frames()
+
 	_show_idle()
 	_update_facing()
 
 	if Engine.is_editor_hint():
 		return
 
-	_prepare_animation_frames()
 	_encounter_area.body_entered.connect(_on_encounter_body_entered)
 
 
@@ -179,6 +186,12 @@ func defeat() -> void:
 
 
 func _prepare_animation_frames() -> void:
+	if _idle_frame_cache.is_empty():
+		var idle_frames := _detect_frames(IDLE_TEXTURE, 1)
+		if not idle_frames.is_empty():
+			_idle_frame_cache = idle_frames[0]
+			var idle_rect: Rect2 = _idle_frame_cache["rect"]
+			_idle_scale_cache = DISPLAY_HEIGHT / maxf(1.0, idle_rect.size.y)
 	if _walk_frames_cache.is_empty():
 		_walk_frames_cache = _detect_frames(WALK_TEXTURE, FRAME_COUNT)
 		_walk_scale_cache = DISPLAY_HEIGHT / _median_frame_height(_walk_frames_cache)
@@ -186,13 +199,19 @@ func _prepare_animation_frames() -> void:
 		_attack_frames_cache = _detect_frames(ATTACK_TEXTURE, FRAME_COUNT)
 		_attack_scale_cache = DISPLAY_HEIGHT / _median_frame_height(_attack_frames_cache)
 
+	_idle_frame = _idle_frame_cache
 	_walk_frames = _walk_frames_cache
 	_attack_frames = _attack_frames_cache
+	_idle_scale = _idle_scale_cache
 	_walk_scale = _walk_scale_cache
 	_attack_scale = _attack_scale_cache
 
 
 func _show_idle() -> void:
+	if not _idle_frame.is_empty():
+		_apply_frame(IDLE_TEXTURE, _idle_frame, _idle_scale)
+		return
+
 	_visual.texture = IDLE_TEXTURE
 	_visual.region_enabled = true
 	_visual.region_rect = Rect2(0.0, 0.0, float(IDLE_TEXTURE.get_width()), float(IDLE_TEXTURE.get_height()))

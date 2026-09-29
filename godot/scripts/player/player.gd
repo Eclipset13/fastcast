@@ -20,6 +20,7 @@ const MAGE_JUMP := preload("res://assets/characters/mage/mage-jump.png")
 
 var _control_enabled: bool = true
 var _facing: float = 1.0
+var _dash_direction: float = 1.0
 var _air_dash_available: bool = true
 var _dash_time_left: float = 0.0
 var _dash_cooldown_left: float = 0.0
@@ -69,32 +70,32 @@ func _physics_process(delta: float) -> void:
 
 	_dash_cooldown_left = maxf(_dash_cooldown_left - delta, 0.0)
 
-	var move_input := _get_move_input()
-	if not is_zero_approx(move_input):
-		_facing = signf(move_input)
-
 	var wants_jump := _jump_requested
 	var wants_dash := _dash_requested
 	_jump_requested = false
 	_dash_requested = false
+
+	# Once a dash starts, ordinary movement input cannot change its direction,
+	# speed, or duration. This keeps dash distance identical whether A/D is held.
+	if _dash_time_left > 0.0:
+		_continue_dash(delta)
+		return
+
+	var move_input := _get_move_input()
+	if not is_zero_approx(move_input):
+		_facing = signf(move_input)
 
 	if is_on_floor():
 		_air_dash_available = true
 
 	var can_dash := is_on_floor() or _air_dash_available
 	if wants_dash and can_dash and _dash_cooldown_left <= 0.0:
+		_dash_direction = _facing
 		if not is_on_floor():
 			_air_dash_available = false
 		_dash_time_left = dash_duration
 		_dash_cooldown_left = dash_cooldown
-
-	if _dash_time_left > 0.0:
-		_dash_time_left = maxf(_dash_time_left - delta, 0.0)
-		velocity.x = _facing * dash_speed
-		velocity.y = 0.0
-		move_and_slide()
-		_show_dash()
-		_check_fall_respawn()
+		_continue_dash(delta)
 		return
 
 	if wants_jump and is_on_floor():
@@ -113,6 +114,15 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_update_visual(delta)
+	_check_fall_respawn()
+
+
+func _continue_dash(delta: float) -> void:
+	velocity.x = _dash_direction * dash_speed
+	velocity.y = 0.0
+	move_and_slide()
+	_dash_time_left = maxf(_dash_time_left - delta, 0.0)
+	_show_dash()
 	_check_fall_respawn()
 
 
