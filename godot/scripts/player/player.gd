@@ -51,6 +51,16 @@ func face_toward(world_x: float) -> void:
 	_visual.flip_h = _facing < 0.0
 
 
+func reset_to_spawn() -> void:
+	global_position = _spawn_position
+	velocity = Vector2.ZERO
+	_dash_time_left = 0.0
+	_dash_cooldown_left = 0.0
+	_air_dash_available = true
+	_run_animation_time = 0.0
+	_show_idle()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not _control_enabled:
 		return

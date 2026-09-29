@@ -18,15 +18,15 @@ mouse_filter = 2
 layout_mode = 0
 offset_right = 480.0
 offset_bottom = 270.0
-color = Color(0.015, 0.025, 0.03, 0.72)
+color = Color(0.015, 0.025, 0.03, 0.68)
 mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="Root"]
 layout_mode = 0
-offset_left = 78.0
-offset_top = 55.0
-offset_right = 402.0
-offset_bottom = 215.0
+offset_left = 54.0
+offset_top = 34.0
+offset_right = 426.0
+offset_bottom = 236.0
 
 [node name="Margin" type="MarginContainer" parent="Root/Panel"]
 layout_mode = 2
@@ -38,43 +38,71 @@ theme_override_constants/margin_bottom = 14
 [node name="VBox" type="VBoxContainer" parent="Root/Panel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
 alignment = 1
 
-[node name="Title" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="EnemyName" type="Label" parent="Root/Panel/Margin/VBox/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "ENCOUNTER"
-horizontal_alignment = 1
-
-[node name="EnemyName" type="Label" parent="Root/Panel/Margin/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
 text = "FOREST SAVAGE"
-horizontal_alignment = 1
 
-[node name="EnemyHP" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="EnemyHP" type="Label" parent="Root/Panel/Margin/VBox/Header"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "HP  58 / 58"
-horizontal_alignment = 1
+text = "HP 58/58"
 
-[node name="EnemyStats" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="PlayerRow" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "ATK 9   STRIKE 3.4s   XP 42"
-horizontal_alignment = 1
+
+[node name="PlayerHP" type="Label" parent="Root/Panel/Margin/VBox/PlayerRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 8
+text = "HP 82/82"
+
+[node name="Mana" type="Label" parent="Root/Panel/Margin/VBox/PlayerRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "MP 60/60"
 
 [node name="Divider" type="HSeparator" parent="Root/Panel/Margin/VBox"]
 layout_mode = 2
 
-[node name="Status" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="SpellName" type="Label" parent="Root/Panel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "Typing combat is the next migration step."
+theme_override_font_sizes/font_size = 10
+text = "Spark"
 horizontal_alignment = 1
 
-[node name="Hint" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="WordRow" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 7
-text = "ESC  return to forest"
+alignment = 1
+theme_override_constants/separation = 0
+
+[node name="Typed" type="Label" parent="Root/Panel/Margin/VBox/WordRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 22
+text = ""
+
+[node name="Remaining" type="Label" parent="Root/Panel/Margin/VBox/WordRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.96, 0.9, 1)
+theme_override_font_sizes/font_size = 22
+text = "zap"
+
+[node name="Defense" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+horizontal_alignment = 1
+
+[node name="Feedback" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Type the shown spell."
 horizontal_alignment = 1

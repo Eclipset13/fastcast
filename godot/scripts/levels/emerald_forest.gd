@@ -11,16 +11,15 @@ const BG_NEAR := preload("res://assets/biomes/emerald-forest/bg-near.png")
 
 @onready var _player = $Player
 @onready var _combat_overlay = $CombatOverlay
+@onready var _combat_controller = $CombatController
 
 var _parallax_layers: Array[Dictionary] = []
-var _active_enemy = null
 
 
 func _ready() -> void:
 	_create_backgrounds()
 	_configure_camera()
 	_connect_encounters()
-	_combat_overlay.connect("close_requested", Callable(self, "_end_test_encounter"))
 
 
 func _process(_delta: float) -> void:
@@ -42,33 +41,7 @@ func _connect_encounters() -> void:
 
 
 func _on_encounter_requested(enemy) -> void:
-	if _active_enemy != null:
-		return
-
-	_active_enemy = enemy
-	_player.call("set_control", false)
-	_player.call("face_toward", enemy.global_position.x)
-	enemy.call("set_combat_locked", true, _player.global_position.x)
-	_combat_overlay.call(
-		"open_for_enemy",
-		String(enemy.get("enemy_name")),
-		int(enemy.get("hp")),
-		int(enemy.get("max_hp")),
-		int(enemy.get("attack_damage")),
-		float(enemy.get("attack_interval")),
-		int(enemy.get("xp_reward"))
-	)
-
-
-func _end_test_encounter() -> void:
-	if _active_enemy == null:
-		_combat_overlay.call("close_overlay")
-		return
-
-	_combat_overlay.call("close_overlay")
-	_active_enemy.call("set_combat_locked", false, _player.global_position.x)
-	_active_enemy = null
-	_player.call("set_control", true)
+	_combat_controller.call("start", enemy, _player, _combat_overlay)
 
 
 func _configure_camera() -> void:
