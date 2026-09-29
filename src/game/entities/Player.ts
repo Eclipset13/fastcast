@@ -20,6 +20,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private dashUntil = 0;
   private dashReadyAt = 0;
   private airDashed = false;
+  private dashWasDown = false;
   private runFrame = false;
   private nextRunFrame = 0;
   private readonly usesMageSheet: boolean;
@@ -49,6 +50,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   setControl(enabled: boolean): void {
     this.canControl = enabled;
+    this.resetInputState();
     if (!enabled) {
       this.dashUntil = 0;
       this.jumpWindupUntil = 0;
@@ -58,6 +60,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocity(0, 0);
       this.showPose('idle');
     }
+  }
+
+  resetInputState(): void {
+    this.scene.input.keyboard?.resetKeys();
+    inputBridge.reset();
+    this.dashWasDown = false;
+    this.jumpBufferedUntil = 0;
   }
 
   private applyMageLayout(art: typeof MAGE_SPRITE | typeof MAGE_RUN_SPRITE | typeof MAGE_JUMP_SPRITE): void {
@@ -160,7 +169,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       .map((key) => Phaser.Input.Keyboard.JustDown(key)).some(Boolean);
     const touchJump = inputBridge.consumeJump();
     if (keyboardJump || touchJump) this.jumpBufferedUntil = time + MOVEMENT.jumpBuffer;
-    const keyboardDash = Phaser.Input.Keyboard.JustDown(this.keys.dash);
+    // Dash is a rising-edge action, never a held-key action. Keeping our own edge
+    // state avoids repeat/sticky Shift dashes even if a browser loses a keyup event.
+    const dashDown = this.keys.dash.isDown;
+    const keyboardDash = dashDown && !this.dashWasDown;
+    this.dashWasDown = dashDown;
     const touchDash = inputBridge.consumeDash();
     const dashPressed = keyboardDash || touchDash;
 
