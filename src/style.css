@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap');
 
 @font-face { font-family: Silkscreen; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/silkscreen-latin-400-normal.woff2') format('woff2'); }
 @font-face { font-family: Silkscreen; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/silkscreen-latin-700-normal.woff2') format('woff2'); }
@@ -7,7 +7,9 @@
   color-scheme: dark;
   --ink: #e8f1e7; --muted: #8ca698; --panel: rgba(7, 18, 14, .94); --line: #294c3b;
   --green: #7fd68c; --gold: #e7d17a; --danger: #ff6978; --deep: #040b08;
-  font-family: Outfit, system-ui, sans-serif; background: var(--deep); color: var(--ink);
+  --font-pixel: Silkscreen, monospace;
+  --font-ui: Outfit, system-ui, sans-serif;
+  font-family: var(--font-ui); background: var(--deep); color: var(--ink);
 }
 
 * { box-sizing: border-box; }
@@ -18,7 +20,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 [hidden] { display: none !important; }
 #app { width: 100%; margin: 0; padding: 0; }
 .eyebrow { font: 400 9px Silkscreen, monospace; letter-spacing: .08em; color: #8fb9a1; text-transform: uppercase; }
-kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px solid #456756; background: #10261b; padding: 2px 5px; box-shadow: 0 2px #06110c; }
+kbd { font: 500 10px Silkscreen, monospace; color: #d9ebdf; border: 1px solid #456756; background: #10261b; padding: 2px 5px; box-shadow: 0 2px #06110c; }
 .panel { border: 1px solid var(--line); background: var(--panel); box-shadow: 0 14px 50px rgba(0, 0, 0, .3), inset 0 0 0 1px rgba(138, 205, 158, .035); }
 
 .screen { min-height: 100vh; display: grid; align-content: center; gap: 30px; padding: clamp(24px, 6vw, 72px); border: 0; background: linear-gradient(rgba(4, 15, 10, .68), rgba(4, 12, 9, .94)), url('/assets/bg/forest.png') center / cover; position: relative; overflow: hidden; }
@@ -32,7 +34,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .class-card:hover { transform: translateY(-4px); border-color: #9dd59e; background: linear-gradient(145deg, rgba(29, 68, 48, .98), rgba(7, 25, 17, .98)); }
 .class-card strong { font: 700 16px Silkscreen, monospace; color: #f0f2d0; }
 .class-card > span:not(.eyebrow, .class-sigil) { color: #9eb7a8; font-size: 14px; max-width: 30ch; }
-.class-card i { color: var(--gold); font-style: normal; margin-top: auto; font: 500 11px 'JetBrains Mono', monospace; }
+.class-card i { color: var(--gold); font-style: normal; margin-top: auto; font: 500 11px Silkscreen, monospace; }
 .class-sigil { font-size: 27px; color: var(--green); height: 37px; }
 .class-card.warrior .class-sigil { color: #ef9c66; }.class-card.samurai .class-sigil { color: #e7d17a; }
 .controls-card { display: flex; flex-wrap: wrap; gap: 22px; color: #92a89a; font-size: 13px; }.controls-card span { display: flex; align-items: center; gap: 6px; }
@@ -128,7 +130,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
 .resource-orb i::after { content: ''; position: absolute; inset: 0 auto auto 0; width: 24px; height: 24px; background: url('./ui/assets/orb-shading.svg') center / 100% no-repeat; }
 .hud-progress { width: 420px; height: 40px; display: grid; grid-template-columns: 24px minmax(100px, 1fr) 76px; align-items: center; gap: 10px; padding: 7px 12px; }
 .xp-label { color: #bcbf87; font: 400 13px Silkscreen, monospace; }
-.hud-progress output { color: #e2dfb0; font: 500 13px 'JetBrains Mono', monospace; text-align: right; white-space: nowrap; }
+.hud-progress output { color: #e2dfb0; font: 500 13px Silkscreen, monospace; text-align: right; white-space: nowrap; }
 .xp-track {
   position: relative; height: 18px; padding: 2px; overflow: hidden;
   border: 1px solid #668468; background: #071813; box-shadow: 0 1px #0c2720;
@@ -400,7 +402,7 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   display: block;
   margin-top: 7px;
   color: #e3ebe4;
-  font: 500 15px/1.2 'JetBrains Mono', monospace;
+  font: 500 15px/1.2 Silkscreen, monospace;
   overflow-wrap: anywhere;
 }
 .upgrade-card code b { color: #526f60; font-weight: 500; }
