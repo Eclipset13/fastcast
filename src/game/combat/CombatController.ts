@@ -193,7 +193,11 @@ export class CombatController {
     this.attackImpactReached = true;
 
     // No input by the visual impact means the defense window has elapsed.
-    if (this.defense?.result === 'pending') this.resolveDefense('failed');
+    if (this.defense?.result === 'pending') {
+      // Commit the miss into DefenseTiming itself so update() cannot resolve the
+      // same strike a second time on the next frame.
+      this.resolveDefense(this.defense.press('', this.defense.expiresAt + 1));
+    }
     if (this.defenseResolution) this.applyDefenseResolution();
   }
 
