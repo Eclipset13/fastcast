@@ -14,6 +14,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private attackStartTimer?: Phaser.Time.TimerEvent;
   private attackImpactTimer?: Phaser.Time.TimerEvent;
   private attackCompleteHandler?: () => void;
+  private attackImpactCallback?: () => void;
+  private attackImpactFrameName?: string;
   private hurtTimer?: Phaser.Time.TimerEvent;
 
   constructor(scene: Phaser.Scene, x: number, y: number, readonly definition: EnemyDefinition,
@@ -67,7 +69,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  /** Starts the wind-up now and lines the authored impact frame up with the QTE target. */
+  /** Starts the wind-up so the authored impact pose, not a detached timer, lands on impactAt. */
   prepareAttack(impactAt: number, onImpact: () => void): void {
     if (this.defeated || this.visualState === 'attacking') return;
     const attack = this.visual?.attack;
@@ -75,12 +77,23 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.anims.stop();
 
     if (!attack) {
-      this.attackImpactTimer = this.scene.time.delayedCall(Math.max(0, impactAt - this.scene.time.now), onImpact);
+      this.attackImpactTimer = this.scene.time.delayedCall(Math.max(0, impactAt - this.scene.time.now), () => {
+        this.attackImpactTimer = undefined;
+        if (!this.defeated) onImpact();
+      });
       return;
     }
 
     this.applyAnimationFrame(attack, 0);
-    const impactFrame = attack.impactFrame ?? Math.floor(attack.frames.length / 2);
+    const impactFrame = Phaser.Math.Clamp(
+      attack.impactFrame ?? Math.floor(attack.frames.length / 2),
+      0,
+      attack.frames.length - 1,
+    );
+    this.attackImpactCallback = onImpact;
+    this.attackImpactFrameName = attack.frames[impactFrame].name;
+
+    // Frame 0 is visible immediately when play() starts, so frame N begins after N frame intervals.
     const impactLead = impactFrame / attack.frameRate * 1000;
     const playDelay = Math.max(0, impactAt - this.scene.time.now - impactLead);
     this.attackStartTimer = this.scene.time.delayedCall(playDelay, () => {
@@ -88,14 +101,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       if (this.visualState !== 'attacking' || this.defeated) return;
       this.attackCompleteHandler = () => {
         this.attackCompleteHandler = undefined;
+        this.attackImpactCallback = undefined;
+        this.attackImpactFrameName = undefined;
         if (!this.defeated) this.showIdle(true);
       };
       this.once(`animationcomplete-${attack.animation}`, this.attackCompleteHandler);
       this.play(attack.animation);
-    });
-    this.attackImpactTimer = this.scene.time.delayedCall(Math.max(0, impactAt - this.scene.time.now), () => {
-      this.attackImpactTimer = undefined;
-      if (!this.defeated) onImpact();
     });
   }
 
@@ -104,10 +115,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.attackImpactTimer?.remove(false);
     this.attackStartTimer = undefined;
     this.attackImpactTimer = undefined;
+    this.attackImpactCallback = undefined;
+    this.attackImpactFrameName = undefined;
     const attack = this.visual?.attack;
     if (attack && this.attackCompleteHandler) this.off(`animationcomplete-${attack.animation}`, this.attackCompleteHandler);
     this.attackCompleteHandler = undefined;
-    if (this.visualState === 'attacking') this.anims.stop();
+    if (this.visualState === 'attacking' || this.anims.currentAnim?.key === attack?.animation) this.anims.stop();
   }
 
   defeat(): void {
@@ -147,8 +160,16 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     const config = this.visualState === 'walking' ? this.visual?.walk
       : this.visualState === 'attacking' ? this.visual?.attack : undefined;
     if (!config) return;
-    const layout = config.frames.find((candidate) => candidate.name === String(frame.textureFrame));
+    const frameName = String(frame.textureFrame);
+    const layout = config.frames.find((candidate) => candidate.name === frameName);
     if (layout) this.applyLayout(layout, config.scale);
+
+    if (this.visualState === 'attacking' && frameName === this.attackImpactFrameName && this.attackImpactCallback) {
+      const callback = this.attackImpactCallback;
+      this.attackImpactCallback = undefined;
+      this.attackImpactFrameName = undefined;
+      callback();
+    }
   };
 
   private applyPose(pose: EnemyVisualPose): void {
