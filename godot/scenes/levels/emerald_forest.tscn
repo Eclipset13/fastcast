@@ -3,7 +3,8 @@
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/world/forest_platform.tscn" id="3_platform"]
-[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/ground/ground-main.png" id="4_ground"]\n[ext_resource type="PackedScene" path="res://scenes/enemies/forest_savage.tscn" id="5_forest_savage"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/ground/ground-main.png" id="4_ground"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/forest_savage.tscn" id="5_forest_savage"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(2600, 44)
