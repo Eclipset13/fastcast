@@ -1,6 +1,25 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/combat_overlay.gd" id="1_overlay_script"]
+[ext_resource type="Script" path="res://scripts/ui/defense_ring.gd" id="2_ring_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_bg"]
+bg_color = Color(0.027, 0.071, 0.098, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.47, 0.5, 0.51, 0.9)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_fill"]
+bg_color = Color(0.94, 0.275, 0.345, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.57, 0.59, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_clear"]
 
 [node name="CombatOverlay" type="CanvasLayer"]
 layer = 80
@@ -14,95 +33,158 @@ offset_right = 480.0
 offset_bottom = 270.0
 mouse_filter = 2
 
-[node name="Shade" type="ColorRect" parent="Root"]
+[node name="Vignette" type="ColorRect" parent="Root"]
 layout_mode = 0
 offset_right = 480.0
 offset_bottom = 270.0
-color = Color(0.015, 0.025, 0.03, 0.68)
 mouse_filter = 2
+color = Color(0.01, 0.025, 0.04, 0.18)
 
-[node name="Panel" type="PanelContainer" parent="Root"]
+[node name="EnemyBlock" type="VBoxContainer" parent="Root"]
 layout_mode = 0
-offset_left = 54.0
-offset_top = 34.0
-offset_right = 426.0
-offset_bottom = 236.0
-
-[node name="Margin" type="MarginContainer" parent="Root/Panel"]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 14
-
-[node name="VBox" type="VBoxContainer" parent="Root/Panel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="Header" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
-layout_mode = 2
+offset_left = 150.0
+offset_top = 28.0
+offset_right = 330.0
+offset_bottom = 70.0
+theme_override_constants/separation = 3
 alignment = 1
 
-[node name="EnemyName" type="Label" parent="Root/Panel/Margin/VBox/Header"]
+[node name="EnemyName" type="Label" parent="Root/EnemyBlock"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.94, 0.97, 0.96, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.09, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 10
 text = "FOREST SAVAGE"
-
-[node name="EnemyHP" type="Label" parent="Root/Panel/Margin/VBox/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 9
-text = "HP 58/58"
-
-[node name="PlayerRow" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
-layout_mode = 2
-
-[node name="PlayerHP" type="Label" parent="Root/Panel/Margin/VBox/PlayerRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 8
-text = "HP 82/82"
-
-[node name="Mana" type="Label" parent="Root/Panel/Margin/VBox/PlayerRow"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "MP 60/60"
-
-[node name="Divider" type="HSeparator" parent="Root/Panel/Margin/VBox"]
-layout_mode = 2
-
-[node name="SpellName" type="Label" parent="Root/Panel/Margin/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-text = "Spark"
 horizontal_alignment = 1
 
-[node name="WordRow" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
+[node name="EnemyBar" type="ProgressBar" parent="Root/EnemyBlock"]
+custom_minimum_size = Vector2(180, 8)
 layout_mode = 2
+show_percentage = false
+max_value = 58.0
+value = 58.0
+theme_override_styles/background = SubResource("StyleBoxFlat_health_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_health_fill")
+
+[node name="EnemyHP" type="Label" parent="Root/EnemyBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.82, 0.82, 1)
+theme_override_font_sizes/font_size = 7
+text = "58 / 58"
+horizontal_alignment = 1
+
+[node name="PlayerState" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 150.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0.82, 0.9, 0.85, 0.9)
+theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.08, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 7
+text = "HP 82/82    MP 60/60"
+
+[node name="SpellBlock" type="VBoxContainer" parent="Root"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 78.0
+offset_right = 430.0
+offset_bottom = 154.0
+theme_override_constants/separation = 2
 alignment = 1
-theme_override_constants/separation = 0
 
-[node name="Typed" type="Label" parent="Root/Panel/Margin/VBox/WordRow"]
+[node name="Icon" type="TextureRect" parent="Root/SpellBlock"]
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 1, 0.6, 1)
-theme_override_font_sizes/font_size = 22
-text = ""
+size_flags_horizontal = 4
+texture_filter = 1
+expand_mode = 3
+stretch_mode = 5
 
-[node name="Remaining" type="Label" parent="Root/Panel/Margin/VBox/WordRow"]
+[node name="SpellName" type="Label" parent="Root/SpellBlock"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.96, 0.9, 1)
-theme_override_font_sizes/font_size = 22
-text = "zap"
-
-[node name="Defense" type="Label" parent="Root/Panel/Margin/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.82, 0.35, 1)
-theme_override_font_sizes/font_size = 10
-text = ""
+theme_override_colors/font_color = Color(0.94, 0.97, 0.96, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.09, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 9
+text = "SPARK"
 horizontal_alignment = 1
 
-[node name="Feedback" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="WordRow" type="HBoxContainer" parent="Root/SpellBlock"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "Type the shown spell."
+size_flags_horizontal = 4
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Hint" type="Label" parent="Root/SpellBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.73, 0.76, 1)
+theme_override_font_sizes/font_size = 6
+text = "TYPE TO CAST"
+horizontal_alignment = 1
+
+[node name="DefenseBlock" type="Control" parent="Root"]
+visible = false
+layout_mode = 0
+offset_left = 174.0
+offset_top = 154.0
+offset_right = 306.0
+offset_bottom = 258.0
+
+[node name="Result" type="Label" parent="Root/DefenseBlock"]
+layout_mode = 0
+offset_right = 132.0
+offset_bottom = 16.0
+theme_override_colors/font_color = Color(0.74, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+
+[node name="Ring" type="Control" parent="Root/DefenseBlock"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 12.0
+offset_right = 106.0
+offset_bottom = 92.0
+mouse_filter = 2
+script = ExtResource("2_ring_script")
+
+[node name="Digit" type="Label" parent="Root/DefenseBlock/Ring"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.95, 0.99, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.09, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 22
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DefenseHint" type="Label" parent="Root/DefenseBlock"]
+layout_mode = 0
+offset_top = 90.0
+offset_right = 132.0
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(0.65, 0.73, 0.76, 1)
+theme_override_font_sizes/font_size = 5
+text = "PRESS THE DIGIT"
+horizontal_alignment = 1
+
+[node name="Feedback" type="Label" parent="Root"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 242.0
+offset_right = 410.0
+offset_bottom = 262.0
+theme_override_colors/font_color = Color(0.92, 0.91, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.08, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 7
 horizontal_alignment = 1

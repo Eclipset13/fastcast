@@ -12,6 +12,7 @@ const BG_NEAR := preload("res://assets/biomes/emerald-forest/bg-near.png")
 @onready var _player = $Player
 @onready var _combat_overlay = $CombatOverlay
 @onready var _combat_controller = $CombatController
+@onready var _controls_label: Label = $HUD/Controls
 
 var _parallax_layers: Array[Dictionary] = []
 
@@ -20,6 +21,8 @@ func _ready() -> void:
 	_create_backgrounds()
 	_configure_camera()
 	_connect_encounters()
+	_combat_controller.connect("battle_started", Callable(self, "_on_battle_started"))
+	_combat_controller.connect("battle_finished", Callable(self, "_on_battle_finished"))
 
 
 func _process(_delta: float) -> void:
@@ -42,6 +45,14 @@ func _connect_encounters() -> void:
 
 func _on_encounter_requested(enemy) -> void:
 	_combat_controller.call("start", enemy, _player, _combat_overlay)
+
+
+func _on_battle_started() -> void:
+	_controls_label.visible = false
+
+
+func _on_battle_finished(_victory: bool, _xp: int) -> void:
+	_controls_label.visible = true
 
 
 func _configure_camera() -> void:

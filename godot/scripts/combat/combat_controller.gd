@@ -31,6 +31,9 @@ var max_mana: int = PLAYER_BASE_MANA
 var _player = null
 var _enemy = null
 var _overlay = null
+var _camera: Camera2D = null
+var _saved_camera_position := Vector2.ZERO
+var _saved_camera_zoom := Vector2.ONE
 var _parser = TypingParser.new()
 var _rng := RandomNumberGenerator.new()
 
@@ -72,6 +75,11 @@ func start(enemy, player, overlay) -> void:
 	_player = player
 	_enemy = enemy
 	_overlay = overlay
+	_camera = _player.get_node_or_null("Camera2D") as Camera2D
+	if _camera != null:
+		_saved_camera_position = _camera.position
+		_saved_camera_zoom = _camera.zoom
+		_enter_battle_camera()
 	_parser.reset()
 	_spell.clear()
 	_previous_spell_id = ""
@@ -150,7 +158,7 @@ func _handle_letter(character: String) -> void:
 	var result_type := String(result.get("type", "noop"))
 
 	if result_type == "progress":
-		_overlay.call("set_spell", String(_spell["name"]), String(_spell["word"]), _parser.typed)
+		_overlay.call("set_spell", String(_spell["id"]), String(_spell["name"]), String(_spell["word"]), _parser.typed)
 	elif result_type == "complete":
 		_cast_spell(result)
 	elif result_type == "miss":
@@ -182,7 +190,7 @@ func _choose_spell(now: float) -> void:
 	_spell = choices[_rng.randi_range(0, choices.size() - 1)].duplicate(true)
 	_previous_spell_id = String(_spell["id"])
 	_parser.select(String(_spell["word"]))
-	_overlay.call("set_spell", String(_spell["name"]), String(_spell["word"]), 0)
+	_overlay.call("set_spell", String(_spell["id"]), String(_spell["name"]), String(_spell["word"]), 0)
 
 
 func _cast_spell(result: Dictionary) -> void:
@@ -362,6 +370,7 @@ func _complete_battle() -> void:
 	if not _victory:
 		_enemy.call("set_combat_locked", false, _player.global_position.x)
 
+	_restore_camera()
 	_player.call("set_control", true)
 	_overlay.call("close_overlay")
 
@@ -372,8 +381,38 @@ func _complete_battle() -> void:
 	_enemy = null
 	_player = null
 	_overlay = null
+	_camera = null
 	_reset_defense()
 	battle_finished.emit(finished_victory, finished_xp)
+
+
+func _enter_battle_camera() -> void:
+	if _camera == null:
+		return
+
+	var spacing := absf(_player.global_position.x - _enemy.global_position.x)
+	var battle_zoom := minf(1.38, 480.0 / (spacing + 110.0))
+	var midpoint_offset_x := (_enemy.global_position.x - _player.global_position.x) * 0.5
+	var target_position := Vector2(midpoint_offset_x, -39.0)
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(_camera, "position", target_position, 0.38)
+	tween.tween_property(_camera, "zoom", Vector2(battle_zoom, battle_zoom), 0.38)
+
+
+func _restore_camera() -> void:
+	if _camera == null:
+		return
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(_camera, "position", _saved_camera_position, 0.38)
+	tween.tween_property(_camera, "zoom", _saved_camera_zoom, 0.38)
 
 
 func _gain_xp(amount: int) -> void:
@@ -404,7 +443,7 @@ func _refresh_ui() -> void:
 	_overlay.call("set_enemy_hp", int(_enemy.get("hp")), int(_enemy.get("max_hp")))
 	_overlay.call("set_player_state", player_hp, player_max_hp, mana, max_mana)
 	if not _spell.is_empty():
-		_overlay.call("set_spell", String(_spell["name"]), String(_spell["word"]), _parser.typed)
+		_overlay.call("set_spell", String(_spell["id"]), String(_spell["name"]), String(_spell["word"]), _parser.typed)
 
 
 func _reset_defense() -> void:
