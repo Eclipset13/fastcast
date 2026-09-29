@@ -215,8 +215,8 @@ export class CombatController {
     this.spellState = 'cast';
     this.nextSpellAt = this.scene.time.now + T.nextSpellDelay;
     this.state.resource -= ability.cost;
-    const rank = Math.max(0, (this.state.abilityLevels[ability.id] ?? 1) - 1);
-    const power = Math.max(0, Math.round(abilityPower(ability, tier, stats.multiplier, this.state)));
+    const rank = Math.max(0, candidate.rank - 1);
+    const power = Math.max(0, Math.round(abilityPower(ability, tier, stats.multiplier, this.state, candidate.rank)));
     this.presentation.cast(ability, this.enemy, () => {
       if (!this.active || this.ending) return;
       this.applySpellEffect(ability, rank, power);
