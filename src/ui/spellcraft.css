@@ -22,6 +22,11 @@
   overflow: hidden;
   border: 0;
   color: var(--sc-text);
+  /* The legacy stylesheet applies a large drop-shadow filter to this PNG-backed
+     dialog. Filters force expensive offscreen compositing over the live Phaser canvas. */
+  filter: none;
+  contain: layout paint style;
+  isolation: isolate;
   image-rendering: pixelated;
 }
 
@@ -32,8 +37,8 @@
 }
 
 #upgrade-dialog::backdrop {
-  background: rgba(2, 8, 11, .56);
-  backdrop-filter: blur(2px);
+  /* Keep the world readable without re-blurring a continuously rendered canvas. */
+  background: rgba(2, 8, 11, .64);
 }
 
 #upgrade-dialog .upgrade-heading {
@@ -165,6 +170,7 @@
   scrollbar-gutter: stable both-edges;
   scrollbar-width: thin;
   scrollbar-color: #547383 #0a1820;
+  contain: layout paint style;
 }
 
 #upgrade-dialog .spellcraft-section {
@@ -536,4 +542,25 @@
   #upgrade-dialog .deck-slot .spellcraft-icon { width: 58px; height: 58px; }
   #upgrade-dialog .deck-slot .spellcraft-icon img { width: 44px; height: 44px; }
   #upgrade-dialog .deck-slot .quiet-button { grid-column: 3; }
+}
+
+
+/* Performance containment: the Learn tab can contain twenty large spell cards.
+   Chromium can skip layout/paint for cards outside the scroll viewport. */
+#upgrade-dialog .deck-slot,
+#upgrade-dialog .reserve-spell,
+#upgrade-dialog .catalog-spell,
+#upgrade-dialog .upgrade-spell-card {
+  contain: layout paint style;
+}
+
+#upgrade-dialog .catalog-spell,
+#upgrade-dialog .upgrade-spell-card,
+#upgrade-dialog .reserve-spell {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 142px;
+}
+
+#upgrade-dialog .spellcraft-icon img {
+  transform: translateZ(0);
 }
