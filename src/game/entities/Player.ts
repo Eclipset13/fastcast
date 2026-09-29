@@ -45,7 +45,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.applyMageLayout(MAGE_SPRITE);
     } else body.setSize(12, 26).setOffset(3, 3);
     this.cursors = scene.input.keyboard!.createCursorKeys();
-    this.keys = scene.input.keyboard!.addKeys({ left: 'A', right: 'D', jump: 'W', dash: 'Q' }) as Record<string, Phaser.Input.Keyboard.Key>;
+    this.keys = scene.input.keyboard!.addKeys({ left: 'A', right: 'D', jump: 'W', dash: 'SHIFT' }) as Record<string, Phaser.Input.Keyboard.Key>;
   }
 
   setControl(enabled: boolean): void {
