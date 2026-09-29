@@ -10,13 +10,19 @@ extends CharacterBody2D
 @export var dash_speed: float = 255.0
 @export var dash_duration: float = 0.13
 @export var dash_cooldown: float = 0.32
+@export var fall_respawn_y: float = 360.0
 
 var _facing: float = 1.0
-var _air_jumps_left: int = 1
+var _air_dash_available: bool = true
 var _dash_time_left: float = 0.0
 var _dash_cooldown_left: float = 0.0
 var _jump_requested: bool = false
 var _dash_requested: bool = false
+var _spawn_position: Vector2
+
+
+func _ready() -> void:
+	_spawn_position = global_position
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -42,9 +48,12 @@ func _physics_process(delta: float) -> void:
 	_dash_requested = false
 
 	if is_on_floor():
-		_air_jumps_left = 1
+		_air_dash_available = true
 
-	if wants_dash and _dash_cooldown_left <= 0.0:
+	var can_dash := is_on_floor() or _air_dash_available
+	if wants_dash and can_dash and _dash_cooldown_left <= 0.0:
+		if not is_on_floor():
+			_air_dash_available = false
 		_dash_time_left = dash_duration
 		_dash_cooldown_left = dash_cooldown
 
@@ -53,14 +62,11 @@ func _physics_process(delta: float) -> void:
 		velocity.x = _facing * dash_speed
 		velocity.y = 0.0
 		move_and_slide()
+		_check_fall_respawn()
 		return
 
-	if wants_jump:
-		if is_on_floor():
-			velocity.y = jump_velocity
-		elif _air_jumps_left > 0:
-			_air_jumps_left -= 1
-			velocity.y = jump_velocity
+	if wants_jump and is_on_floor():
+		velocity.y = jump_velocity
 
 	if not is_on_floor():
 		velocity.y = minf(velocity.y + gravity * delta, max_fall_speed)
@@ -74,6 +80,18 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, air_acceleration * 0.25 * delta)
 
 	move_and_slide()
+	_check_fall_respawn()
+
+
+func _check_fall_respawn() -> void:
+	if global_position.y <= fall_respawn_y:
+		return
+
+	global_position = _spawn_position
+	velocity = Vector2.ZERO
+	_dash_time_left = 0.0
+	_dash_cooldown_left = 0.0
+	_air_dash_available = true
 
 
 func _get_move_input() -> float:
