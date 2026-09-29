@@ -17,6 +17,7 @@ import {
   EMERALD_FOREST_TREE_ASSETS,
 } from '../world/EmeraldForestDecorations';
 import { RunestoneInteraction } from '../world/RunestoneInteraction';
+import { ForestPortal, FOREST_PORTAL_ASSETS, FOREST_PORTAL_POSITION } from '../world/ForestPortal';
 
 type PlatformTexture =
   | 'forest-platform-long'
@@ -83,6 +84,7 @@ export class GameScene extends Phaser.Scene {
   private terrain!: Phaser.Physics.Arcade.StaticGroup;
   private runestone!: Phaser.GameObjects.Image;
   private runestoneInteraction!: RunestoneInteraction;
+  private exitPortal!: ForestPortal;
 
   constructor() { super('gameplay'); }
 
@@ -106,6 +108,11 @@ export class GameScene extends Phaser.Scene {
     this.load.image(GROUND_TEXTURE, '/assets/biomes/emerald-forest/ground/ground-main.png');
     for (const tree of EMERALD_FOREST_TREE_ASSETS) this.load.image(tree.key, tree.path);
     for (const prop of EMERALD_FOREST_PROP_ASSETS) this.load.image(prop.key, prop.path);
+    this.load.image(FOREST_PORTAL_ASSETS.frame.key, FOREST_PORTAL_ASSETS.frame.path);
+    this.load.spritesheet(FOREST_PORTAL_ASSETS.activeSheet.key, FOREST_PORTAL_ASSETS.activeSheet.path, {
+      frameWidth: FOREST_PORTAL_ASSETS.activeSheet.frameWidth,
+      frameHeight: FOREST_PORTAL_ASSETS.activeSheet.frameHeight,
+    });
   }
 
   create(): void {
@@ -138,6 +145,14 @@ export class GameScene extends Phaser.Scene {
       this.runestone,
       () => !this.combat.active,
     );
+    this.exitPortal = new ForestPortal(
+      this,
+      this.player,
+      FOREST_PORTAL_POSITION.x,
+      FOREST_PORTAL_POSITION.y,
+      () => !this.combat.active && !document.querySelector<HTMLDialogElement>('#upgrade-dialog')?.open,
+      () => events.emit(GameEvents.toast, 'The path beyond is not yet formed.'),
+    );
     const handleKey = (event: KeyboardEvent) => {
       if (this.combat.handleKey(event)) event.preventDefault();
     };
@@ -162,6 +177,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.combat.update(seconds);
     this.runestoneInteraction.update();
+    this.exitPortal.update(seconds);
     if (this.player.y > GAME_HEIGHT + 20) this.respawn();
   }
 
@@ -209,7 +225,10 @@ export class GameScene extends Phaser.Scene {
       this.player.setPosition(110, GROUND_Y - 18);
       events.emit(GameEvents.playerChanged, state);
       events.emit(GameEvents.toast, 'The forest returns you to the waystone.');
-    } else events.emit(GameEvents.toast, 'Wraith dispersed · experience gained');
+    } else {
+      events.emit(GameEvents.toast, 'Wraith dispersed · experience gained');
+      if (this.enemies.every((enemy) => enemy.defeated)) this.exitPortal.activate();
+    }
   }
 
   private respawn(): void {
@@ -263,9 +282,5 @@ export class GameScene extends Phaser.Scene {
       graphics.fillStyle(0x263e32, 1).fillTriangle(x, GROUND_Y, x + 7, GROUND_Y - 8, x + 15, GROUND_Y);
       graphics.fillStyle(0x496b51, 1).fillTriangle(x + 5, GROUND_Y - 2, x + 8, GROUND_Y - 7, x + 10, GROUND_Y - 2);
     }
-    // A small ruined arch hints at a larger connected world.
-    graphics.fillStyle(0x13271e, 1).fillRect(2180, GROUND_Y - 58, 9, 58).fillRect(2250, GROUND_Y - 58, 9, 58);
-    graphics.fillStyle(0x294b38, 1).fillRect(2175, GROUND_Y - 62, 90, 9);
-    graphics.fillStyle(0x4d8552, 0.8).fillRect(2182, GROUND_Y - 62, 31, 2).fillRect(2248, GROUND_Y - 49, 3, 20);
   }
 }

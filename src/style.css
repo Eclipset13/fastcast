@@ -54,6 +54,14 @@ kbd { font: 500 10px 'JetBrains Mono', monospace; color: #d9ebdf; border: 1px so
   text-shadow: 1px 1px 0 #061613; white-space: nowrap; image-rendering: pixelated;
 }
 
+.portal-prompt {
+  width: 112px;
+  color: #d1f985;
+  border-color: rgba(109, 201, 119, 0.72);
+  background: rgba(6, 43, 50, 0.88);
+  box-shadow: 0 0 14px rgba(84, 171, 113, 0.22);
+}
+
 /* A shared design scale keeps all HUD elements in proportion, including during combat. */
 .game-hud {
   --hud-scale: 1;
