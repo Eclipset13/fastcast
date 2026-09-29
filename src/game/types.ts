@@ -44,8 +44,9 @@ export interface PlayerState {
   resource: number;
   maxResource: number;
   focus: number;
-  abilityLevels: Record<string, number>;
   /** Highest rank permanently unlocked for each ability. */
+  abilityLevels: Record<string, number>;
+  /** Rank currently equipped/used in combat for each ability. */
   selectedAbilityRanks: Record<string, number>;
   learnedAbilityIds: string[];
   deckAbilityIds: string[];
