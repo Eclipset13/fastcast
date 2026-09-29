@@ -1,10 +1,170 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/forest_platform.tscn" id="3_platform"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/ground/ground-main.png" id="4_ground"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(2600, 44)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_boundary"]
+size = Vector2(16, 270)
 
 [node name="EmeraldForest" type="Node2D"]
 script = ExtResource("1_forest_script")
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Terrain" type="Node2D" parent="."]
+
+[node name="Ground" type="StaticBody2D" parent="Terrain"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/Ground"]
+position = Vector2(1300, 248)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="Tile01" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(0, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile02" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(360, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile03" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(720, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile04" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(1080, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile05" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(1440, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile06" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(1800, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile07" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(2160, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="Tile08" type="Sprite2D" parent="Terrain/Ground"]
+z_index = 5
+texture = ExtResource("4_ground")
+position = Vector2(2520, 153.8497)
+scale = Vector2(0.187891, 0.187891)
+centered = false
+
+[node name="LeftBoundary" type="StaticBody2D" parent="Terrain"]
+position = Vector2(-8, 135)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/LeftBoundary"]
+shape = SubResource("RectangleShape2D_boundary")
+
+[node name="RightBoundary" type="StaticBody2D" parent="Terrain"]
+position = Vector2(2608, 135)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/RightBoundary"]
+shape = SubResource("RectangleShape2D_boundary")
+
+[node name="Platform01_MediumA" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(320, 182)
+platform_kind = 1
+
+[node name="Platform02_SmallA" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(425, 139)
+platform_kind = 3
+
+[node name="Platform03_Long" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(545, 112)
+platform_kind = 0
+
+[node name="Platform04_MediumB" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(700, 162)
+platform_kind = 2
+
+[node name="Platform05_SmallB" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(850, 188)
+platform_kind = 4
+
+[node name="Platform06_MediumA" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(950, 144)
+platform_kind = 1
+
+[node name="Platform07_Long" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1070, 103)
+platform_kind = 0
+
+[node name="Platform08_SmallA" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1225, 151)
+platform_kind = 3
+
+[node name="Platform09_Long" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1350, 184)
+platform_kind = 0
+
+[node name="Platform10_MediumB" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1515, 176)
+platform_kind = 2
+
+[node name="Platform11_SmallB" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1620, 130)
+platform_kind = 4
+
+[node name="Platform12_Long" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1740, 96)
+platform_kind = 0
+
+[node name="Platform13_MediumA" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(1900, 149)
+platform_kind = 1
+
+[node name="Platform14_SmallA" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(2030, 111)
+platform_kind = 3
+
+[node name="Platform15_Long" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(2160, 170)
+platform_kind = 0
+
+[node name="Platform16_MediumB" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(2320, 132)
+platform_kind = 2
+
+[node name="Platform17_SmallB" parent="Terrain" instance=ExtResource("3_platform")]
+position = Vector2(2440, 94)
+platform_kind = 4
+
+[node name="Decorations" type="Node2D" parent="."]
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Portals" type="Node2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(110, 208)
