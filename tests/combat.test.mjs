@@ -9,7 +9,8 @@ const { DefenseTiming } = await server.ssrLoadModule('/src/game/combat/DefenseTi
 const { DefenseStrike } = await server.ssrLoadModule('/src/game/combat/DefenseStrike.ts');
 const { TypingParser } = await server.ssrLoadModule('/src/game/systems/TypingParser.ts');
 const { selectDeckSpell } = await server.ssrLoadModule('/src/game/combat/SpellSelection.ts');
-const { createPlayerState } = await server.ssrLoadModule('/src/game/systems/Progression.ts');
+const { createPlayerState, selectAbilityRank, selectedAbilityRank } =
+  await server.ssrLoadModule('/src/game/systems/Progression.ts');
 const { CLASSES } = await server.ssrLoadModule('/src/game/data/classes.ts');
 
 test('defense accepts both inclusive edges of the 200ms window', () => {
@@ -104,6 +105,7 @@ test('random selection uses only learned equipped affordable spells at current r
   const state = createPlayerState(CLASSES.mage);
   state.deckAbilityIds = ['spark', 'fireball', 'judgment'];
   state.abilityLevels.fireball = 3;
+  state.selectedAbilityRanks.fireball = 3;
   assert.equal(selectDeckSpell(state, 'spark', () => 0).word.full, 'ignisinferno');
   for (let i = 0; i < 20; i++) assert.notEqual(selectDeckSpell(state, null, () => i / 20).ability.id, 'judgment');
   state.resource = 0;
@@ -118,7 +120,7 @@ test('random selection uses only learned equipped affordable spells at current r
 
 test('selected upgraded word completes immediately; digits preserve partial input', () => {
   const state = createPlayerState(CLASSES.mage);
-  state.deckAbilityIds = ['fireball']; state.abilityLevels.fireball = 3;
+  state.deckAbilityIds = ['fireball']; state.abilityLevels.fireball = 3; state.selectedAbilityRanks.fireball = 3;
   const spell = selectDeckSpell(state, null);
   const parser = new TypingParser();
   parser.select(spell);
@@ -136,4 +138,21 @@ test('selected upgraded word completes immediately; digits preserve partial inpu
   parser.reset();
   assert.equal(parser.active, null);
   assert.equal(parser.typed, 0);
+});
+
+
+test('upgraded spells can cast an older unlocked rank selected in the deck', () => {
+  const state = createPlayerState(CLASSES.mage);
+  const fireball = CLASSES.mage.abilities.find((ability) => ability.id === 'fireball');
+  state.abilityLevels.fireball = 3;
+  state.selectedAbilityRanks.fireball = 3;
+  state.deckAbilityIds = ['fireball'];
+  assert.equal(selectedAbilityRank(state, fireball), 3);
+  assert.equal(selectAbilityRank(state, fireball, 1), true);
+  assert.equal(selectedAbilityRank(state, fireball), 1);
+  const spell = selectDeckSpell(state, null, () => 0);
+  assert.equal(spell.rank, 1);
+  assert.equal(spell.word.full, 'ignis');
+  assert.equal(selectAbilityRank(state, fireball, 4), false);
+  assert.equal(selectedAbilityRank(state, fireball), 1);
 });
