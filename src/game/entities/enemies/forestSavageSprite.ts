@@ -24,7 +24,7 @@ export const FOREST_SAVAGE_ATTACK = {
 
 const FRAME_COUNT = 8;
 const ALPHA_THRESHOLD = 10;
-const DISPLAY_HEIGHT = 46;
+const DISPLAY_HEIGHT = 39;
 
 interface DetectedFrame extends EnemyVisualFrame {
   pixels: number;
