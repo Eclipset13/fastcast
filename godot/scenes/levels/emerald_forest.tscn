@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
+
+[node name="EmeraldForest" type="Node2D"]
+script = ExtResource("1_forest_script")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(110, 208)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Location" type="Label" parent="HUD"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 170.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.86, 0.96, 0.84, 1)
+theme_override_font_sizes/font_size = 8
+text = "EMERALD FOREST"
+
+[node name="Controls" type="Label" parent="HUD"]
+offset_left = 8.0
+offset_top = 248.0
+offset_right = 420.0
+offset_bottom = 266.0
+theme_override_colors/font_color = Color(0.78, 0.88, 0.8, 0.85)
+theme_override_font_sizes/font_size = 7
+text = "A/D move   Space jump   Shift dash"
