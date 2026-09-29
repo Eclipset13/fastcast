@@ -104,17 +104,23 @@ function detectFrames(scene: Phaser.Scene, textureKey: string, prefix: string, e
   const selected = components.sort((a, b) => b.pixels - a.pixels).slice(0, expected);
   if (selected.length !== expected) return fallbackGrid(scene, textureKey, prefix, expected, width, height);
 
-  // Discover rows from the component centres. This supports both 4x2 sheets and
-  // single-row attack sheets without hard-coding the source image dimensions.
-  const byY = [...selected].sort((a, b) => centreY(a) - centreY(b));
-  const rows: typeof selected[] = [];
-  const rowGap = height * 0.18;
-  for (const component of byY) {
-    const last = rows.at(-1);
-    if (!last || Math.abs(centreY(component) - averageCentreY(last)) > rowGap) rows.push([component]);
-    else last.push(component);
+  // Very wide sheets are authored as a single horizontal strip. Sorting those by Y
+  // can scramble wind-up frames because raised-club poses have much taller bounds.
+  // More compact sheets are treated as row-based (our walk sheet is 4x2).
+  let ordered: typeof selected;
+  if (width / height > 2.2) {
+    ordered = [...selected].sort((a, b) => centreX(a) - centreX(b));
+  } else {
+    const byY = [...selected].sort((a, b) => centreY(a) - centreY(b));
+    const rows: typeof selected[] = [];
+    const rowGap = height * 0.18;
+    for (const component of byY) {
+      const last = rows.at(-1);
+      if (!last || Math.abs(centreY(component) - averageCentreY(last)) > rowGap) rows.push([component]);
+      else last.push(component);
+    }
+    ordered = rows.flatMap((row) => row.sort((a, b) => centreX(a) - centreX(b)));
   }
-  const ordered = rows.flatMap((row) => row.sort((a, b) => centreX(a) - centreX(b)));
 
   return ordered.map((component, index) => {
     const x = component.minX;
