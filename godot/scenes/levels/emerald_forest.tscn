@@ -1,9 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3 uid="uid://cdp7hwephjyc1"]
 
-[ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
+[ext_resource type="Script" uid="uid://c58wd5nju6q22" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/world/forest_platform.tscn" id="3_platform"]
-[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/ground/ground-main.png" id="4_ground"]
+[ext_resource type="Texture2D" uid="uid://c1rk8lno5qyif" path="res://assets/biomes/emerald-forest/ground/ground-main.png" id="4_ground"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(2600, 44)
@@ -11,167 +11,162 @@ size = Vector2(2600, 44)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_boundary"]
 size = Vector2(16, 270)
 
-[node name="EmeraldForest" type="Node2D"]
+[node name="EmeraldForest" type="Node2D" unique_id=1435471758]
 script = ExtResource("1_forest_script")
 
-[node name="Background" type="Node2D" parent="."]
+[node name="Background" type="Node2D" parent="." unique_id=1901413887]
 
-[node name="Terrain" type="Node2D" parent="."]
+[node name="Terrain" type="Node2D" parent="." unique_id=1736696722]
 
-[node name="Ground" type="StaticBody2D" parent="Terrain"]
+[node name="Ground" type="StaticBody2D" parent="Terrain" unique_id=327403482]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/Ground"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/Ground" unique_id=600381033]
 position = Vector2(1300, 248)
 shape = SubResource("RectangleShape2D_ground")
 
-[node name="Tile01" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile01" type="Sprite2D" parent="Terrain/Ground" unique_id=523965835]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(0, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile02" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile02" type="Sprite2D" parent="Terrain/Ground" unique_id=1791264794]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(360, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile03" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile03" type="Sprite2D" parent="Terrain/Ground" unique_id=835310304]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(720, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile04" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile04" type="Sprite2D" parent="Terrain/Ground" unique_id=1674273554]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(1080, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile05" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile05" type="Sprite2D" parent="Terrain/Ground" unique_id=549176074]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(1440, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile06" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile06" type="Sprite2D" parent="Terrain/Ground" unique_id=1913089999]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(1800, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile07" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile07" type="Sprite2D" parent="Terrain/Ground" unique_id=1046409504]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(2160, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="Tile08" type="Sprite2D" parent="Terrain/Ground"]
+[node name="Tile08" type="Sprite2D" parent="Terrain/Ground" unique_id=1829618790]
 z_index = 5
-texture = ExtResource("4_ground")
 position = Vector2(2520, 153.8497)
 scale = Vector2(0.187891, 0.187891)
+texture = ExtResource("4_ground")
 centered = false
 
-[node name="LeftBoundary" type="StaticBody2D" parent="Terrain"]
+[node name="LeftBoundary" type="StaticBody2D" parent="Terrain" unique_id=803463454]
 position = Vector2(-8, 135)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/LeftBoundary"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/LeftBoundary" unique_id=2018935123]
 shape = SubResource("RectangleShape2D_boundary")
 
-[node name="RightBoundary" type="StaticBody2D" parent="Terrain"]
+[node name="RightBoundary" type="StaticBody2D" parent="Terrain" unique_id=1624954046]
 position = Vector2(2608, 135)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/RightBoundary"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/RightBoundary" unique_id=634340427]
 shape = SubResource("RectangleShape2D_boundary")
 
-[node name="Platform01_MediumA" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform01_MediumA" parent="Terrain" unique_id=150733545 instance=ExtResource("3_platform")]
 position = Vector2(320, 182)
 platform_kind = 1
 
-[node name="Platform02_SmallA" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform02_SmallA" parent="Terrain" unique_id=1268427763 instance=ExtResource("3_platform")]
 position = Vector2(425, 139)
 platform_kind = 3
 
-[node name="Platform03_Long" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform03_Long" parent="Terrain" unique_id=1242083961 instance=ExtResource("3_platform")]
 position = Vector2(545, 112)
-platform_kind = 0
 
-[node name="Platform04_MediumB" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform04_MediumB" parent="Terrain" unique_id=833144382 instance=ExtResource("3_platform")]
 position = Vector2(700, 162)
 platform_kind = 2
 
-[node name="Platform05_SmallB" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform05_SmallB" parent="Terrain" unique_id=1684699430 instance=ExtResource("3_platform")]
 position = Vector2(850, 188)
 platform_kind = 4
 
-[node name="Platform06_MediumA" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform06_MediumA" parent="Terrain" unique_id=979488808 instance=ExtResource("3_platform")]
 position = Vector2(950, 144)
 platform_kind = 1
 
-[node name="Platform07_Long" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform07_Long" parent="Terrain" unique_id=336423410 instance=ExtResource("3_platform")]
 position = Vector2(1070, 103)
-platform_kind = 0
 
-[node name="Platform08_SmallA" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform08_SmallA" parent="Terrain" unique_id=1607080807 instance=ExtResource("3_platform")]
 position = Vector2(1225, 151)
 platform_kind = 3
 
-[node name="Platform09_Long" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform09_Long" parent="Terrain" unique_id=1237978542 instance=ExtResource("3_platform")]
 position = Vector2(1350, 184)
-platform_kind = 0
 
-[node name="Platform10_MediumB" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform10_MediumB" parent="Terrain" unique_id=1938361117 instance=ExtResource("3_platform")]
 position = Vector2(1515, 176)
 platform_kind = 2
 
-[node name="Platform11_SmallB" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform11_SmallB" parent="Terrain" unique_id=1363266933 instance=ExtResource("3_platform")]
 position = Vector2(1620, 130)
 platform_kind = 4
 
-[node name="Platform12_Long" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform12_Long" parent="Terrain" unique_id=1957579841 instance=ExtResource("3_platform")]
 position = Vector2(1740, 96)
-platform_kind = 0
 
-[node name="Platform13_MediumA" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform13_MediumA" parent="Terrain" unique_id=1862199871 instance=ExtResource("3_platform")]
 position = Vector2(1900, 149)
 platform_kind = 1
 
-[node name="Platform14_SmallA" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform14_SmallA" parent="Terrain" unique_id=597240817 instance=ExtResource("3_platform")]
 position = Vector2(2030, 111)
 platform_kind = 3
 
-[node name="Platform15_Long" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform15_Long" parent="Terrain" unique_id=1272295593 instance=ExtResource("3_platform")]
 position = Vector2(2160, 170)
-platform_kind = 0
 
-[node name="Platform16_MediumB" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform16_MediumB" parent="Terrain" unique_id=2018455920 instance=ExtResource("3_platform")]
 position = Vector2(2320, 132)
 platform_kind = 2
 
-[node name="Platform17_SmallB" parent="Terrain" instance=ExtResource("3_platform")]
+[node name="Platform17_SmallB" parent="Terrain" unique_id=916165630 instance=ExtResource("3_platform")]
 position = Vector2(2440, 94)
 platform_kind = 4
 
-[node name="Decorations" type="Node2D" parent="."]
+[node name="Decorations" type="Node2D" parent="." unique_id=736241306]
 
-[node name="Enemies" type="Node2D" parent="."]
+[node name="Enemies" type="Node2D" parent="." unique_id=279679636]
 
-[node name="Portals" type="Node2D" parent="."]
+[node name="Portals" type="Node2D" parent="." unique_id=315996174]
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
+[node name="Player" parent="." unique_id=632059800 instance=ExtResource("2_player")]
 position = Vector2(110, 208)
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1110126501]
 
-[node name="Location" type="Label" parent="HUD"]
+[node name="Location" type="Label" parent="HUD" unique_id=1912382274]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 170.0
@@ -180,7 +175,7 @@ theme_override_colors/font_color = Color(0.86, 0.96, 0.84, 1)
 theme_override_font_sizes/font_size = 8
 text = "EMERALD FOREST"
 
-[node name="Controls" type="Label" parent="HUD"]
+[node name="Controls" type="Label" parent="HUD" unique_id=979635436]
 offset_left = 8.0
 offset_top = 248.0
 offset_right = 420.0
