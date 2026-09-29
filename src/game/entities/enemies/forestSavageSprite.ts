@@ -24,7 +24,7 @@ export const FOREST_SAVAGE_ATTACK = {
 
 const FRAME_COUNT = 8;
 const ALPHA_THRESHOLD = 10;
-const DISPLAY_HEIGHT = 46;
+const DISPLAY_HEIGHT = 40;
 
 interface DetectedFrame extends EnemyVisualFrame {
   pixels: number;
@@ -228,7 +228,7 @@ export function createForestSavageAnimations(scene: Phaser.Scene): EnemyVisualCo
       repeat: 0,
       impactFrame: Math.min(FOREST_SAVAGE_ATTACK.impactFrame, attackFrames.length - 1),
     },
-    body: { width: 18, height: 30 },
+    body: { width: 16, height: 27 },
     sourceFaces: 'right',
   };
 }
