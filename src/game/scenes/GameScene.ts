@@ -85,6 +85,7 @@ export class GameScene extends Phaser.Scene {
   private runestone!: Phaser.GameObjects.Image;
   private runestoneInteraction!: RunestoneInteraction;
   private exitPortal!: ForestPortal;
+  private spellcraftOpen = false;
 
   constructor() { super('gameplay'); }
 
@@ -153,6 +154,9 @@ export class GameScene extends Phaser.Scene {
       () => !this.combat.active && !document.querySelector<HTMLDialogElement>('#upgrade-dialog')?.open,
       () => events.emit(GameEvents.toast, 'The path beyond is not yet formed.'),
     );
+    events.on(GameEvents.upgradeRequested, this.handleSpellcraftOpened);
+    events.on(GameEvents.upgradeMenuClosed, this.handleSpellcraftClosed);
+
     const handleKey = (event: KeyboardEvent) => {
       if (this.combat.handleKey(event)) event.preventDefault();
     };
@@ -161,6 +165,9 @@ export class GameScene extends Phaser.Scene {
     window.addEventListener('keydown', handleKey);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       window.removeEventListener('keydown', handleKey);
+      events.off(GameEvents.upgradeRequested, this.handleSpellcraftOpened);
+      events.off(GameEvents.upgradeMenuClosed, this.handleSpellcraftClosed);
+      this.physics.world.resume();
       this.combat.destroy();
     });
     events.emit(GameEvents.playerChanged, state);
@@ -168,6 +175,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
+    // Spellcraft is a modal workshop. Freeze world simulation while it is open so
+    // the browser can spend its frame budget on the DOM menu instead of animating
+    // the entire biome behind it.
+    if (this.spellcraftOpen) return;
+
     const seconds = Math.min(delta / 1000, 0.05);
     this.biomeRenderer.update(seconds);
     this.player.update(this.time.now);
@@ -180,6 +192,16 @@ export class GameScene extends Phaser.Scene {
     this.exitPortal.update(seconds);
     if (this.player.y > GAME_HEIGHT + 20) this.respawn();
   }
+
+  private readonly handleSpellcraftOpened = (): void => {
+    this.spellcraftOpen = true;
+    this.physics.world.pause();
+  };
+
+  private readonly handleSpellcraftClosed = (): void => {
+    this.spellcraftOpen = false;
+    this.physics.world.resume();
+  };
 
   private spawnEnemy(x: number, y: number): void {
     const enemy = new Enemy(this, x, y, FOREST_WRAITH);
