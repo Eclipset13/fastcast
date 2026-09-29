@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/combat_overlay.gd" id="1_overlay_script"]
+
+[node name="CombatOverlay" type="CanvasLayer"]
+layer = 80
+script = ExtResource("1_overlay_script")
+
+[node name="Root" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+
+[node name="Shade" type="ColorRect" parent="Root"]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+color = Color(0.015, 0.025, 0.03, 0.72)
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 55.0
+offset_right = 402.0
+offset_bottom = 215.0
+
+[node name="Margin" type="MarginContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "ENCOUNTER"
+horizontal_alignment = 1
+
+[node name="EnemyName" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "FOREST SAVAGE"
+horizontal_alignment = 1
+
+[node name="EnemyHP" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "HP  58 / 58"
+horizontal_alignment = 1
+
+[node name="EnemyStats" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "ATK 9   STRIKE 3.4s   XP 42"
+horizontal_alignment = 1
+
+[node name="Divider" type="HSeparator" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="Status" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Typing combat is the next migration step."
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Root/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 7
+text = "ESC  return to forest"
+horizontal_alignment = 1

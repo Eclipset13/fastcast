@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/world/forest_platform.tscn" id="3_platform"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/ground/ground-main.png" id="4_ground"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/forest_savage.tscn" id="5_forest_savage"]
+[ext_resource type="PackedScene" path="res://scenes/ui/combat_overlay.tscn" id="6_combat_overlay"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(2600, 44)
@@ -195,3 +196,6 @@ offset_bottom = 266.0
 theme_override_colors/font_color = Color(0.78, 0.88, 0.8, 0.85)
 theme_override_font_sizes/font_size = 7
 text = "A/D move   Space jump   Shift dash"
+
+
+[node name="CombatOverlay" parent="." instance=ExtResource("6_combat_overlay")]

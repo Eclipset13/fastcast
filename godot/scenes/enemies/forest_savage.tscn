@@ -12,9 +12,12 @@ size = Vector2(284, 48)
 [node name="ForestSavage" type="CharacterBody2D"]
 script = ExtResource("1_enemy_script")
 floor_stop_on_slope = true
+z_index = 20
 
 [node name="Visual" type="Sprite2D" parent="."]
 texture = ExtResource("2_idle")
+region_enabled = true
+region_rect = Rect2(0, 0, 461, 461)
 position = Vector2(0, -6)
 scale = Vector2(0.0780911, 0.0780911)
 

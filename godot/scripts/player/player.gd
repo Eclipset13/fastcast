@@ -18,6 +18,7 @@ const MAGE_JUMP := preload("res://assets/characters/mage/mage-jump.png")
 
 @onready var _visual: Sprite2D = $Visual
 
+var _control_enabled: bool = true
 var _facing: float = 1.0
 var _air_dash_available: bool = true
 var _dash_time_left: float = 0.0
@@ -33,7 +34,25 @@ func _ready() -> void:
 	_show_idle()
 
 
+func set_control(enabled: bool) -> void:
+	_control_enabled = enabled
+	_jump_requested = false
+	_dash_requested = false
+	_dash_time_left = 0.0
+	if not enabled:
+		velocity = Vector2.ZERO
+		_run_animation_time = 0.0
+		_show_idle()
+
+
+func face_toward(world_x: float) -> void:
+	_facing = -1.0 if world_x < global_position.x else 1.0
+	_visual.flip_h = _facing < 0.0
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if not _control_enabled:
+		return
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		if key_event.pressed and not key_event.echo:
@@ -44,6 +63,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not _control_enabled:
+		velocity = Vector2.ZERO
+		return
+
 	_dash_cooldown_left = maxf(_dash_cooldown_left - delta, 0.0)
 
 	var move_input := _get_move_input()
@@ -122,7 +145,7 @@ func _show_idle() -> void:
 
 func _show_run_frame(frame: int) -> void:
 	var column := frame % 4
-	var row := frame / 4
+	var row := frame >> 2
 	var crop_y := 120.0 if row == 0 else 90.0
 	_visual.texture = MAGE_RUN
 	_visual.region_rect = Rect2(
@@ -136,7 +159,7 @@ func _show_run_frame(frame: int) -> void:
 
 func _show_jump_frame(frame: int) -> void:
 	var column := frame % 4
-	var row := frame / 4
+	var row := frame >> 2
 	var row_offset := 0.0 if row == 0 else -10.0
 	_visual.texture = MAGE_JUMP
 	_visual.region_rect = Rect2(
