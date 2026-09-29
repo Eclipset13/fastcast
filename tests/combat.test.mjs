@@ -6,6 +6,7 @@ import { createServer } from 'vite';
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 after(() => server.close());
 const { DefenseTiming } = await server.ssrLoadModule('/src/game/combat/DefenseTiming.ts');
+const { DefenseStrike } = await server.ssrLoadModule('/src/game/combat/DefenseStrike.ts');
 const { TypingParser } = await server.ssrLoadModule('/src/game/systems/TypingParser.ts');
 const { selectDeckSpell } = await server.ssrLoadModule('/src/game/combat/SpellSelection.ts');
 const { createPlayerState } = await server.ssrLoadModule('/src/game/systems/Progression.ts');
@@ -36,6 +37,67 @@ test('ring has a full warning, shrinks linearly, and holds at target through gra
   assert.equal(qte.progress(2900), 0.5);
   assert.equal(qte.progress(3400), 1);
   assert.equal(qte.progress(3590), 1);
+});
+
+test('successful defense keeps one digit and one timing object until impact', () => {
+  const timing = new DefenseTiming('4', 5000, 1000, 200);
+  const strike = new DefenseStrike(timing);
+  assert.equal(strike.press('4', 4910), 'perfect');
+  for (const now of [4920, 4980, 5000, 5100]) {
+    strike.update(now);
+    assert.equal(strike.timing, timing);
+    assert.equal(strike.timing.digit, '4');
+    assert.equal(strike.result, 'perfect');
+    assert.equal(strike.consumeResolution(now, 430), null);
+  }
+  strike.reachImpact(5201);
+  assert.equal(strike.consumeResolution(5201, 430), 'perfect');
+  assert.equal(strike.timing.digit, '4');
+});
+
+test('wrong defense digit fails without replacing the advertised digit', () => {
+  const timing = new DefenseTiming('4', 5000, 1000, 200);
+  const strike = new DefenseStrike(timing);
+  assert.equal(strike.press('7', 5000), 'failed');
+  assert.equal(strike.timing, timing);
+  assert.equal(strike.timing.digit, '4');
+  assert.equal(strike.consumeResolution(5000, 430), null);
+});
+
+test('timeout remains on the same strike until impact and applies once', () => {
+  const timing = new DefenseTiming('4', 5000, 1000, 200);
+  const strike = new DefenseStrike(timing);
+  assert.equal(strike.update(5201), 'failed');
+  assert.equal(strike.timing, timing);
+  assert.equal(strike.consumeResolution(5201, 430), null);
+  strike.reachImpact(5201);
+  assert.equal(strike.consumeResolution(5201, 430), 'failed');
+  assert.equal(strike.consumeResolution(5202, 430), null);
+  assert.equal(strike.consumeResolution(5400, 430), null);
+});
+
+test('a new strike can begin only after the previous result display completes', () => {
+  const first = new DefenseStrike(new DefenseTiming('4', 5000, 1000, 200));
+  first.press('4', 5000);
+  first.reachImpact(5201);
+  assert.equal(first.consumeResolution(5201, 430), 'perfect');
+  assert.equal(first.clearIfReady(5630), false);
+  assert.equal(first.clearIfReady(5631), true);
+  const second = new DefenseStrike(new DefenseTiming('7', 9000, 1000, 200));
+  assert.notEqual(second.timing, first.timing);
+  assert.equal(second.timing.digit, '7');
+});
+
+test('failed strike cannot produce duplicate damage resolutions', () => {
+  const strike = new DefenseStrike(new DefenseTiming('4', 5000, 1000, 200));
+  let damageApplications = 0;
+  strike.update(5201);
+  strike.reachImpact(5201);
+  for (const now of [5201, 5202, 5300, 5600]) {
+    if (strike.consumeResolution(now, 430) === 'failed') damageApplications++;
+    strike.update(now);
+  }
+  assert.equal(damageApplications, 1);
 });
 
 test('random selection uses only learned equipped affordable spells at current rank', () => {
