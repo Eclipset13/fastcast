@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player_script"]
+[ext_resource type="Texture2D" path="res://assets/characters/mage/mage-walk.png" id="2_mage_walk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(14, 24)
@@ -8,9 +9,12 @@ size = Vector2(14, 24)
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_player_script")
 
-[node name="Visual" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-7, -12, 7, -12, 7, 12, -7, 12)
-color = Color(0.95, 0.78, 0.25, 1)
+[node name="Visual" type="Sprite2D" parent="."]
+texture = ExtResource("2_mage_walk")
+region_enabled = true
+region_rect = Rect2(362, 0, 362, 543)
+position = Vector2(0, -6)
+scale = Vector2(0.0662983, 0.0662983)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_player")
