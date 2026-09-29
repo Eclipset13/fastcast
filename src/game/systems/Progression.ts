@@ -15,6 +15,7 @@ export function createPlayerState(classDef: ClassDefinition): PlayerState {
     resource: classDef.resource.max, maxResource: classDef.resource.max,
     focus: 0,
     abilityLevels: Object.fromEntries(classDef.abilities.map((ability) => [ability.id, 1])),
+    selectedAbilityRanks: Object.fromEntries(classDef.abilities.map((ability) => [ability.id, 1])),
     learnedAbilityIds,
     deckAbilityIds: starterDeck.filter((id) => learnedAbilityIds.includes(id)),
     unlocks: { doubleJump: false, longDash: false },
@@ -68,6 +69,22 @@ export function upgradeAbility(player: PlayerState, ability: AbilityDefinition):
   if (cost === null || !canUpgrade(player, ability)) return false;
   player.skillPoints -= cost;
   player.abilityLevels[ability.id] += 1;
+  // Newly unlocked rank becomes active by default, while older ranks remain selectable in Deck.
+  player.selectedAbilityRanks[ability.id] = player.abilityLevels[ability.id];
+  return true;
+}
+
+export function selectedAbilityRank(player: PlayerState, ability: AbilityDefinition): number {
+  const unlocked = Math.max(1, Math.min(maxRank(ability), player.abilityLevels[ability.id] ?? 1));
+  const selected = player.selectedAbilityRanks[ability.id] ?? unlocked;
+  return Math.max(1, Math.min(unlocked, selected));
+}
+
+export function selectAbilityRank(player: PlayerState, ability: AbilityDefinition, rank: number): boolean {
+  if (!isAbilityLearned(player, ability)) return false;
+  const unlocked = Math.max(1, Math.min(maxRank(ability), player.abilityLevels[ability.id] ?? 1));
+  if (!Number.isInteger(rank) || rank < 1 || rank > unlocked) return false;
+  player.selectedAbilityRanks[ability.id] = rank;
   return true;
 }
 
