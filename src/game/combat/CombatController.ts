@@ -175,7 +175,9 @@ export class CombatController {
         (this.enemy.definition.perfectWindow ?? T.perfectWindow) * 1000);
       this.defenseResolution = null;
       this.attackImpactReached = false;
-      this.enemy.prepareAttack(this.nextAttackAt, () => this.reachAttackImpact());
+      // Let the full +/- timing window remain valid, then land the authored impact pose.
+      // This keeps late-but-valid defenses possible without applying damage before the club connects.
+      this.enemy.prepareAttack(this.defense.expiresAt + 1, () => this.reachAttackImpact());
     }
     if (this.defense?.result === 'pending' && this.defense.update(now) === 'failed') this.resolveDefense('failed');
   }
@@ -189,6 +191,9 @@ export class CombatController {
   private reachAttackImpact(): void {
     if (!this.active || this.ending) return;
     this.attackImpactReached = true;
+
+    // No input by the visual impact means the defense window has elapsed.
+    if (this.defense?.result === 'pending') this.resolveDefense('failed');
     if (this.defenseResolution) this.applyDefenseResolution();
   }
 
@@ -312,6 +317,7 @@ export class CombatController {
     this.endAt = this.scene.time.now + T.endDelay;
     this.defense = null;
     this.defenseResolution = null;
+    this.attackImpactReached = false;
     this.enemy.cancelAttack();
     this.parser.reset();
     this.dotTicks = 0;
@@ -330,7 +336,7 @@ export class CombatController {
   private emitChange(): void { events.emit(GameEvents.battleChanged, this.snapshot()); }
   destroy(): void {
     this.active = false;
-    this.parser.reset(); this.defense = null; this.defenseResolution = null; this.dotTicks = 0;
+    this.parser.reset(); this.defense = null; this.defenseResolution = null; this.attackImpactReached = false; this.dotTicks = 0;
     if (this.enemy) this.enemy.cancelAttack();
     this.presentation.destroy();
     events.emit(GameEvents.battleExited);
