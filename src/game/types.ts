@@ -44,7 +44,10 @@ export interface PlayerState {
   resource: number;
   maxResource: number;
   focus: number;
+  /** Highest rank permanently unlocked for each ability. */
   abilityLevels: Record<string, number>;
+  /** Rank currently equipped/used in combat for each ability. */
+  selectedAbilityRanks: Record<string, number>;
   learnedAbilityIds: string[];
   deckAbilityIds: string[];
   unlocks: { doubleJump: boolean; longDash: boolean };
@@ -75,6 +78,8 @@ export interface WordDefinition {
 
 export interface SpellCandidate {
   ability: AbilityDefinition;
+  /** Rank selected for this equipped spell, independent from the highest unlocked rank. */
+  rank: number;
   word: WordDefinition;
   affordable: boolean;
 }

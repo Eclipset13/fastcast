@@ -15,6 +15,8 @@ import {
   equipAbility,
   isAbilityLearned,
   learnAbility,
+  selectAbilityRank,
+  selectedAbilityRank,
   unequipAbility,
   upgradeAbility,
 } from '../game/systems/Progression';
@@ -261,12 +263,15 @@ export class GameUI {
 
   private getSpellcraftRenderKey(player: PlayerState): string {
     const levels = player.classDef.abilities.map((ability) => `${ability.id}:${player.abilityLevels[ability.id] ?? 1}`).join(',');
+    const selectedRanks = player.classDef.abilities.map((ability) =>
+      `${ability.id}:${selectedAbilityRank(player, ability)}`).join(',');
     return [
       this.spellcraftTab,
       player.skillPoints,
       player.learnedAbilityIds.join(','),
       player.deckAbilityIds.join(','),
       levels,
+      selectedRanks,
     ].join('|');
   }
 
@@ -299,15 +304,27 @@ export class GameUI {
           <div><strong>Empty slot</strong><p>Equip a learned spell below.</p></div>
         </article>`;
       }
-      const level = player.abilityLevels[ability.id];
-      const word = buildWord(ability, level).full;
+      const level = player.abilityLevels[ability.id] ?? 1;
+      const activeRank = selectedAbilityRank(player, ability);
+      const word = buildWord(ability, activeRank).full;
+      const rankPicker = level > 1 ? `
+        <div class="deck-rank-picker" aria-label="Choose ${ability.name} version">
+          ${Array.from({ length: level }, (_, index) => {
+            const rank = index + 1;
+            const rankWord = buildWord(ability, rank).full;
+            return `<button type="button" class="${rank === activeRank ? 'active' : ''}"
+              data-rank-ability="${ability.id}" data-rank-value="${rank}"
+              title="Rank ${rank}: ${rankWord}" aria-pressed="${rank === activeRank}">R${rank}</button>`;
+          }).join('')}
+        </div>` : '';
       return `<article class="deck-slot">
         <span class="deck-slot-number">0${slot + 1}</span>
         ${this.abilityIcon(ability)}
         <div class="deck-slot-copy">
           <strong>${ability.name}</strong>
           <code>${word}</code>
-          <span>Rank ${level} / ${maxRank(ability)}</span>
+          <span>Using rank ${activeRank} · unlocked ${level} / ${maxRank(ability)}</span>
+          ${rankPicker}
         </div>
         <button class="quiet-button" data-unequip="${ability.id}">Remove</button>
       </article>`;
@@ -319,7 +336,7 @@ export class GameUI {
         const full = player.deckAbilityIds.length >= 6;
         return `<article class="reserve-spell">
           ${this.abilityIcon(ability)}
-          <div><strong>${ability.name}</strong><code>${buildWord(ability, player.abilityLevels[ability.id]).full}</code></div>
+          <div><strong>${ability.name}</strong><code>${buildWord(ability, selectedAbilityRank(player, ability)).full}</code></div>
           <button data-equip="${ability.id}" ${full ? 'disabled' : ''}>${full ? 'Free a slot' : 'Equip'}</button>
         </article>`;
       }).join('');
@@ -427,6 +444,17 @@ export class GameUI {
         if (ability && equipAbility(player, ability)) {
           events.emit(GameEvents.playerChanged, player);
           this.showToast(`${ability.name} equipped`);
+        }
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-rank-ability]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const ability = player.classDef.abilities.find((item) => item.id === button.dataset.rankAbility);
+        const rank = Number(button.dataset.rankValue);
+        if (ability && selectAbilityRank(player, ability, rank)) {
+          events.emit(GameEvents.playerChanged, player);
+          this.showToast(`${ability.name} · Rank ${rank} selected`);
         }
       });
     });

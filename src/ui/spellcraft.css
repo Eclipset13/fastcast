@@ -243,7 +243,7 @@
 
 #upgrade-dialog code {
   color: #f2d271;
-  font: 500 13px/1.25 'JetBrains Mono', monospace;
+  font: 500 13px/1.25 Silkscreen, monospace;
 }
 
 #upgrade-dialog .deck-slot-copy code {
@@ -413,7 +413,7 @@
 
 #upgrade-dialog .catalog-title > span:not(.rank-pips) {
   color: #89a5ad;
-  font: 500 10px/1 'JetBrains Mono', monospace;
+  font: 500 10px/1 Silkscreen, monospace;
 }
 
 #upgrade-dialog .catalog-copy code {
@@ -563,4 +563,45 @@
 
 #upgrade-dialog .spellcraft-icon img {
   transform: translateZ(0);
+}
+
+
+/* Deck rank/version selector: unlocked ranks stay available after upgrading. */
+#upgrade-dialog .deck-rank-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+#upgrade-dialog .deck-rank-picker button {
+  min-width: 30px;
+  min-height: 24px;
+  padding: 4px 7px;
+  border: 1px solid #405b68;
+  background: #091923;
+  color: #82979e;
+  font: 400 8px/1 Silkscreen, monospace;
+  letter-spacing: .02em;
+}
+
+#upgrade-dialog .deck-rank-picker button:hover {
+  border-color: #8eabb6;
+  color: #eef2ed;
+  background: #112631;
+}
+
+#upgrade-dialog .deck-rank-picker button.active {
+  border-color: #e0c25c;
+  color: #fff0ad;
+  background: #213027;
+  box-shadow: inset 0 -2px #b99432, 0 0 7px rgba(224, 194, 92, .18);
+}
+
+@media (max-width: 760px) {
+  #upgrade-dialog .deck-rank-picker button {
+    min-width: 28px;
+    min-height: 22px;
+    padding: 3px 6px;
+  }
 }
