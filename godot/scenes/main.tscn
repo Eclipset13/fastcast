@@ -4,30 +4,9 @@
 [ext_resource type="PackedScene" path="res://scenes/levels/emerald_forest.tscn" id="2_forest"]
 [ext_resource type="PackedScene" path="res://scenes/ui/world_hud.tscn" id="3_hud"]
 
-[node name="Main" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Main" type="Node"]
 script = ExtResource("1_main_script")
 
-[node name="World" type="SubViewportContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-stretch = true
-stretch_shrink = 3
-texture_filter = 2
-
-[node name="GameViewport" type="SubViewport" parent="World"]
-size = Vector2i(480, 270)
-render_target_update_mode = 4
-
-[node name="EmeraldForest" parent="World/GameViewport" instance=ExtResource("2_forest")]
+[node name="EmeraldForest" parent="." instance=ExtResource("2_forest")]
 
 [node name="HUD" parent="." instance=ExtResource("3_hud")]

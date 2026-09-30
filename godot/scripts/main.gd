@@ -1,6 +1,6 @@
-extends Control
+extends Node
 
-@onready var _forest: Node = $World/GameViewport/EmeraldForest
+@onready var _forest: Node = $EmeraldForest
 @onready var _hud: CanvasLayer = $HUD
 
 
