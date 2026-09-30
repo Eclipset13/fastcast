@@ -110,16 +110,6 @@ offset_top = 1.0
 offset_right = 257.0
 offset_bottom = 22.0
 
-[node name="Frame" type="TextureRect" parent="Root/Frame/Content/Header/SPBadge"]
-layout_mode = 0
-offset_right = 62.0
-offset_bottom = 21.0
-mouse_filter = 2
-texture = ExtResource("5_badge")
-expand_mode = 1
-stretch_mode = 0
-texture_filter = 1
-
 [node name="Rune" type="Polygon2D" parent="Root/Frame/Content/Header/SPBadge"]
 position = Vector2(11, 5)
 polygon = PackedVector2Array(3, 0, 5, 0, 5, 2, 7, 2, 7, 4, 9, 4, 9, 6, 7, 6, 7, 8, 5, 8, 5, 10, 3, 10, 3, 8, 1, 8, 1, 6, -1, 6, -1, 4, 1, 4, 1, 2, 3, 2)
@@ -142,9 +132,10 @@ horizontal_alignment = 2
 
 [node name="Close" type="Button" parent="Root/Frame/Content/Header"]
 layout_mode = 0
-offset_left = 264.0
-offset_right = 284.0
-offset_bottom = 20.0
+offset_left = 266.0
+offset_top = 1.0
+offset_right = 283.0
+offset_bottom = 18.0
 theme_override_fonts/font = ExtResource("3_bold")
 theme_override_colors/font_color = Color(0.91, 0.94, 0.92, 1)
 theme_override_font_sizes/font_size = 7
