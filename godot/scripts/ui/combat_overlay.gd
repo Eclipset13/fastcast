@@ -63,7 +63,12 @@ func set_player_state(_hp: int, _max_hp: int, _mana: float, _max_mana: int) -> v
 
 
 func set_spell(spell_id: String, spell_name: String, word: String, typed_count: int) -> void:
-	_icon.texture = SPELL_TEXTURES.get(spell_id)
+	var texture: Texture2D = SPELL_TEXTURES.get(spell_id) as Texture2D
+	if texture == null:
+		var path := "res://assets/moves/mage/%s.png" % spell_id
+		if ResourceLoader.exists(path):
+			texture = load(path) as Texture2D
+	_icon.texture = texture
 	_icon.visible = _icon.texture != null
 	_spell_name.text = spell_name.to_upper()
 	_hint.text = "TYPE TO CAST"

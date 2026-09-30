@@ -5,8 +5,22 @@ const SPELL_COLORS := {
 	"fireball": Color(1.0, 0.416, 0.196, 1.0),
 	"ice-spike": Color(0.439, 0.812, 1.0, 1.0),
 	"mend": Color(0.447, 0.929, 0.553, 1.0),
+	"void-rift": Color(0.604, 0.361, 1.0, 1.0),
+	"moon-slice": Color(0.91, 0.945, 1.0, 1.0),
+	"arc-volley": Color(0.965, 0.847, 0.627, 1.0),
 	"aegis": Color(0.514, 0.788, 1.0, 1.0),
+	"hourglass": Color(0.918, 0.769, 0.361, 1.0),
+	"ascend": Color(0.663, 0.91, 1.0, 1.0),
+	"blood-crescent": Color(1.0, 0.302, 0.369, 1.0),
+	"venom": Color(0.494, 0.91, 0.239, 1.0),
+	"arcane-bind": Color(0.733, 0.443, 1.0, 1.0),
+	"nova": Color(1.0, 0.706, 0.31, 1.0),
 	"gale": Color(0.741, 0.918, 1.0, 1.0),
+	"frost-shards": Color(0.396, 0.749, 1.0, 1.0),
+	"phase": Color(0.655, 0.475, 1.0, 1.0),
+	"judgment": Color(1.0, 0.886, 0.565, 1.0),
+	"soulflame": Color(0.718, 0.361, 1.0, 1.0),
+	"astral-bloom": Color(1.0, 0.561, 0.855, 1.0),
 }
 
 var _player: CharacterBody2D = null
@@ -72,6 +86,12 @@ func cast_spell(spell_id: String, kind: String, amount: int) -> void:
 	if kind == "guard":
 		_halo(player_point + Vector2(0.0, 4.0), color, 20.0)
 		_float_text(_player.global_position + Vector2(0.0, -27.0), "WARD", color)
+		return
+
+	if kind == "utility":
+		_halo(player_point + Vector2(0.0, 4.0), color, 22.0)
+		_float_text(_player.global_position + Vector2(0.0, -27.0), "TIME", color)
+		_flash_visual(_player, color, 0.14)
 		return
 
 	var target := _enemy.global_position + Vector2(0.0, -8.0)

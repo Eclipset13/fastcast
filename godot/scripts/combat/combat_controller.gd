@@ -27,14 +27,10 @@ var player_hp: int = PLAYER_BASE_HP
 var player_max_hp: int = PLAYER_BASE_HP
 var mana: float = float(PLAYER_BASE_MANA)
 var max_mana: int = PLAYER_BASE_MANA
-var spell_ranks: Dictionary = {
-	"spark": 1,
-	"fireball": 1,
-	"ice-spike": 1,
-	"mend": 1,
-	"aegis": 1,
-	"gale": 1,
-}
+var spell_ranks: Dictionary = {}
+var selected_spell_ranks: Dictionary = {}
+var learned_spell_ids: Array[String] = []
+var deck_spell_ids: Array[String] = []
 
 var _player: CharacterBody2D = null
 var _enemy: CharacterBody2D = null
@@ -54,6 +50,9 @@ var _input_enabled_at: float = 0.0
 var _next_attack_at: float = 0.0
 var _pending_attack_delay: float = 0.0
 var _guard: float = 0.0
+var _dot_ticks: int = 0
+var _dot_damage: float = 0.0
+var _dot_at: float = 0.0
 
 var _defense_active: bool = false
 var _defense_digit: String = ""
@@ -72,9 +71,20 @@ var _victory_xp: int = 0
 func _ready() -> void:
 	_rng.randomize()
 
+	for spell in MageSpells.all_spells():
+		var spell_id := String(spell["id"])
+		spell_ranks[spell_id] = 1
+		selected_spell_ranks[spell_id] = 1
+
+	learned_spell_ids = MageSpells.starter_deck_ids()
+	deck_spell_ids = MageSpells.starter_deck_ids()
+
 
 func start(enemy: CharacterBody2D, player: CharacterBody2D, overlay: CanvasLayer) -> void:
 	if active or enemy == null or bool(enemy.get("defeated")):
+		return
+	if not _has_usable_deck():
+		enemy.call("cancel_encounter_request")
 		return
 
 	active = true
@@ -97,6 +107,9 @@ func start(enemy: CharacterBody2D, player: CharacterBody2D, overlay: CanvasLayer
 	_previous_spell_id = ""
 	_guard = 0.0
 	_pending_attack_delay = 0.0
+	_dot_ticks = 0
+	_dot_damage = 0.0
+	_dot_at = 0.0
 	_reset_defense()
 
 	var now := _now()
@@ -132,6 +145,10 @@ func _process(delta: float) -> void:
 
 	if _spell.is_empty() and now >= _next_spell_at:
 		_choose_spell(now)
+
+	_update_dot(now)
+	if _ending:
+		return
 
 	_update_defense(now)
 	_refresh_ui()
@@ -186,10 +203,21 @@ func _handle_letter(character: String) -> void:
 
 func _choose_spell(now: float) -> void:
 	var affordable: Array = []
-	for base_spell in MageSpells.starter_deck():
-		var spell_id := String(base_spell["id"])
-		var rank := int(spell_ranks.get(spell_id, 1))
-		var spell: Dictionary = MageSpells.at_rank(base_spell, rank)
+	for spell_id in deck_spell_ids:
+		if not learned_spell_ids.has(spell_id):
+			continue
+
+		var base_spell := MageSpells.find_spell(spell_id)
+		if base_spell.is_empty():
+			continue
+
+		var unlocked_rank := get_spell_rank(spell_id)
+		var selected_rank := clampi(
+			int(selected_spell_ranks.get(spell_id, unlocked_rank)),
+			1,
+			unlocked_rank
+		)
+		var spell: Dictionary = MageSpells.at_rank(base_spell, selected_rank)
 		if float(spell["cost"]) <= mana:
 			affordable.append(spell)
 
@@ -212,10 +240,17 @@ func _choose_spell(now: float) -> void:
 	_spell = choices[_rng.randi_range(0, choices.size() - 1)].duplicate(true)
 	_previous_spell_id = String(_spell["id"])
 	_parser.select(String(_spell["word"]))
-	_overlay.call("set_spell", String(_spell["id"]), String(_spell["name"]), String(_spell["word"]), 0)
+	_overlay.call(
+		"set_spell",
+		String(_spell["id"]),
+		String(_spell["name"]),
+		String(_spell["word"]),
+		0
+	)
 
 
 func _cast_spell(result: Dictionary) -> void:
+	var spell_id := String(_spell["id"])
 	var spell_name := String(_spell["name"])
 	var kind := String(_spell["kind"])
 	var multiplier := float(result.get("multiplier", 1.0))
@@ -227,41 +262,80 @@ func _cast_spell(result: Dictionary) -> void:
 		float(_spell["power"]) * multiplier * (1.0 + 0.06 * float(player_level - 1))
 	))
 
+	var self_cost := int(_spell.get("self_cost", 0))
+	if self_cost > 0:
+		var paid := mini(self_cost, maxi(0, player_hp - 1))
+		player_hp -= paid
+		if _presentation != null and paid > 0:
+			_presentation.call("damage_player", paid, false)
+
 	if kind == "heal":
 		var healed := mini(power, player_max_hp - player_hp)
 		player_hp += healed
 		if _presentation != null:
-			_presentation.call("cast_spell", String(_spell["id"]), kind, healed)
+			_presentation.call("cast_spell", spell_id, kind, healed)
 		_overlay.call("show_feedback", "%s · +%d HP%s" % [
 			spell_name,
 			healed,
 			_speed_text(cps),
 		])
 	elif kind == "guard":
-		_guard = float(_spell["guard"])
+		_guard = float(_spell.get("guard", 0.0))
 		if _presentation != null:
-			_presentation.call("cast_spell", String(_spell["id"]), kind, 0)
+			_presentation.call("cast_spell", spell_id, kind, 0)
 		_overlay.call("show_feedback", "%s · WARD %d%%" % [
 			spell_name,
 			int(round(_guard * 100.0)),
 		])
+	elif kind == "utility":
+		var utility_delay := float(_spell.get("delay", 0.0))
+		if utility_delay > 0.0:
+			_delay_attack(utility_delay)
+		if _presentation != null:
+			_presentation.call("cast_spell", spell_id, kind, 0)
+		_overlay.call("show_feedback", "%s · DELAY %.1fs" % [
+			spell_name,
+			utility_delay,
+		])
 	else:
 		_enemy.call("take_damage", power)
 		if _presentation != null:
-			_presentation.call("cast_spell", String(_spell["id"]), kind, power)
+			_presentation.call("cast_spell", spell_id, kind, power)
 		_overlay.call("show_feedback", "%s · %d damage%s" % [
 			spell_name,
 			power,
 			_speed_text(cps),
 		])
 
+		if kind == "hybrid":
+			var healed := mini(power, player_max_hp - player_hp)
+			player_hp += healed
+
 		var delay := float(_spell.get("delay", 0.0))
 		if delay > 0.0:
 			_delay_attack(delay)
 
+		var dot_total := float(_spell.get("dot_total", 0.0))
+		if dot_total > 0.0:
+			_dot_ticks = 4
+			_dot_damage = dot_total / 4.0
+			_dot_at = _now() + 0.55
+
 	_parser.reset()
 	_spell.clear()
 	_next_spell_at = _now() + SPELL_DELAY
+
+	if int(_enemy.get("hp")) <= 0:
+		_finish(true)
+
+
+func _update_dot(now: float) -> void:
+	if _dot_ticks <= 0 or now < _dot_at or _enemy == null:
+		return
+
+	_dot_ticks -= 1
+	_dot_at = now + 0.55
+	_enemy.call("take_damage", int(round(_dot_damage)))
 
 	if int(_enemy.get("hp")) <= 0:
 		_finish(true)
@@ -381,6 +455,8 @@ func _finish(victory: bool) -> void:
 	_ending_timer = 0.85
 	_parser.reset()
 	_spell.clear()
+	_dot_ticks = 0
+	_dot_damage = 0.0
 	_enemy.call("cancel_attack")
 
 	if victory:
@@ -457,13 +533,28 @@ func _restore_camera() -> void:
 	tween.tween_property(_camera, "zoom", _saved_camera_zoom, 0.38)
 
 
+func _has_usable_deck() -> bool:
+	for spell_id in deck_spell_ids:
+		if learned_spell_ids.has(spell_id):
+			return true
+	return false
+
+
 func get_spell_rank(spell_id: String) -> int:
 	return int(spell_ranks.get(spell_id, 1))
 
 
+func get_selected_spell_rank(spell_id: String) -> int:
+	return clampi(
+		int(selected_spell_ranks.get(spell_id, get_spell_rank(spell_id))),
+		1,
+		get_spell_rank(spell_id)
+	)
+
+
 func get_spell_upgrade_cost(spell_id: String):
 	var spell := MageSpells.find_spell(spell_id)
-	if spell.is_empty():
+	if spell.is_empty() or not learned_spell_ids.has(spell_id):
 		return null
 	return MageSpells.upgrade_cost(spell, get_spell_rank(spell_id))
 
@@ -472,25 +563,98 @@ func get_spell_preview(spell_id: String) -> Dictionary:
 	var spell := MageSpells.find_spell(spell_id)
 	if spell.is_empty():
 		return {}
+
 	var rank := get_spell_rank(spell_id)
 	var current := MageSpells.at_rank(spell, rank)
 	var next := {}
 	if rank < MageSpells.max_rank(spell):
 		next = MageSpells.at_rank(spell, rank + 1)
+
 	return {
 		"id": spell_id,
 		"name": String(spell["name"]),
 		"rank": rank,
+		"selected_rank": get_selected_spell_rank(spell_id),
 		"max_rank": MageSpells.max_rank(spell),
 		"current": current,
+		"selected": MageSpells.at_rank(spell, get_selected_spell_rank(spell_id)),
 		"next": next,
 		"cost": get_spell_upgrade_cost(spell_id),
+		"unlock_cost": MageSpells.unlock_cost(spell),
+		"learned": learned_spell_ids.has(spell_id),
+		"equipped": deck_spell_ids.has(spell_id),
 	}
+
+
+func get_catalog_spell_ids() -> Array[String]:
+	var result: Array[String] = []
+	for spell in MageSpells.all_spells():
+		result.append(String(spell["id"]))
+	return result
+
+
+func get_upgradeable_spell_ids() -> Array[String]:
+	return learned_spell_ids.duplicate()
+
+
+func get_learned_spell_ids() -> Array[String]:
+	return learned_spell_ids.duplicate()
+
+
+func get_deck_spell_ids() -> Array[String]:
+	return deck_spell_ids.duplicate()
+
+
+func learn_spell(spell_id: String) -> bool:
+	if learned_spell_ids.has(spell_id):
+		return false
+
+	var spell := MageSpells.find_spell(spell_id)
+	if spell.is_empty():
+		return false
+
+	var cost := MageSpells.unlock_cost(spell)
+	if skill_points < cost:
+		return false
+
+	skill_points -= cost
+	learned_spell_ids.append(spell_id)
+	return true
+
+
+func equip_spell(spell_id: String) -> bool:
+	if not learned_spell_ids.has(spell_id):
+		return false
+	if deck_spell_ids.has(spell_id) or deck_spell_ids.size() >= 6:
+		return false
+
+	deck_spell_ids.append(spell_id)
+	return true
+
+
+func unequip_spell(spell_id: String) -> bool:
+	var index := deck_spell_ids.find(spell_id)
+	if index < 0:
+		return false
+	deck_spell_ids.remove_at(index)
+	return true
+
+
+func select_spell_rank(spell_id: String, rank: int) -> bool:
+	if not learned_spell_ids.has(spell_id):
+		return false
+
+	var unlocked := get_spell_rank(spell_id)
+	if rank < 1 or rank > unlocked:
+		return false
+
+	selected_spell_ranks[spell_id] = rank
+	return true
 
 
 func upgrade_spell(spell_id: String) -> bool:
 	var spell := MageSpells.find_spell(spell_id)
-	if spell.is_empty():
+	if spell.is_empty() or not learned_spell_ids.has(spell_id):
 		return false
 
 	var rank := get_spell_rank(spell_id)
@@ -500,11 +664,8 @@ func upgrade_spell(spell_id: String) -> bool:
 
 	skill_points -= int(cost)
 	spell_ranks[spell_id] = rank + 1
+	selected_spell_ranks[spell_id] = rank + 1
 	return true
-
-
-func get_upgradeable_spell_ids() -> Array[String]:
-	return ["spark", "fireball", "ice-spike", "mend", "aegis", "gale"]
 
 
 func _gain_xp(amount: int) -> void:

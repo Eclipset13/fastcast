@@ -151,39 +151,20 @@ offset_right = 292.0
 offset_bottom = 49.0
 theme_override_constants/separation = 4
 
-[node name="Deck" type="Label" parent="Root/Frame/Content/Tabs"]
+[node name="Deck" type="Button" parent="Root/Frame/Content/Tabs"]
 custom_minimum_size = Vector2(92, 14)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_regular")
-theme_override_colors/font_color = Color(0.43, 0.52, 0.55, 1)
-theme_override_font_sizes/font_size = 5
 text = "DECK"
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="Learn" type="Label" parent="Root/Frame/Content/Tabs"]
+[node name="Learn" type="Button" parent="Root/Frame/Content/Tabs"]
 custom_minimum_size = Vector2(92, 14)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_regular")
-theme_override_colors/font_color = Color(0.43, 0.52, 0.55, 1)
-theme_override_font_sizes/font_size = 5
 text = "LEARN"
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="Upgrade" type="PanelContainer" parent="Root/Frame/Content/Tabs"]
+[node name="Upgrade" type="Button" parent="Root/Frame/Content/Tabs"]
 custom_minimum_size = Vector2(92, 14)
 layout_mode = 2
-theme_override_styles/panel = SubResource("Style_tab_active")
-
-[node name="Label" type="Label" parent="Root/Frame/Content/Tabs/Upgrade"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("3_bold")
-theme_override_colors/font_color = Color(0.96, 0.87, 0.63, 1)
-theme_override_font_sizes/font_size = 5
 text = "UPGRADE"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="SectionTitle" type="Label" parent="Root/Frame/Content"]
 layout_mode = 0
