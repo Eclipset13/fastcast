@@ -15,6 +15,7 @@ const DISPLAY_HEIGHT := 36.0
 const WALK_FPS := 10.0
 const ATTACK_FPS := 10.0
 const ATTACK_IMPACT_FRAME := 5
+const ENCOUNTER_HEIGHT_TOLERANCE := 8.0
 
 static var _idle_frame_cache: Dictionary = {}
 static var _walk_frames_cache: Array = []
@@ -57,10 +58,14 @@ var _attack_frames: Array = []
 var _idle_scale: float = 0.0
 var _walk_scale: float = 0.0
 var _attack_scale: float = 0.0
+var _encounter_candidate: CharacterBody2D = null
+var _encounter_request_pending: bool = false
+var _spawn_position: Vector2
 
 
 func _ready() -> void:
 	hp = max_hp
+	_spawn_position = global_position
 	_home_x = global_position.x
 	_direction = -1.0 if starts_facing_left else 1.0
 
@@ -74,6 +79,7 @@ func _ready() -> void:
 		return
 
 	_encounter_area.body_entered.connect(_on_encounter_body_entered)
+	_encounter_area.body_exited.connect(_on_encounter_body_exited)
 
 
 func _process(delta: float) -> void:
@@ -122,9 +128,12 @@ func _physics_process(delta: float) -> void:
 		_walk_time = 0.0
 		_show_idle()
 
+	_try_request_encounter()
+
 
 func set_combat_locked(locked: bool, player_x: float = global_position.x) -> void:
 	combat_locked = locked
+	_encounter_request_pending = false
 	velocity = Vector2.ZERO
 	_walk_time = 0.0
 	if locked:
@@ -168,12 +177,28 @@ func reset_enemy() -> void:
 	defeated = false
 	hp = max_hp
 	combat_locked = false
+	_encounter_request_pending = false
+	global_position = _spawn_position
+	_home_x = _spawn_position.x
+	velocity = Vector2.ZERO
 	visible = true
 	process_mode = Node.PROCESS_MODE_INHERIT
 	collision_layer = 1
 	collision_mask = 1
 	_attacking = false
 	_show_idle()
+
+
+func prepare_for_battle_position(world_position: Vector2) -> void:
+	global_position = world_position
+	velocity = Vector2.ZERO
+	_walk_time = 0.0
+	_encounter_request_pending = false
+	_show_idle()
+
+
+func cancel_encounter_request() -> void:
+	_encounter_request_pending = false
 
 
 func defeat() -> void:
@@ -256,10 +281,35 @@ func _update_facing() -> void:
 
 
 func _on_encounter_body_entered(body: Node) -> void:
-	if defeated or combat_locked:
+	if defeated or combat_locked or body.name != "Player":
 		return
-	if body.name != "Player":
+
+	_encounter_candidate = body as CharacterBody2D
+	_encounter_request_pending = false
+
+
+func _on_encounter_body_exited(body: Node) -> void:
+	if body != _encounter_candidate:
 		return
+
+	_encounter_candidate = null
+	_encounter_request_pending = false
+
+
+func _try_request_encounter() -> void:
+	if defeated or combat_locked or _encounter_request_pending:
+		return
+	if _encounter_candidate == null or not is_instance_valid(_encounter_candidate):
+		return
+	if not is_on_floor() or not _encounter_candidate.is_on_floor():
+		return
+
+	var standing_on_enemy := bool(_encounter_candidate.call("is_standing_on_body", self))
+	var same_height := absf(_encounter_candidate.global_position.y - global_position.y) <= ENCOUNTER_HEIGHT_TOLERANCE
+	if not same_height and not standing_on_enemy:
+		return
+
+	_encounter_request_pending = true
 	encounter_requested.emit(self)
 
 

@@ -5,11 +5,19 @@ const VIEW_WIDTH := 480.0
 const VIEW_HEIGHT := 270.0
 const GROUND_Y := 226.0
 
+const BODY_HALF_HEIGHT := 12.0
+const BATTLE_TARGET_SPACING := 132.0
+const BATTLE_MIN_SPACING := 24.0
+const BATTLE_SEARCH_RADIUS := 170.0
+const BATTLE_SAMPLE_STEP := 4.0
+const BATTLE_SURFACE_TOLERANCE := 5.0
+const BATTLE_EDGE_MARGIN := 18.0
+
 const BG_FAR := preload("res://assets/biomes/emerald-forest/bg-far.png")
 const BG_MID := preload("res://assets/biomes/emerald-forest/bg-mid.png")
 const BG_NEAR := preload("res://assets/biomes/emerald-forest/bg-near.png")
 
-@onready var _player = $Player
+@onready var _player: CharacterBody2D = $Player
 @onready var _combat_overlay = $CombatOverlay
 @onready var _combat_controller = $CombatController
 @onready var _controls_label: Label = $HUD/Controls
@@ -43,8 +51,95 @@ func _connect_encounters() -> void:
 			enemy.connect("encounter_requested", Callable(self, "_on_encounter_requested"))
 
 
-func _on_encounter_requested(enemy) -> void:
+func _on_encounter_requested(enemy: CharacterBody2D) -> void:
+	var standing_on_enemy := bool(_player.call("is_standing_on_body", enemy))
+	if standing_on_enemy and not _stage_stacked_encounter(enemy):
+		enemy.call("cancel_encounter_request")
+		return
+
 	_combat_controller.call("start", enemy, _player, _combat_overlay)
+
+
+func _stage_stacked_encounter(enemy: CharacterBody2D) -> bool:
+	var surface_y := enemy.global_position.y + BODY_HALF_HEIGHT
+	var center_x := enemy.global_position.x
+	var candidates: Array[Vector2] = []
+
+	var start_x := maxf(BATTLE_EDGE_MARGIN, center_x - BATTLE_SEARCH_RADIUS)
+	var end_x := minf(WORLD_WIDTH - BATTLE_EDGE_MARGIN, center_x + BATTLE_SEARCH_RADIUS)
+	var sample_count := int(floor((end_x - start_x) / BATTLE_SAMPLE_STEP)) + 1
+
+	for index in range(sample_count):
+		var x := start_x + float(index) * BATTLE_SAMPLE_STEP
+		var support := _find_battle_support(x, surface_y, enemy)
+		if support != null:
+			candidates.append(support)
+
+	if candidates.size() < 2:
+		return false
+
+	var best_left := Vector2.ZERO
+	var best_right := Vector2.ZERO
+	var best_spacing := -1.0
+	var best_center_error := INF
+
+	for left_index in range(candidates.size()):
+		for right_index in range(left_index + 1, candidates.size()):
+			var left := candidates[left_index]
+			var right := candidates[right_index]
+			var spacing := right.x - left.x
+			if spacing < BATTLE_MIN_SPACING or spacing > BATTLE_TARGET_SPACING + BATTLE_SAMPLE_STEP:
+				continue
+			if absf(left.y - right.y) > BATTLE_SURFACE_TOLERANCE:
+				continue
+
+			var pair_center := (left.x + right.x) * 0.5
+			var center_error := absf(pair_center - center_x)
+			var better_spacing := spacing > best_spacing + 0.1
+			var same_spacing_better_center := absf(spacing - best_spacing) <= 0.1 and center_error < best_center_error
+			if better_spacing or same_spacing_better_center:
+				best_spacing = spacing
+				best_center_error = center_error
+				best_left = left
+				best_right = right
+
+	if best_spacing < BATTLE_MIN_SPACING:
+		return false
+
+	var player_was_right := _player.global_position.x > enemy.global_position.x + 1.0
+	var player_position := best_right if player_was_right else best_left
+	var enemy_position := best_left if player_was_right else best_right
+
+	_player.call("prepare_for_battle_position", player_position)
+	enemy.call("prepare_for_battle_position", enemy_position)
+	return true
+
+
+func _find_battle_support(
+	x: float,
+	reference_surface_y: float,
+	enemy: CharacterBody2D
+):
+	var from := Vector2(x, reference_surface_y - 18.0)
+	var to := Vector2(x, reference_surface_y + 26.0)
+	var exclude: Array[RID] = [_player.get_rid(), enemy.get_rid()]
+	var query := PhysicsRayQueryParameters2D.create(from, to, 1, exclude)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+
+	var hit := get_world_2d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		return null
+
+	var collider = hit.get("collider")
+	if collider is CharacterBody2D:
+		return null
+
+	var hit_position: Vector2 = hit["position"]
+	if absf(hit_position.y - reference_surface_y) > BATTLE_SURFACE_TOLERANCE:
+		return null
+
+	return Vector2(x, hit_position.y - BODY_HALF_HEIGHT)
 
 
 func _on_battle_started() -> void:

@@ -61,6 +61,29 @@ func reset_to_spawn() -> void:
 	_show_idle()
 
 
+func prepare_for_battle_position(world_position: Vector2) -> void:
+	global_position = world_position
+	velocity = Vector2.ZERO
+	_dash_time_left = 0.0
+	_dash_cooldown_left = 0.0
+	_jump_requested = false
+	_dash_requested = false
+	_run_animation_time = 0.0
+	_show_idle()
+
+
+func is_standing_on_body(body: Node) -> bool:
+	if not is_on_floor():
+		return false
+
+	for index in range(get_slide_collision_count()):
+		var collision := get_slide_collision(index)
+		if collision.get_collider() == body and collision.get_normal().y < -0.7:
+			return true
+
+	return false
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not _control_enabled:
 		return
