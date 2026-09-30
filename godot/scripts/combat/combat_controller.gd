@@ -257,6 +257,7 @@ func _miscast(result: Dictionary) -> void:
 	player_hp = maxi(0, player_hp - damage)
 	if _presentation != null:
 		_presentation.call("damage_player", damage, false)
+	_overlay.call("flash_damage", false)
 
 	_overlay.call("show_feedback", "MISCAST · '%s' instead of '%s' · -%d HP" % [
 		wrong,
@@ -325,6 +326,7 @@ func _on_enemy_attack_impact() -> void:
 	if _defense_result == "perfect":
 		if _presentation != null:
 			_presentation.call("parry")
+		_overlay.call("flash_parry")
 		_overlay.call("show_feedback", "PERFECT · no damage")
 	else:
 		var raw_damage := float(_enemy.get("attack_damage")) * CRITICAL_MULTIPLIER
@@ -333,6 +335,7 @@ func _on_enemy_attack_impact() -> void:
 		_guard = 0.0
 		if _presentation != null:
 			_presentation.call("damage_player", damage, true)
+		_overlay.call("flash_damage", true)
 		_overlay.call("show_feedback", "Forest Savage strikes · -%d HP" % damage)
 
 	_defense_clear_at = now + DEFENSE_RESULT_TIME

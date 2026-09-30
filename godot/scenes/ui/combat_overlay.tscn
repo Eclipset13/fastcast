@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/combat_overlay.gd" id="1_overlay_script"]
 [ext_resource type="Script" path="res://scripts/ui/defense_ring.gd" id="2_ring_script"]
+[ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="3_silkscreen_regular"]
+[ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-700-normal.woff2" id="4_silkscreen_bold"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_bg"]
 bg_color = Color(0.027, 0.071, 0.098, 0.94)
@@ -21,6 +23,17 @@ border_color = Color(1, 0.57, 0.59, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_clear"]
 
+[sub_resource type="Shader" id="Shader_damage_vignette"]
+code = "shader_type canvas_item;\nuniform float strength : hint_range(0.0, 1.0) = 0.0;\nvoid fragment() {\n\tvec2 p = (UV - vec2(0.5)) * vec2(1.0, 0.78);\n\tfloat d = length(p);\n\tfloat edge = smoothstep(0.27, 0.61, d);\n\tfloat corners = smoothstep(0.36, 0.64, d);\n\tfloat alpha = max(edge * 0.78, corners) * strength;\n\tCOLOR = vec4(0.92, 0.015, 0.055, alpha);\n}\n"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_damage"]
+shader = SubResource("Shader_damage_vignette")
+shader_parameter/strength = 0.0
+
+[sub_resource type="Theme" id="Theme_battle"]
+default_font = ExtResource("3_silkscreen_regular")
+default_font_size = 8
+
 [node name="CombatOverlay" type="CanvasLayer"]
 layer = 80
 script = ExtResource("1_overlay_script")
@@ -32,6 +45,7 @@ anchors_preset = 0
 offset_right = 480.0
 offset_bottom = 270.0
 mouse_filter = 2
+theme = SubResource("Theme_battle")
 
 [node name="Vignette" type="ColorRect" parent="Root"]
 layout_mode = 0
@@ -39,6 +53,23 @@ offset_right = 480.0
 offset_bottom = 270.0
 mouse_filter = 2
 color = Color(0.01, 0.025, 0.04, 0.18)
+
+[node name="DamageFlash" type="ColorRect" parent="Root"]
+visible = false
+material = SubResource("ShaderMaterial_damage")
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+
+[node name="ParryFlash" type="ColorRect" parent="Root"]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(0.08, 0.62, 1, 1)
 
 [node name="EnemyBlock" type="VBoxContainer" parent="Root"]
 layout_mode = 0
@@ -51,6 +82,7 @@ alignment = 1
 
 [node name="EnemyName" type="Label" parent="Root/EnemyBlock"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_silkscreen_bold")
 theme_override_colors/font_color = Color(0.94, 0.97, 0.96, 1)
 theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.09, 1)
 theme_override_constants/shadow_offset_x = 1
@@ -107,6 +139,7 @@ stretch_mode = 5
 
 [node name="SpellName" type="Label" parent="Root/SpellBlock"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_silkscreen_bold")
 theme_override_colors/font_color = Color(0.94, 0.97, 0.96, 1)
 theme_override_colors/font_shadow_color = Color(0.02, 0.06, 0.09, 1)
 theme_override_constants/shadow_offset_x = 1
@@ -138,6 +171,7 @@ offset_bottom = 258.0
 
 [node name="Result" type="Label" parent="Root/DefenseBlock"]
 layout_mode = 0
+theme_override_fonts/font = ExtResource("4_silkscreen_bold")
 offset_right = 132.0
 offset_bottom = 16.0
 theme_override_colors/font_color = Color(0.74, 0.96, 1, 1)
@@ -155,6 +189,7 @@ script = ExtResource("2_ring_script")
 
 [node name="Digit" type="Label" parent="Root/DefenseBlock/Ring"]
 layout_mode = 0
+theme_override_fonts/font = ExtResource("4_silkscreen_bold")
 offset_right = 80.0
 offset_bottom = 80.0
 theme_override_colors/font_color = Color(0.95, 0.99, 1, 1)
