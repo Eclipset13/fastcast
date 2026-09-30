@@ -20,7 +20,9 @@ const BG_NEAR := preload("res://assets/biomes/emerald-forest/bg-near.png")
 @onready var _player: CharacterBody2D = $Player
 @onready var _combat_overlay = $CombatOverlay
 @onready var _combat_controller = $CombatController
-@onready var _controls_label: Label = $HUD/Controls
+@onready var _hud: CanvasLayer = $HUD
+@onready var _controls_label: Label = $HUD/Root/Controls
+@onready var _portal: Node2D = $Portals/ForestExitPortal
 
 var _parallax_layers: Array[Dictionary] = []
 
@@ -29,8 +31,12 @@ func _ready() -> void:
 	_create_backgrounds()
 	_configure_camera()
 	_connect_encounters()
+	_hud.call("bind_controller", _combat_controller)
+	_portal.call("bind_player", _player)
+	_portal.connect("enter_requested", Callable(self, "_on_portal_enter_requested"))
 	_combat_controller.connect("battle_started", Callable(self, "_on_battle_started"))
 	_combat_controller.connect("battle_finished", Callable(self, "_on_battle_finished"))
+	_refresh_room_progress()
 
 
 func _process(_delta: float) -> void:
@@ -154,8 +160,37 @@ func _on_battle_started() -> void:
 	_controls_label.visible = false
 
 
-func _on_battle_finished(_victory: bool, _xp: int) -> void:
+func _on_battle_finished(victory: bool, _xp: int) -> void:
 	_controls_label.visible = true
+	if victory:
+		_refresh_room_progress()
+
+
+func _refresh_room_progress() -> void:
+	var total: int = 0
+	var defeated: int = 0
+
+	for enemy in $Enemies.get_children():
+		if not (enemy is CharacterBody2D):
+			continue
+		total += 1
+		if bool(enemy.get("defeated")):
+			defeated += 1
+
+	if total > 0 and defeated >= total:
+		_hud.call("set_objective", "PORTAL AWAKENED")
+		_portal.call("activate")
+	else:
+		_hud.call(
+			"set_objective",
+			"DEFEAT THE FOREST SAVAGES %d / %d" % [defeated, total]
+		)
+
+
+func _on_portal_enter_requested() -> void:
+	if bool(_combat_controller.get("active")):
+		return
+	_hud.call("show_toast", "THE PATH BEYOND IS NOT YET FORMED.")
 
 
 func _configure_camera() -> void:

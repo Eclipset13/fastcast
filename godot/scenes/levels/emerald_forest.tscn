@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
@@ -16,7 +16,8 @@
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-d.png" id="14_tree_d"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/runestone-start.png" id="15_runestone"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/fallen-log-mid.png" id="16_fallen_log"]
-[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/portal/portal-frame-off.png" id="17_portal_frame"]
+[ext_resource type="PackedScene" path="res://scenes/ui/world_hud.tscn" id="17_world_hud"]
+[ext_resource type="PackedScene" path="res://scenes/world/forest_portal.tscn" id="18_portal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(2600, 44)
@@ -267,35 +268,13 @@ position = Vector2(1350, 166)
 
 [node name="Portals" type="Node2D" parent="."]
 
-[node name="ForestExitPortal" parent="Portals" instance=ExtResource("9_decoration")]
+[node name="ForestExitPortal" parent="Portals" instance=ExtResource("18_portal")]
 position = Vector2(2510, 237)
-texture = ExtResource("17_portal_frame")
-target_height = 202.0
-depth = 10
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(110, 208)
 
-[node name="HUD" type="CanvasLayer" parent="."]
-
-[node name="Location" type="Label" parent="HUD"]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 170.0
-offset_bottom = 26.0
-theme_override_colors/font_color = Color(0.86, 0.96, 0.84, 1)
-theme_override_font_sizes/font_size = 8
-text = "EMERALD FOREST"
-
-[node name="Controls" type="Label" parent="HUD"]
-offset_left = 8.0
-offset_top = 248.0
-offset_right = 420.0
-offset_bottom = 266.0
-theme_override_colors/font_color = Color(0.78, 0.88, 0.8, 0.85)
-theme_override_font_sizes/font_size = 7
-text = "A/D move   Space jump   Shift dash"
-
+[node name="HUD" parent="." instance=ExtResource("17_world_hud")]
 
 [node name="BattlePresentation" type="Node2D" parent="."]
 script = ExtResource("8_battle_presentation")
