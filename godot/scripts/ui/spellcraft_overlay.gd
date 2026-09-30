@@ -78,6 +78,7 @@ func _refresh() -> void:
 func _make_spell_card(spell_id: String, preview: Dictionary) -> Control:
 	var card := PanelContainer.new()
 	card.custom_minimum_size = Vector2(128.0, 58.0)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.add_theme_stylebox_override("panel", _card_style())
 
 	var margin := MarginContainer.new()
