@@ -31,6 +31,7 @@ var max_mana: int = PLAYER_BASE_MANA
 var _player: CharacterBody2D = null
 var _enemy: CharacterBody2D = null
 var _overlay: CanvasLayer = null
+var _presentation: Node2D = null
 var _camera: Camera2D = null
 var _saved_camera_position := Vector2.ZERO
 var _saved_camera_zoom := Vector2.ONE
@@ -75,6 +76,9 @@ func start(enemy: CharacterBody2D, player: CharacterBody2D, overlay: CanvasLayer
 	_player = player
 	_enemy = enemy
 	_overlay = overlay
+	_presentation = get_parent().get_node_or_null("BattlePresentation") as Node2D
+	if _presentation != null:
+		_presentation.call("begin", _player, _enemy)
 	_camera = _player.get_node_or_null("Camera2D") as Camera2D
 	if _camera != null:
 		_saved_camera_position = _camera.position
@@ -208,6 +212,8 @@ func _cast_spell(result: Dictionary) -> void:
 	if kind == "heal":
 		var healed := mini(power, player_max_hp - player_hp)
 		player_hp += healed
+		if _presentation != null:
+			_presentation.call("cast_spell", String(_spell["id"]), kind, healed)
 		_overlay.call("show_feedback", "%s · +%d HP%s" % [
 			spell_name,
 			healed,
@@ -215,12 +221,16 @@ func _cast_spell(result: Dictionary) -> void:
 		])
 	elif kind == "guard":
 		_guard = float(_spell["guard"])
+		if _presentation != null:
+			_presentation.call("cast_spell", String(_spell["id"]), kind, 0)
 		_overlay.call("show_feedback", "%s · WARD %d%%" % [
 			spell_name,
 			int(round(_guard * 100.0)),
 		])
 	else:
 		_enemy.call("take_damage", power)
+		if _presentation != null:
+			_presentation.call("cast_spell", String(_spell["id"]), kind, power)
 		_overlay.call("show_feedback", "%s · %d damage%s" % [
 			spell_name,
 			power,
@@ -245,6 +255,8 @@ func _miscast(result: Dictionary) -> void:
 	var expected := String(result.get("expected", "?"))
 	var damage := maxi(2, int(round(float(player_max_hp) * (0.05 + progress * 0.08))))
 	player_hp = maxi(0, player_hp - damage)
+	if _presentation != null:
+		_presentation.call("damage_player", damage, false)
 
 	_overlay.call("show_feedback", "MISCAST · '%s' instead of '%s' · -%d HP" % [
 		wrong,
@@ -311,12 +323,16 @@ func _on_enemy_attack_impact() -> void:
 		_defense_result = "failed"
 
 	if _defense_result == "perfect":
+		if _presentation != null:
+			_presentation.call("parry")
 		_overlay.call("show_feedback", "PERFECT · no damage")
 	else:
 		var raw_damage := float(_enemy.get("attack_damage")) * CRITICAL_MULTIPLIER
 		var damage := maxi(1, int(round(raw_damage * (1.0 - _guard))))
 		player_hp = maxi(0, player_hp - damage)
 		_guard = 0.0
+		if _presentation != null:
+			_presentation.call("damage_player", damage, true)
 		_overlay.call("show_feedback", "Forest Savage strikes · -%d HP" % damage)
 
 	_defense_clear_at = now + DEFENSE_RESULT_TIME
@@ -348,6 +364,8 @@ func _finish(victory: bool) -> void:
 
 	if victory:
 		_victory_xp = int(_enemy.get("xp_reward"))
+		if _presentation != null:
+			_presentation.call("enemy_death")
 		_gain_xp(_victory_xp)
 		_overlay.call("show_result", "VICTORY  +%d XP" % _victory_xp)
 	else:
@@ -371,6 +389,8 @@ func _complete_battle() -> void:
 		_enemy.call("set_combat_locked", false, _player.global_position.x)
 
 	_restore_camera()
+	if _presentation != null:
+		_presentation.call("end")
 	_player.call("set_control", true)
 	_overlay.call("close_overlay")
 
@@ -381,6 +401,7 @@ func _complete_battle() -> void:
 	_enemy = null
 	_player = null
 	_overlay = null
+	_presentation = null
 	_camera = null
 	_reset_defense()
 	battle_finished.emit(finished_victory, finished_xp)
