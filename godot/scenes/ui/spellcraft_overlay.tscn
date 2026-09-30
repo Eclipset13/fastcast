@@ -227,13 +227,14 @@ mouse_filter = 2
 [node name="Scroll" type="ScrollContainer" parent="Root/Frame/Content"]
 layout_mode = 0
 offset_top = 74.0
-offset_right = 292.0
+offset_right = 302.0
 offset_bottom = 195.0
 horizontal_scroll_mode = 0
 
 [node name="List" type="GridContainer" parent="Root/Frame/Content/Scroll"]
+custom_minimum_size = Vector2(292, 0)
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
 columns = 2
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 6
