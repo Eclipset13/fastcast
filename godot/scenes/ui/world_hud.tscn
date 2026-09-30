@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/world_hud.gd" id="1_hud_script"]
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="2_font_regular"]
@@ -7,7 +7,7 @@
 
 [sub_resource type="Theme" id="Theme_hud"]
 default_font = ExtResource("2_font_regular")
-default_font_size = 9
+default_font_size = 11
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.012, 0.078, 0.075, 0.70)
@@ -25,113 +25,103 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.12, 0.26, 0.20, 0.48)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orb"]
-bg_color = Color(0.012, 0.078, 0.09, 0.50)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.36, 0.51, 0.44, 0.75)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp_bg"]
-bg_color = Color(0.027, 0.094, 0.075, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40, 0.52, 0.41, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp_fill"]
-bg_color = Color(0.78, 0.655, 0.286, 1)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_objective"]
 bg_color = Color(0.012, 0.078, 0.075, 0.58)
 border_width_top = 1
 border_width_bottom = 1
-border_color = Color(0.36, 0.50, 0.40, 0.50)
+border_color = Color(0.36, 0.50, 0.40, 0.40)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toast"]
+bg_color = Color(0.012, 0.078, 0.075, 0.78)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.345, 0.49, 0.40, 0.9)
 
 [node name="WorldHUD" type="CanvasLayer"]
 layer = 40
 script = ExtResource("1_hud_script")
 
 [node name="Root" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 1440.0
-offset_bottom = 810.0
+layout_mode = 0
+offset_right = 1592.0
+offset_bottom = 902.0
 mouse_filter = 2
 theme = SubResource("Theme_hud")
 
 [node name="PlayerPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 22.0
-offset_right = 222.0
-offset_bottom = 71.0
+offset_right = 260.0
+offset_bottom = 64.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Inner" type="Panel" parent="Root/PlayerPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 259.0
+offset_bottom = 63.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_inner")
 
 [node name="Biome" type="Label" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 8.0
-offset_right = 186.0
-offset_bottom = 22.0
-theme_override_colors/font_color = Color(0.53, 0.69, 0.57, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+offset_left = 16.0
+offset_top = 9.0
+offset_right = 244.0
+offset_bottom = 25.0
+theme_override_colors/font_color = Color(0.529, 0.694, 0.573, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 12
 text = "EMERALD FOREST"
+horizontal_alignment = 1
 
 [node name="ClassRow" type="HBoxContainer" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 25.0
-offset_right = 186.0
-offset_bottom = 43.0
-theme_override_constants/separation = 7
+offset_left = 16.0
+offset_top = 29.0
+offset_right = 244.0
+offset_bottom = 52.0
+theme_override_constants/separation = 9
 
 [node name="Class" type="Label" parent="Root/PlayerPanel/ClassRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("3_font_bold")
 theme_override_colors/font_color = Color(0.906, 0.902, 0.71, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 14
 text = "RUNESINGER"
 
-[node name="Rune" type="Polygon2D" parent="Root/PlayerPanel"]
-position = Vector2(151, 32)
-polygon = PackedVector2Array(3, 0, 5, 0, 5, 2, 7, 2, 7, 3, 9, 3, 9, 5, 7, 5, 7, 7, 5, 7, 5, 9, 3, 9, 3, 7, 2, 7, 2, 5, 0, 5, 0, 3, 2, 3, 2, 2, 3, 2)
+[node name="RuneSlot" type="Control" parent="Root/PlayerPanel/ClassRow"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+
+[node name="Rune" type="Polygon2D" parent="Root/PlayerPanel/ClassRow/RuneSlot"]
+position = Vector2(0, 5)
+polygon = PackedVector2Array(4, 0, 6, 0, 6, 2, 8, 2, 8, 4, 10, 4, 10, 6, 8, 6, 8, 8, 6, 8, 6, 10, 4, 10, 4, 8, 2, 8, 2, 6, 0, 6, 0, 4, 2, 4, 2, 2, 4, 2)
 color = Color(0.443, 0.58, 0.427, 1)
 
 [node name="Level" type="Label" parent="Root/PlayerPanel/ClassRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.851, 0.624, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 13
 text = "LV 1"
 
 [node name="VineTL" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = -6.0
-offset_top = -6.0
-offset_right = 18.0
-offset_bottom = 18.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 24.0
+offset_bottom = 24.0
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -140,12 +130,12 @@ texture_filter = 1
 
 [node name="VineTR" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 180.0
-offset_top = -6.0
-offset_right = 204.0
-offset_bottom = 18.0
+offset_left = 236.0
+offset_top = -8.0
+offset_right = 268.0
+offset_bottom = 24.0
 rotation = 1.570796
-pivot_offset = Vector2(12, 12)
+pivot_offset = Vector2(16, 16)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -154,12 +144,12 @@ texture_filter = 1
 
 [node name="VineBL" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = -6.0
-offset_top = 31.0
-offset_right = 18.0
-offset_bottom = 55.0
+offset_left = -8.0
+offset_top = 40.0
+offset_right = 24.0
+offset_bottom = 72.0
 rotation = -1.570796
-pivot_offset = Vector2(12, 12)
+pivot_offset = Vector2(16, 16)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -168,12 +158,12 @@ texture_filter = 1
 
 [node name="VineBR" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 180.0
-offset_top = 31.0
-offset_right = 204.0
-offset_bottom = 55.0
+offset_left = 236.0
+offset_top = 40.0
+offset_right = 268.0
+offset_bottom = 72.0
 rotation = 3.141593
-pivot_offset = Vector2(12, 12)
+pivot_offset = Vector2(16, 16)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -181,96 +171,141 @@ stretch_mode = 0
 texture_filter = 1
 
 [node name="HeartRune" type="Polygon2D" parent="Root"]
-position = Vector2(237, 42)
-polygon = PackedVector2Array(3, 0, 5, 0, 5, 2, 7, 2, 7, 3, 9, 3, 9, 5, 7, 5, 7, 7, 5, 7, 5, 9, 3, 9, 3, 7, 2, 7, 2, 5, 0, 5, 0, 3, 2, 3, 2, 2, 3, 2)
+position = Vector2(280, 27)
+polygon = PackedVector2Array(4, 0, 6, 0, 6, 2, 8, 2, 8, 4, 10, 4, 10, 6, 8, 6, 8, 8, 6, 8, 6, 10, 4, 10, 4, 8, 2, 8, 2, 6, 0, 6, 0, 4, 2, 4, 2, 2, 4, 2)
 color = Color(0.443, 0.58, 0.427, 1)
 
 [node name="Hearts" type="HBoxContainer" parent="Root"]
 layout_mode = 0
-offset_left = 255.0
-offset_top = 34.0
-offset_right = 490.0
-offset_bottom = 58.0
-theme_override_constants/separation = 6
+offset_left = 304.0
+offset_top = 16.0
+offset_right = 616.0
+offset_bottom = 48.0
+theme_override_constants/separation = 8
 
-[node name="ManaFrame" type="Panel" parent="Root"]
+[node name="ManaFrame" type="Control" parent="Root"]
 layout_mode = 0
-offset_left = 507.0
-offset_top = 30.0
-offset_right = 725.0
-offset_bottom = 62.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_orb")
+offset_left = 636.0
+offset_top = 10.0
+offset_right = 924.0
+offset_bottom = 54.0
+
+[node name="Outer" type="Polygon2D" parent="Root/ManaFrame"]
+polygon = PackedVector2Array(6, 0, 282, 0, 282, 2, 286, 2, 286, 6, 288, 6, 288, 38, 286, 38, 286, 42, 282, 42, 282, 44, 6, 44, 6, 42, 2, 42, 2, 38, 0, 38, 0, 6, 2, 6, 2, 2, 6, 2)
+color = Color(0.36, 0.51, 0.44, 0.75)
+
+[node name="Inner" type="Polygon2D" parent="Root/ManaFrame"]
+position = Vector2(1, 1)
+polygon = PackedVector2Array(6, 0, 280, 0, 280, 2, 284, 2, 284, 6, 286, 6, 286, 36, 284, 36, 284, 40, 280, 40, 280, 42, 6, 42, 6, 40, 2, 40, 2, 36, 0, 36, 0, 6, 2, 6, 2, 2, 6, 2)
+color = Color(0.012, 0.078, 0.09, 0.50)
+
+[node name="Inset" type="Polygon2D" parent="Root/ManaFrame"]
+position = Vector2(3, 3)
+polygon = PackedVector2Array(5, 0, 277, 0, 277, 2, 281, 2, 281, 5, 283, 5, 283, 33, 281, 33, 281, 36, 277, 36, 277, 38, 5, 38, 5, 36, 2, 36, 2, 33, 0, 33, 0, 5, 2, 5, 2, 2, 5, 2)
+color = Color(0.125, 0.255, 0.224, 0.20)
 
 [node name="Orbs" type="HBoxContainer" parent="Root/ManaFrame"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 7.0
-offset_right = 208.0
-offset_bottom = 25.0
-theme_override_constants/separation = 8
+offset_left = 13.0
+offset_top = 10.0
+offset_right = 275.0
+offset_bottom = 34.0
+theme_override_constants/separation = 10
 
 [node name="ProgressPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 1024.0
-offset_top = 31.0
-offset_right = 1343.0
-offset_bottom = 62.0
+offset_left = 1090.0
+offset_top = 12.0
+offset_right = 1510.0
+offset_bottom = 52.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Inner" type="Panel" parent="Root/ProgressPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 419.0
+offset_bottom = 39.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_inner")
 
 [node name="XPLabel" type="Label" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 8.0
-offset_right = 30.0
-offset_bottom = 22.0
+offset_left = 12.0
+offset_top = 9.0
+offset_right = 36.0
+offset_bottom = 29.0
 theme_override_colors/font_color = Color(0.737, 0.749, 0.529, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 13
 text = "XP"
 
-[node name="XPBar" type="ProgressBar" parent="Root/ProgressPanel"]
+[node name="XPTrack" type="Control" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 38.0
-offset_top = 8.0
-offset_right = 252.0
-offset_bottom = 22.0
-show_percentage = false
-max_value = 60.0
-theme_override_styles/background = SubResource("StyleBoxFlat_xp_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_xp_fill")
+offset_left = 46.0
+offset_top = 11.0
+offset_right = 322.0
+offset_bottom = 29.0
+clip_contents = true
+
+[node name="Outer" type="Polygon2D" parent="Root/ProgressPanel/XPTrack"]
+polygon = PackedVector2Array(4, 0, 272, 0, 272, 2, 276, 2, 276, 16, 272, 16, 272, 18, 4, 18, 4, 16, 0, 16, 0, 2, 4, 2)
+color = Color(0.40, 0.52, 0.41, 1)
+
+[node name="Inner" type="Polygon2D" parent="Root/ProgressPanel/XPTrack"]
+position = Vector2(1, 1)
+polygon = PackedVector2Array(4, 0, 270, 0, 270, 2, 274, 2, 274, 14, 270, 14, 270, 16, 4, 16, 4, 14, 0, 14, 0, 2, 4, 2)
+color = Color(0.027, 0.094, 0.075, 1)
+
+[node name="Fill" type="ColorRect" parent="Root/ProgressPanel/XPTrack"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 3.0
+offset_bottom = 15.0
+color = Color(0.78, 0.655, 0.286, 1)
+
+[node name="TopHighlight" type="ColorRect" parent="Root/ProgressPanel/XPTrack/Fill"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 2.0
+grow_horizontal = 2
+color = Color(0.925, 0.808, 0.443, 1)
+
+[node name="BottomShade" type="ColorRect" parent="Root/ProgressPanel/XPTrack/Fill"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.557, 0.447, 0.196, 1)
 
 [node name="XPValue" type="Label" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 260.0
-offset_top = 7.0
-offset_right = 310.0
-offset_bottom = 23.0
+offset_left = 332.0
+offset_top = 9.0
+offset_right = 408.0
+offset_bottom = 29.0
 theme_override_colors/font_color = Color(0.886, 0.875, 0.69, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 13
 text = "0 / 60"
 horizontal_alignment = 2
 
 [node name="VineTL" type="TextureRect" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = -6.0
-offset_top = -6.0
-offset_right = 18.0
-offset_bottom = 18.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 24.0
+offset_bottom = 24.0
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -279,81 +314,89 @@ texture_filter = 1
 
 [node name="VineBR" type="TextureRect" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 301.0
-offset_top = 13.0
-offset_right = 325.0
-offset_bottom = 37.0
+offset_left = 396.0
+offset_top = 16.0
+offset_right = 428.0
+offset_bottom = 48.0
 rotation = 3.141593
-pivot_offset = Vector2(12, 12)
+pivot_offset = Vector2(16, 16)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
 stretch_mode = 0
 texture_filter = 1
 
-[node name="SPRune" type="Polygon2D" parent="Root"]
-position = Vector2(1360, 39)
-polygon = PackedVector2Array(4, 0, 7, 0, 7, 3, 10, 3, 10, 6, 13, 6, 13, 9, 10, 9, 10, 12, 7, 12, 7, 16, 4, 16, 4, 12, 1, 12, 1, 9, -2, 9, -2, 6, 1, 6, 1, 3, 4, 3)
+[node name="SPGroup" type="Control" parent="Root"]
+layout_mode = 0
+offset_left = 1532.0
+offset_top = 21.0
+offset_right = 1592.0
+offset_bottom = 43.0
+
+[node name="Rune" type="Polygon2D" parent="Root/SPGroup"]
+position = Vector2(0, 3)
+polygon = PackedVector2Array(5, 0, 7, 0, 7, 3, 9, 3, 9, 6, 12, 6, 12, 10, 9, 10, 9, 13, 7, 13, 7, 16, 5, 16, 5, 13, 3, 13, 3, 10, 0, 10, 0, 6, 3, 6, 3, 3, 5, 3)
 color = Color(0.776, 0.627, 0.267, 1)
 
-[node name="SPValue" type="Label" parent="Root"]
+[node name="SPValue" type="Label" parent="Root/SPGroup"]
 layout_mode = 0
-offset_left = 1379.0
-offset_top = 35.0
-offset_right = 1416.0
-offset_bottom = 57.0
+offset_left = 22.0
+offset_top = 0.0
+offset_right = 60.0
+offset_bottom = 22.0
 theme_override_colors/font_color = Color(0.878, 0.749, 0.337, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 text = "0 SP"
 horizontal_alignment = 2
 
 [node name="ObjectivePanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 1127.0
-offset_top = 89.0
-offset_right = 1416.0
-offset_bottom = 115.0
+offset_left = 1284.0
+offset_top = 88.0
+offset_right = 1592.0
+offset_bottom = 120.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_objective")
 
 [node name="Diamond" type="Polygon2D" parent="Root/ObjectivePanel"]
-position = Vector2(17, 13)
+position = Vector2(20, 16)
 rotation = 0.785398
-polygon = PackedVector2Array(-5, -5, 5, -5, 5, 5, -5, 5)
+polygon = PackedVector2Array(-6, -6, 6, -6, 6, 6, -6, 6)
 color = Color(0.843, 0.737, 0.322, 1)
 
 [node name="DiamondInner" type="Polygon2D" parent="Root/ObjectivePanel"]
-position = Vector2(17, 13)
+position = Vector2(20, 16)
 rotation = 0.785398
-polygon = PackedVector2Array(-3, -3, 3, -3, 3, 3, -3, 3)
+polygon = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
 color = Color(0.09, 0.161, 0.106, 1)
 
 [node name="Objective" type="Label" parent="Root/ObjectivePanel"]
 layout_mode = 0
-offset_left = 35.0
-offset_top = 6.0
-offset_right = 278.0
-offset_bottom = 21.0
+offset_left = 44.0
+offset_top = 7.0
+offset_right = 294.0
+offset_bottom = 25.0
 theme_override_colors/font_color = Color(0.788, 0.827, 0.604, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_colors/font_shadow_color = Color(0.024, 0.086, 0.075, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 11
 text = "DEFEAT THE FOREST GUARDIANS"
 
 [node name="Toast" type="Label" parent="Root"]
 visible = false
 layout_mode = 0
-offset_left = 500.0
-offset_top = 728.0
-offset_right = 940.0
-offset_bottom = 758.0
+offset_left = 596.0
+offset_top = 824.0
+offset_right = 996.0
+offset_bottom = 858.0
 theme_override_colors/font_color = Color(0.894, 0.929, 0.741, 1)
 theme_override_colors/font_shadow_color = Color(0.01, 0.04, 0.02, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 text = "THE PATH BEYOND IS NOT YET FORMED."
 horizontal_alignment = 1
+vertical_alignment = 1

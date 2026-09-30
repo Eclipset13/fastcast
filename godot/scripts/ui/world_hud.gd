@@ -5,24 +5,27 @@ const HEART_FULL := preload("res://assets/ui/hud/heart-full.svg")
 const ORB_SHAPE := preload("res://assets/ui/hud/orb-shape.svg")
 const ORB_SHADING := preload("res://assets/ui/hud/orb-shading.svg")
 
+const REFERENCE_VIEW := Vector2(1648.0, 928.0)
+const REFERENCE_EDGE := Vector2(28.0, 26.0)
 const HEART_COUNT := 8
 const ORB_COUNT := 8
 const MANA_COLOR := Color(0.40, 0.725, 1.0, 1.0)
 const ORB_OUTER := Color(0.212, 0.357, 0.365, 1.0)
 const ORB_INNER := Color(0.027, 0.106, 0.125, 1.0)
 
+@onready var _root: Control = $Root
 @onready var _hearts: HBoxContainer = $Root/Hearts
 @onready var _orbs: HBoxContainer = $Root/ManaFrame/Orbs
 @onready var _level_label: Label = $Root/PlayerPanel/ClassRow/Level
-@onready var _xp_bar: ProgressBar = $Root/ProgressPanel/XPBar
+@onready var _xp_fill: ColorRect = $Root/ProgressPanel/XPTrack/Fill
 @onready var _xp_value: Label = $Root/ProgressPanel/XPValue
-@onready var _sp_value: Label = $Root/SPValue
+@onready var _sp_value: Label = $Root/SPGroup/SPValue
 @onready var _objective: Label = $Root/ObjectivePanel/Objective
 @onready var _toast: Label = $Root/Toast
 
 var _controller: Node = null
 var _heart_widgets: Array[TextureProgressBar] = []
-var _orb_widgets: Array[TextureProgressBar] = []
+var _orb_fills: Array[TextureRect] = []
 
 var _previous_hp: int = -1
 var _previous_xp: int = -1
@@ -35,6 +38,8 @@ func _ready() -> void:
 	_build_hearts()
 	_build_orbs()
 	_toast.visible = false
+	_apply_reference_scale()
+	get_viewport().size_changed.connect(_apply_reference_scale)
 
 
 func bind_controller(controller: Node) -> void:
@@ -68,6 +73,16 @@ func _process(_delta: float) -> void:
 		_refresh(false)
 
 
+func _apply_reference_scale() -> void:
+	var viewport_size := Vector2(get_viewport().get_visible_rect().size)
+	var scale_factor := minf(
+		viewport_size.x / REFERENCE_VIEW.x,
+		viewport_size.y / REFERENCE_VIEW.y
+	)
+	_root.scale = Vector2(scale_factor, scale_factor)
+	_root.position = REFERENCE_EDGE * scale_factor
+
+
 func _build_hearts() -> void:
 	for child in _hearts.get_children():
 		child.queue_free()
@@ -75,7 +90,7 @@ func _build_hearts() -> void:
 
 	for _index in range(HEART_COUNT):
 		var heart := TextureProgressBar.new()
-		heart.custom_minimum_size = Vector2(24.0, 24.0)
+		heart.custom_minimum_size = Vector2(32.0, 32.0)
 		heart.min_value = 0.0
 		heart.max_value = 100.0
 		heart.value = 100.0
@@ -90,15 +105,16 @@ func _build_hearts() -> void:
 func _build_orbs() -> void:
 	for child in _orbs.get_children():
 		child.queue_free()
-	_orb_widgets.clear()
+	_orb_fills.clear()
 
 	for _index in range(ORB_COUNT):
 		var holder := Control.new()
-		holder.custom_minimum_size = Vector2(18.0, 18.0)
+		holder.custom_minimum_size = Vector2(24.0, 24.0)
 		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 		var outer := TextureRect.new()
-		outer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		outer.position = Vector2.ZERO
+		outer.size = Vector2(24.0, 24.0)
 		outer.texture = ORB_SHAPE
 		outer.modulate = ORB_OUTER
 		outer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -109,7 +125,7 @@ func _build_orbs() -> void:
 
 		var inner := TextureRect.new()
 		inner.position = Vector2(2.0, 2.0)
-		inner.size = Vector2(14.0, 14.0)
+		inner.size = Vector2(20.0, 20.0)
 		inner.texture = ORB_SHAPE
 		inner.modulate = ORB_INNER
 		inner.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -118,19 +134,20 @@ func _build_orbs() -> void:
 		inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		holder.add_child(inner)
 
-		var fill := TextureProgressBar.new()
-		fill.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		fill.min_value = 0.0
-		fill.max_value = 100.0
-		fill.value = 100.0
-		fill.texture_progress = ORB_SHAPE
-		fill.tint_progress = MANA_COLOR
+		var fill := TextureRect.new()
+		fill.position = Vector2.ZERO
+		fill.size = Vector2(24.0, 24.0)
+		fill.texture = ORB_SHAPE
+		fill.modulate = MANA_COLOR
+		fill.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		fill.stretch_mode = TextureRect.STRETCH_SCALE
 		fill.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		holder.add_child(fill)
 
 		var shading := TextureRect.new()
-		shading.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		shading.position = Vector2.ZERO
+		shading.size = Vector2(24.0, 24.0)
 		shading.texture = ORB_SHADING
 		shading.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		shading.stretch_mode = TextureRect.STRETCH_SCALE
@@ -139,7 +156,7 @@ func _build_orbs() -> void:
 		holder.add_child(shading)
 
 		_orbs.add_child(holder)
-		_orb_widgets.append(fill)
+		_orb_fills.append(fill)
 
 
 func _refresh(force: bool) -> void:
@@ -159,8 +176,10 @@ func _refresh(force: bool) -> void:
 
 	_level_label.text = "LV %d" % level
 	var xp_target: int = _xp_for_level(level)
-	_xp_bar.max_value = xp_target
-	_xp_bar.value = xp
+	var xp_ratio: float = clampf(float(xp) / float(maxi(xp_target, 1)), 0.0, 1.0)
+	var fill_size: Vector2 = _xp_fill.size
+	fill_size.x = 270.0 * xp_ratio
+	_xp_fill.size = fill_size
 	_xp_value.text = "%d / %d" % [xp, xp_target]
 	_sp_value.text = "%d SP" % sp
 
@@ -198,8 +217,8 @@ func _update_orbs(mana: float, max_mana: int) -> void:
 		(maxf(mana, 0.0) / float(max_mana)) * float(ORB_COUNT)
 	))
 
-	for index in range(_orb_widgets.size()):
-		_orb_widgets[index].value = 100.0 if index < filled else 0.0
+	for index in range(_orb_fills.size()):
+		_orb_fills[index].visible = index < filled
 
 
 func _animate_damage() -> void:
@@ -219,9 +238,9 @@ func _animate_heal() -> void:
 
 
 func _animate_xp() -> void:
-	_xp_bar.modulate = Color(1.35, 1.25, 0.72, 1.0)
+	_xp_fill.modulate = Color(1.35, 1.25, 0.72, 1.0)
 	var tween := create_tween()
-	tween.tween_property(_xp_bar, "modulate", Color.WHITE, 0.36)
+	tween.tween_property(_xp_fill, "modulate", Color.WHITE, 0.36)
 
 
 func _animate_level() -> void:
