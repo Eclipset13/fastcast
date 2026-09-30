@@ -89,8 +89,14 @@ func _build_hearts() -> void:
 	_heart_widgets.clear()
 
 	for _index in range(HEART_COUNT):
+		var holder := Control.new()
+		holder.custom_minimum_size = Vector2(32.0, 32.0)
+		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 		var heart := TextureProgressBar.new()
-		heart.custom_minimum_size = Vector2(48.0, 48.0)
+		heart.position = Vector2.ZERO
+		heart.size = Vector2(16.0, 16.0)
+		heart.scale = Vector2(2.0, 2.0)
 		heart.min_value = 0.0
 		heart.max_value = 100.0
 		heart.value = 100.0
@@ -98,7 +104,9 @@ func _build_hearts() -> void:
 		heart.texture_progress = HEART_FULL
 		heart.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		heart.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_hearts.add_child(heart)
+		holder.add_child(heart)
+
+		_hearts.add_child(holder)
 		_heart_widgets.append(heart)
 
 
