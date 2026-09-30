@@ -28,9 +28,9 @@ var player_max_hp: int = PLAYER_BASE_HP
 var mana: float = float(PLAYER_BASE_MANA)
 var max_mana: int = PLAYER_BASE_MANA
 
-var _player = null
-var _enemy = null
-var _overlay = null
+var _player: CharacterBody2D = null
+var _enemy: CharacterBody2D = null
+var _overlay: CanvasLayer = null
 var _camera: Camera2D = null
 var _saved_camera_position := Vector2.ZERO
 var _saved_camera_zoom := Vector2.ONE
@@ -64,7 +64,7 @@ func _ready() -> void:
 	_rng.randomize()
 
 
-func start(enemy, player, overlay) -> void:
+func start(enemy: CharacterBody2D, player: CharacterBody2D, overlay: CanvasLayer) -> void:
 	if active or enemy == null or bool(enemy.get("defeated")):
 		return
 
@@ -390,10 +390,10 @@ func _enter_battle_camera() -> void:
 	if _camera == null:
 		return
 
-	var spacing := absf(_player.global_position.x - _enemy.global_position.x)
-	var battle_zoom := minf(1.38, 480.0 / (spacing + 110.0))
-	var midpoint_offset_x := (_enemy.global_position.x - _player.global_position.x) * 0.5
-	var target_position := Vector2(midpoint_offset_x, -39.0)
+	var spacing: float = absf(_player.global_position.x - _enemy.global_position.x)
+	var battle_zoom: float = minf(1.38, 480.0 / (spacing + 110.0))
+	var midpoint_offset_x: float = (_enemy.global_position.x - _player.global_position.x) * 0.5
+	var target_position: Vector2 = Vector2(midpoint_offset_x, -39.0)
 
 	var tween := create_tween()
 	tween.set_parallel(true)
