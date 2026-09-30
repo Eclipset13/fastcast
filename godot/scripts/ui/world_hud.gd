@@ -90,7 +90,7 @@ func _build_hearts() -> void:
 
 	for _index in range(HEART_COUNT):
 		var heart := TextureProgressBar.new()
-		heart.custom_minimum_size = Vector2(32.0, 32.0)
+		heart.custom_minimum_size = Vector2(38.0, 38.0)
 		heart.min_value = 0.0
 		heart.max_value = 100.0
 		heart.value = 100.0

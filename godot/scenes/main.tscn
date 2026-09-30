@@ -22,7 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 stretch = true
 stretch_shrink = 3
-texture_filter = 1
+texture_filter = 2
 
 [node name="GameViewport" type="SubViewport" parent="World"]
 size = Vector2i(480, 270)
