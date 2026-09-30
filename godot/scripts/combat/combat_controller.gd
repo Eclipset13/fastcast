@@ -164,6 +164,13 @@ func _handle_letter(character: String) -> void:
 	if result_type == "progress":
 		_overlay.call("set_spell", String(_spell["id"]), String(_spell["name"]), String(_spell["word"]), _parser.typed)
 	elif result_type == "complete":
+		_overlay.call(
+			"set_spell",
+			String(_spell["id"]),
+			String(_spell["name"]),
+			String(_spell["word"]),
+			_parser.typed
+		)
 		_cast_spell(result)
 	elif result_type == "miss":
 		_miscast(result)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
@@ -8,6 +8,15 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/combat_overlay.tscn" id="6_combat_overlay"]
 [ext_resource type="Script" path="res://scripts/combat/combat_controller.gd" id="7_combat_controller"]
 [ext_resource type="Script" path="res://scripts/combat/battle_presentation.gd" id="8_battle_presentation"]
+[ext_resource type="PackedScene" path="res://scenes/world/forest_decoration.tscn" id="9_decoration"]
+[ext_resource type="PackedScene" path="res://scenes/world/forest_stone.tscn" id="10_stone"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-a.png" id="11_tree_a"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-b.png" id="12_tree_b"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-c.png" id="13_tree_c"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-d.png" id="14_tree_d"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/runestone-start.png" id="15_runestone"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/fallen-log-mid.png" id="16_fallen_log"]
+[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/portal/portal-frame-off.png" id="17_portal_frame"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(2600, 44)
@@ -165,6 +174,88 @@ position = Vector2(2440, 94)
 platform_kind = 4
 
 [node name="Decorations" type="Node2D" parent="."]
+[node name="Tree01_LargeC" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(150, 227)
+texture = ExtResource("13_tree_c")
+art_scale = 0.29
+depth = 1
+
+[node name="Tree02_LargeA" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(475, 227)
+texture = ExtResource("11_tree_a")
+art_scale = 0.32
+flip_h = true
+depth = 3
+
+[node name="Tree03_LargeB" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(800, 227)
+texture = ExtResource("12_tree_b")
+art_scale = 0.28
+flip_h = true
+depth = 1
+
+[node name="Tree04_LargeD" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(1115, 227)
+texture = ExtResource("14_tree_d")
+art_scale = 0.34
+depth = 3
+
+[node name="Tree05_LargeA" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(1435, 227)
+texture = ExtResource("11_tree_a")
+art_scale = 0.28
+depth = 1
+
+[node name="Tree06_LargeB" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(1745, 227)
+texture = ExtResource("12_tree_b")
+art_scale = 0.32
+depth = 3
+
+[node name="Tree07_LargeC" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(2075, 227)
+texture = ExtResource("13_tree_c")
+art_scale = 0.3
+flip_h = true
+depth = 1
+
+[node name="Tree08_LargeD" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(2400, 227)
+texture = ExtResource("14_tree_d")
+art_scale = 0.32
+flip_h = true
+depth = 3
+
+[node name="RunestoneStart" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(58, 227)
+texture = ExtResource("15_runestone")
+art_scale = 0.06
+depth = 5
+
+[node name="FallenLogMid" parent="Decorations" instance=ExtResource("9_decoration")]
+position = Vector2(650, 250)
+texture = ExtResource("16_fallen_log")
+art_scale = 0.085
+depth = 4
+
+[node name="Stone01" parent="Decorations" instance=ExtResource("10_stone")]
+position = Vector2(245, 226)
+
+[node name="Stone02" parent="Decorations" instance=ExtResource("10_stone")]
+position = Vector2(815, 226)
+
+[node name="Stone03" parent="Decorations" instance=ExtResource("10_stone")]
+position = Vector2(1260, 226)
+
+[node name="Stone04" parent="Decorations" instance=ExtResource("10_stone")]
+position = Vector2(1660, 226)
+
+[node name="Stone05" parent="Decorations" instance=ExtResource("10_stone")]
+position = Vector2(1970, 226)
+
+[node name="Stone06" parent="Decorations" instance=ExtResource("10_stone")]
+position = Vector2(2440, 226)
+
 
 [node name="Enemies" type="Node2D" parent="."]
 
@@ -175,6 +266,12 @@ position = Vector2(760, 208)
 position = Vector2(1350, 166)
 
 [node name="Portals" type="Node2D" parent="."]
+
+[node name="ForestExitPortal" parent="Portals" instance=ExtResource("9_decoration")]
+position = Vector2(2510, 237)
+texture = ExtResource("17_portal_frame")
+target_height = 202.0
+depth = 10
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(110, 208)
