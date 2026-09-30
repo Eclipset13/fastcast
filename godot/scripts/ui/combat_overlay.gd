@@ -19,7 +19,6 @@ const COLOR_TYPED := Color(1.0, 0.95, 0.84, 1.0)
 @onready var _enemy_name: Label = $Root/EnemyBlock/EnemyName
 @onready var _enemy_bar: ProgressBar = $Root/EnemyBlock/EnemyBar
 @onready var _enemy_hp: Label = $Root/EnemyBlock/EnemyHP
-@onready var _player_state: Label = $Root/PlayerState
 @onready var _icon: TextureRect = $Root/SpellBlock/Icon
 @onready var _spell_name: Label = $Root/SpellBlock/SpellName
 @onready var _word_row: HBoxContainer = $Root/SpellBlock/WordRow
@@ -59,8 +58,8 @@ func set_enemy_hp(current: int, maximum: int) -> void:
 	_enemy_hp.text = "%d / %d" % [current, maximum]
 
 
-func set_player_state(hp: int, max_hp: int, mana: float, max_mana: int) -> void:
-	_player_state.text = "HP %d/%d    MP %d/%d" % [hp, max_hp, int(round(mana)), max_mana]
+func set_player_state(_hp: int, _max_hp: int, _mana: float, _max_mana: int) -> void:
+	pass
 
 
 func set_spell(spell_id: String, spell_name: String, word: String, typed_count: int) -> void:
