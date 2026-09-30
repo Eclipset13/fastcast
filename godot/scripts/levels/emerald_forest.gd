@@ -21,7 +21,6 @@ const BG_NEAR := preload("res://assets/biomes/emerald-forest/bg-near.png")
 @onready var _combat_overlay = $CombatOverlay
 @onready var _combat_controller = $CombatController
 @onready var _hud: CanvasLayer = $HUD
-@onready var _controls_label: Label = $HUD/Root/Controls
 @onready var _portal: Node2D = $Portals/ForestExitPortal
 
 var _parallax_layers: Array[Dictionary] = []
@@ -34,7 +33,6 @@ func _ready() -> void:
 	_hud.call("bind_controller", _combat_controller)
 	_portal.call("bind_player", _player)
 	_portal.connect("enter_requested", Callable(self, "_on_portal_enter_requested"))
-	_combat_controller.connect("battle_started", Callable(self, "_on_battle_started"))
 	_combat_controller.connect("battle_finished", Callable(self, "_on_battle_finished"))
 	_refresh_room_progress()
 
@@ -156,12 +154,7 @@ func _find_battle_support(
 	return Vector2(x, hit_position.y - BODY_HALF_HEIGHT)
 
 
-func _on_battle_started() -> void:
-	_controls_label.visible = false
-
-
 func _on_battle_finished(victory: bool, _xp: int) -> void:
-	_controls_label.visible = true
 	if victory:
 		_refresh_room_progress()
 
@@ -181,10 +174,7 @@ func _refresh_room_progress() -> void:
 		_hud.call("set_objective", "PORTAL AWAKENED")
 		_portal.call("activate")
 	else:
-		_hud.call(
-			"set_objective",
-			"DEFEAT THE FOREST SAVAGES %d / %d" % [defeated, total]
-		)
+		_hud.call("set_objective", "DEFEAT THE FOREST GUARDIANS")
 
 
 func _on_portal_enter_requested() -> void:

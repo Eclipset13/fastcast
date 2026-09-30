@@ -3,19 +3,20 @@ extends CanvasLayer
 const HEART_EMPTY := preload("res://assets/ui/hud/heart-empty.svg")
 const HEART_FULL := preload("res://assets/ui/hud/heart-full.svg")
 const ORB_SHAPE := preload("res://assets/ui/hud/orb-shape.svg")
+const ORB_SHADING := preload("res://assets/ui/hud/orb-shading.svg")
 
 const HEART_COUNT := 8
 const ORB_COUNT := 8
-const MANA_COLOR := Color(0.40, 0.73, 1.0, 1.0)
-const ORB_EMPTY_COLOR := Color(0.18, 0.33, 0.35, 1.0)
+const MANA_COLOR := Color(0.4, 0.725, 1.0, 1.0)
+const ORB_EMPTY_COLOR := Color(0.212, 0.357, 0.365, 1.0)
 
 @onready var _hearts: HBoxContainer = $Root/Hearts
-@onready var _orbs: HBoxContainer = $Root/ManaPanel/Margin/VBox/Orbs
-@onready var _level_label: Label = $Root/PlayerPanel/Margin/VBox/ClassRow/Level
-@onready var _xp_bar: ProgressBar = $Root/ProgressPanel/Margin/VBox/XPRow/XPBar
-@onready var _xp_value: Label = $Root/ProgressPanel/Margin/VBox/XPRow/XPValue
-@onready var _sp_value: Label = $Root/ProgressPanel/Margin/VBox/SPRow/SPValue
-@onready var _objective: Label = $Root/ObjectivePanel/Margin/Objective
+@onready var _orbs: HBoxContainer = $Root/ManaPanel/Orbs
+@onready var _level_label: Label = $Root/PlayerPanel/ClassRow/Level
+@onready var _xp_bar: ProgressBar = $Root/ProgressPanel/XPBar
+@onready var _xp_value: Label = $Root/ProgressPanel/XPValue
+@onready var _sp_value: Label = $Root/SPValue
+@onready var _objective: Label = $Root/ObjectivePanel/Objective
 @onready var _toast: Label = $Root/Toast
 
 var _controller: Node = null
@@ -73,13 +74,14 @@ func _build_hearts() -> void:
 
 	for _index in range(HEART_COUNT):
 		var heart := TextureProgressBar.new()
-		heart.custom_minimum_size = Vector2(16.0, 16.0)
+		heart.custom_minimum_size = Vector2(8.0, 8.0)
 		heart.min_value = 0.0
 		heart.max_value = 100.0
 		heart.value = 100.0
 		heart.texture_under = HEART_EMPTY
 		heart.texture_progress = HEART_FULL
 		heart.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		heart.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_hearts.add_child(heart)
 		_heart_widgets.append(heart)
 
@@ -90,8 +92,12 @@ func _build_orbs() -> void:
 	_orb_widgets.clear()
 
 	for _index in range(ORB_COUNT):
+		var holder := Control.new()
+		holder.custom_minimum_size = Vector2(6.0, 6.0)
+		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 		var orb := TextureProgressBar.new()
-		orb.custom_minimum_size = Vector2(12.0, 12.0)
+		orb.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		orb.min_value = 0.0
 		orb.max_value = 100.0
 		orb.value = 100.0
@@ -100,7 +106,19 @@ func _build_orbs() -> void:
 		orb.tint_under = ORB_EMPTY_COLOR
 		orb.tint_progress = MANA_COLOR
 		orb.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		_orbs.add_child(orb)
+		orb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		holder.add_child(orb)
+
+		var shading := TextureRect.new()
+		shading.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		shading.texture = ORB_SHADING
+		shading.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		shading.stretch_mode = TextureRect.STRETCH_SCALE
+		shading.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		shading.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		holder.add_child(shading)
+
+		_orbs.add_child(holder)
 		_orb_widgets.append(orb)
 
 
@@ -167,32 +185,32 @@ func _update_orbs(mana: float, max_mana: int) -> void:
 func _animate_damage() -> void:
 	var base_x: float = _hearts.position.x
 	var tween := create_tween()
-	tween.tween_property(_hearts, "position:x", base_x - 2.0, 0.04)
-	tween.tween_property(_hearts, "position:x", base_x + 2.0, 0.05)
+	tween.tween_property(_hearts, "position:x", base_x - 1.0, 0.04)
+	tween.tween_property(_hearts, "position:x", base_x + 1.0, 0.05)
 	tween.tween_property(_hearts, "position:x", base_x, 0.05)
 
 
 func _animate_heal() -> void:
 	_hearts.scale = Vector2.ONE
 	var tween := create_tween()
-	tween.tween_property(_hearts, "scale", Vector2(1.08, 1.08), 0.10)
+	tween.tween_property(_hearts, "scale", Vector2(1.05, 1.05), 0.10)
 	tween.tween_property(_hearts, "scale", Vector2.ONE, 0.14)
 
 
 func _animate_xp() -> void:
-	_xp_bar.modulate = Color(1.35, 1.25, 0.72, 1.0)
+	_xp_bar.modulate = Color(1.25, 1.18, 0.72, 1.0)
 	var tween := create_tween()
 	tween.tween_property(_xp_bar, "modulate", Color.WHITE, 0.30)
 
 
 func _animate_level() -> void:
-	_level_label.scale = Vector2(1.18, 1.18)
+	_level_label.scale = Vector2(1.15, 1.15)
 	var tween := create_tween()
 	tween.tween_property(_level_label, "scale", Vector2.ONE, 0.30)
 
 
 func _animate_sp() -> void:
-	_sp_value.modulate = Color(1.35, 1.2, 0.55, 1.0)
+	_sp_value.modulate = Color(1.3, 1.18, 0.55, 1.0)
 	var tween := create_tween()
 	tween.tween_property(_sp_value, "modulate", Color.WHITE, 0.30)
 
