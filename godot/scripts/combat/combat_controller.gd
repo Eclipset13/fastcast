@@ -27,6 +27,14 @@ var player_hp: int = PLAYER_BASE_HP
 var player_max_hp: int = PLAYER_BASE_HP
 var mana: float = float(PLAYER_BASE_MANA)
 var max_mana: int = PLAYER_BASE_MANA
+var spell_ranks: Dictionary = {
+	"spark": 1,
+	"fireball": 1,
+	"ice-spike": 1,
+	"mend": 1,
+	"aegis": 1,
+	"gale": 1,
+}
 
 var _player: CharacterBody2D = null
 var _enemy: CharacterBody2D = null
@@ -178,7 +186,10 @@ func _handle_letter(character: String) -> void:
 
 func _choose_spell(now: float) -> void:
 	var affordable: Array = []
-	for spell in MageSpells.starter_deck():
+	for base_spell in MageSpells.starter_deck():
+		var spell_id := String(base_spell["id"])
+		var rank := int(spell_ranks.get(spell_id, 1))
+		var spell: Dictionary = MageSpells.at_rank(base_spell, rank)
 		if float(spell["cost"]) <= mana:
 			affordable.append(spell)
 
@@ -444,6 +455,56 @@ func _restore_camera() -> void:
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(_camera, "position", _saved_camera_position, 0.38)
 	tween.tween_property(_camera, "zoom", _saved_camera_zoom, 0.38)
+
+
+func get_spell_rank(spell_id: String) -> int:
+	return int(spell_ranks.get(spell_id, 1))
+
+
+func get_spell_upgrade_cost(spell_id: String):
+	var spell := MageSpells.find_spell(spell_id)
+	if spell.is_empty():
+		return null
+	return MageSpells.upgrade_cost(spell, get_spell_rank(spell_id))
+
+
+func get_spell_preview(spell_id: String) -> Dictionary:
+	var spell := MageSpells.find_spell(spell_id)
+	if spell.is_empty():
+		return {}
+	var rank := get_spell_rank(spell_id)
+	var current := MageSpells.at_rank(spell, rank)
+	var next := {}
+	if rank < MageSpells.max_rank(spell):
+		next = MageSpells.at_rank(spell, rank + 1)
+	return {
+		"id": spell_id,
+		"name": String(spell["name"]),
+		"rank": rank,
+		"max_rank": MageSpells.max_rank(spell),
+		"current": current,
+		"next": next,
+		"cost": get_spell_upgrade_cost(spell_id),
+	}
+
+
+func upgrade_spell(spell_id: String) -> bool:
+	var spell := MageSpells.find_spell(spell_id)
+	if spell.is_empty():
+		return false
+
+	var rank := get_spell_rank(spell_id)
+	var cost = MageSpells.upgrade_cost(spell, rank)
+	if cost == null or skill_points < int(cost):
+		return false
+
+	skill_points -= int(cost)
+	spell_ranks[spell_id] = rank + 1
+	return true
+
+
+func get_upgradeable_spell_ids() -> Array[String]:
+	return ["spark", "fireball", "ice-spike", "mend", "aegis", "gale"]
 
 
 func _gain_xp(amount: int) -> void:

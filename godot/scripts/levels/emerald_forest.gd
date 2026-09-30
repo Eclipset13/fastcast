@@ -24,6 +24,8 @@ const BG_NEAR := preload("res://assets/biomes/emerald-forest/bg-near.png")
 @onready var _combat_overlay = $CombatOverlay
 @onready var _combat_controller = $CombatController
 @onready var _portal: Node2D = $Portals/ForestExitPortal
+@onready var _runestone: Node2D = $Decorations/RunestoneStart
+@onready var _spellcraft_overlay: CanvasLayer = $SpellcraftOverlay
 
 var _parallax_layers: Array[Dictionary] = []
 
@@ -34,6 +36,10 @@ func _ready() -> void:
 	_connect_encounters()
 	_portal.call("bind_player", _player)
 	_portal.connect("enter_requested", Callable(self, "_on_portal_enter_requested"))
+	_runestone.call("bind_player", _player)
+	_runestone.connect("spellcraft_requested", Callable(self, "_on_spellcraft_requested"))
+	_spellcraft_overlay.connect("closed", Callable(self, "_on_spellcraft_closed"))
+	_spellcraft_overlay.connect("upgrade_purchased", Callable(self, "_on_spell_upgraded"))
 	_combat_controller.connect("battle_finished", Callable(self, "_on_battle_finished"))
 	call_deferred("_refresh_room_progress")
 
@@ -182,6 +188,30 @@ func _on_portal_enter_requested() -> void:
 	if bool(_combat_controller.get("active")):
 		return
 	toast_requested.emit("THE PATH BEYOND IS NOT YET FORMED.")
+
+
+func _on_spellcraft_requested() -> void:
+	if bool(_combat_controller.get("active")):
+		return
+
+	_player.call("set_control", false)
+	_runestone.call("set_menu_open", true)
+	_spellcraft_overlay.call("open", _combat_controller)
+
+
+func _on_spellcraft_closed() -> void:
+	_runestone.call("set_menu_open", false)
+	_player.call("set_control", true)
+
+
+func _on_spell_upgraded(spell_id: String) -> void:
+	var preview: Dictionary = _combat_controller.call("get_spell_preview", spell_id)
+	if preview.is_empty():
+		return
+	toast_requested.emit("%s UPGRADED · RANK %d" % [
+		String(preview["name"]).to_upper(),
+		int(preview["rank"]),
+	])
 
 
 func _configure_camera() -> void:

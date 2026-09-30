@@ -1,0 +1,131 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/spellcraft_overlay.gd" id="1_script"]
+[ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="2_regular"]
+[ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-700-normal.woff2" id="3_bold"]
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.025, 0.07, 0.10, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.56, 0.63, 1)
+
+[sub_resource type="StyleBoxFlat" id="Style_button"]
+bg_color = Color(0.05, 0.12, 0.16, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.49, 0.65, 0.71, 1)
+
+[sub_resource type="StyleBoxFlat" id="Style_button_hover"]
+bg_color = Color(0.08, 0.17, 0.21, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.84, 0.74, 0.40, 1)
+
+[node name="SpellcraftOverlay" type="CanvasLayer"]
+layer = 95
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 0
+
+[node name="Shade" type="ColorRect" parent="Root"]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+color = Color(0.01, 0.03, 0.045, 0.7)
+mouse_filter = 0
+
+[node name="Panel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 14.0
+offset_right = 402.0
+offset_bottom = 256.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Eyebrow" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 12.0
+offset_right = 190.0
+offset_bottom = 22.0
+theme_override_fonts/font = ExtResource("2_regular")
+theme_override_colors/font_color = Color(0.55, 0.78, 0.85, 1)
+theme_override_font_sizes/font_size = 5
+text = "RUNESTONE WORKSHOP"
+
+[node name="Title" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 25.0
+offset_right = 200.0
+offset_bottom = 45.0
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_colors/font_color = Color(0.94, 0.96, 0.94, 1)
+theme_override_colors/font_shadow_color = Color(0.01, 0.03, 0.04, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 13
+text = "SPELLCRAFT"
+
+[node name="SPValue" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 24.0
+offset_right = 285.0
+offset_bottom = 43.0
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_colors/font_color = Color(0.91, 0.78, 0.36, 1)
+theme_override_font_sizes/font_size = 8
+text = "0 SP"
+horizontal_alignment = 2
+
+[node name="Close" type="Button" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 291.0
+offset_top = 12.0
+offset_right = 313.0
+offset_bottom = 34.0
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("Style_button")
+theme_override_styles/hover = SubResource("Style_button_hover")
+text = "X"
+
+[node name="Section" type="Label" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 51.0
+offset_right = 150.0
+offset_bottom = 62.0
+theme_override_fonts/font = ExtResource("3_bold")
+theme_override_colors/font_color = Color(0.83, 0.84, 0.74, 1)
+theme_override_font_sizes/font_size = 6
+text = "UPGRADE SPELLS"
+
+[node name="Scroll" type="ScrollContainer" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 67.0
+offset_right = 311.0
+offset_bottom = 229.0
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="Root/Panel/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[connection signal="pressed" from="Root/Panel/Close" to="." method="close"]

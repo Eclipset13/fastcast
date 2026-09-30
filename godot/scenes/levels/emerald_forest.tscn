@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
@@ -14,8 +14,9 @@
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-b.png" id="12_tree_b"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-c.png" id="13_tree_c"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-d.png" id="14_tree_d"]
-[ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/runestone-start.png" id="15_runestone"]
+[ext_resource type="PackedScene" path="res://scenes/world/runestone.tscn" id="15_runestone"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/fallen-log-mid.png" id="16_fallen_log"]
+[ext_resource type="PackedScene" path="res://scenes/ui/spellcraft_overlay.tscn" id="17_spellcraft"]
 [ext_resource type="PackedScene" path="res://scenes/world/forest_portal.tscn" id="18_portal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
@@ -226,11 +227,8 @@ art_scale = 0.32
 flip_h = true
 depth = 3
 
-[node name="RunestoneStart" parent="Decorations" instance=ExtResource("9_decoration")]
+[node name="RunestoneStart" parent="Decorations" instance=ExtResource("15_runestone")]
 position = Vector2(58, 227)
-texture = ExtResource("15_runestone")
-art_scale = 0.06
-depth = 5
 
 [node name="FallenLogMid" parent="Decorations" instance=ExtResource("9_decoration")]
 position = Vector2(650, 250)
@@ -280,3 +278,5 @@ script = ExtResource("8_battle_presentation")
 script = ExtResource("7_combat_controller")
 
 [node name="CombatOverlay" parent="." instance=ExtResource("6_combat_overlay")]
+
+[node name="SpellcraftOverlay" parent="." instance=ExtResource("17_spellcraft")]
