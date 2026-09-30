@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/world_hud.gd" id="1_hud_script"]
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="2_font_regular"]
@@ -7,7 +7,7 @@
 
 [sub_resource type="Theme" id="Theme_hud"]
 default_font = ExtResource("2_font_regular")
-default_font_size = 3
+default_font_size = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.012, 0.078, 0.075, 0.70)
@@ -15,7 +15,15 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.345, 0.49, 0.40, 0.90)
+border_color = Color(0.345, 0.49, 0.40, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inner"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12, 0.26, 0.20, 0.48)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orb"]
 bg_color = Color(0.012, 0.078, 0.09, 0.50)
@@ -23,7 +31,7 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.36, 0.51, 0.44, 0.80)
+border_color = Color(0.36, 0.51, 0.44, 0.75)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp_bg"]
 bg_color = Color(0.027, 0.094, 0.075, 1)
@@ -40,7 +48,7 @@ bg_color = Color(0.78, 0.655, 0.286, 1)
 bg_color = Color(0.012, 0.078, 0.075, 0.58)
 border_width_top = 1
 border_width_bottom = 1
-border_color = Color(0.36, 0.50, 0.40, 0.56)
+border_color = Color(0.36, 0.50, 0.40, 0.50)
 
 [node name="WorldHUD" type="CanvasLayer"]
 layer = 40
@@ -49,63 +57,81 @@ script = ExtResource("1_hud_script")
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 480.0
-offset_bottom = 270.0
+offset_right = 1440.0
+offset_bottom = 810.0
 mouse_filter = 2
 theme = SubResource("Theme_hud")
 
 [node name="PlayerPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 7.0
-offset_right = 74.0
-offset_bottom = 24.0
+offset_left = 24.0
+offset_top = 22.0
+offset_right = 222.0
+offset_bottom = 71.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Inner" type="Panel" parent="Root/PlayerPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_inner")
 
 [node name="Biome" type="Label" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 2.0
-offset_right = 62.0
-offset_bottom = 7.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 186.0
+offset_bottom = 22.0
 theme_override_colors/font_color = Color(0.53, 0.69, 0.57, 1)
-theme_override_font_sizes/font_size = 3
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 9
 text = "EMERALD FOREST"
 
 [node name="ClassRow" type="HBoxContainer" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 9.0
-offset_right = 62.0
-offset_bottom = 15.0
-theme_override_constants/separation = 2
+offset_left = 12.0
+offset_top = 25.0
+offset_right = 186.0
+offset_bottom = 43.0
+theme_override_constants/separation = 7
 
 [node name="Class" type="Label" parent="Root/PlayerPanel/ClassRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("3_font_bold")
 theme_override_colors/font_color = Color(0.906, 0.902, 0.71, 1)
-theme_override_font_sizes/font_size = 4
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 11
 text = "RUNESINGER"
 
-[node name="Rune" type="Label" parent="Root/PlayerPanel/ClassRow"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.443, 0.58, 0.427, 1)
-theme_override_font_sizes/font_size = 3
-text = "+"
+[node name="Rune" type="Polygon2D" parent="Root/PlayerPanel"]
+position = Vector2(151, 32)
+polygon = PackedVector2Array(3, 0, 5, 0, 5, 2, 7, 2, 7, 3, 9, 3, 9, 5, 7, 5, 7, 7, 5, 7, 5, 9, 3, 9, 3, 7, 2, 7, 2, 5, 0, 5, 0, 3, 2, 3, 2, 2, 3, 2)
+color = Color(0.443, 0.58, 0.427, 1)
 
 [node name="Level" type="Label" parent="Root/PlayerPanel/ClassRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.851, 0.624, 1)
-theme_override_font_sizes/font_size = 3
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 10
 text = "LV 1"
 
 [node name="VineTL" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 6.0
-offset_bottom = 6.0
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 18.0
+offset_bottom = 18.0
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -114,12 +140,12 @@ texture_filter = 1
 
 [node name="VineTR" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 60.0
-offset_top = -2.0
-offset_right = 68.0
-offset_bottom = 6.0
+offset_left = 180.0
+offset_top = -6.0
+offset_right = 204.0
+offset_bottom = 18.0
 rotation = 1.570796
-pivot_offset = Vector2(4, 4)
+pivot_offset = Vector2(12, 12)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -128,12 +154,12 @@ texture_filter = 1
 
 [node name="VineBL" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = -2.0
-offset_top = 11.0
-offset_right = 6.0
-offset_bottom = 19.0
+offset_left = -6.0
+offset_top = 31.0
+offset_right = 18.0
+offset_bottom = 55.0
 rotation = -1.570796
-pivot_offset = Vector2(4, 4)
+pivot_offset = Vector2(12, 12)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -142,76 +168,84 @@ texture_filter = 1
 
 [node name="VineBR" type="TextureRect" parent="Root/PlayerPanel"]
 layout_mode = 0
-offset_left = 60.0
-offset_top = 11.0
-offset_right = 68.0
-offset_bottom = 19.0
+offset_left = 180.0
+offset_top = 31.0
+offset_right = 204.0
+offset_bottom = 55.0
 rotation = 3.141593
-pivot_offset = Vector2(4, 4)
+pivot_offset = Vector2(12, 12)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
 stretch_mode = 0
 texture_filter = 1
 
-[node name="HeartRune" type="Label" parent="Root"]
-layout_mode = 0
-offset_left = 79.0
-offset_top = 11.0
-offset_right = 84.0
-offset_bottom = 18.0
-theme_override_colors/font_color = Color(0.443, 0.58, 0.427, 1)
-theme_override_font_sizes/font_size = 4
-text = "+"
+[node name="HeartRune" type="Polygon2D" parent="Root"]
+position = Vector2(237, 42)
+polygon = PackedVector2Array(3, 0, 5, 0, 5, 2, 7, 2, 7, 3, 9, 3, 9, 5, 7, 5, 7, 7, 5, 7, 5, 9, 3, 9, 3, 7, 2, 7, 2, 5, 0, 5, 0, 3, 2, 3, 2, 2, 3, 2)
+color = Color(0.443, 0.58, 0.427, 1)
 
 [node name="Hearts" type="HBoxContainer" parent="Root"]
 layout_mode = 0
-offset_left = 86.0
-offset_top = 11.0
-offset_right = 164.0
-offset_bottom = 19.0
-theme_override_constants/separation = 2
+offset_left = 255.0
+offset_top = 34.0
+offset_right = 490.0
+offset_bottom = 58.0
+theme_override_constants/separation = 6
 
-[node name="ManaPanel" type="Panel" parent="Root"]
+[node name="ManaFrame" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 169.0
-offset_top = 9.0
-offset_right = 241.0
-offset_bottom = 22.0
+offset_left = 507.0
+offset_top = 30.0
+offset_right = 725.0
+offset_bottom = 62.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_orb")
 
-[node name="Orbs" type="HBoxContainer" parent="Root/ManaPanel"]
+[node name="Orbs" type="HBoxContainer" parent="Root/ManaFrame"]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 3.0
-offset_right = 68.0
-offset_bottom = 10.0
-theme_override_constants/separation = 2
+offset_left = 9.0
+offset_top = 7.0
+offset_right = 208.0
+offset_bottom = 25.0
+theme_override_constants/separation = 8
 
 [node name="ProgressPanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 340.0
-offset_top = 10.0
-offset_right = 448.0
-offset_bottom = 21.0
+offset_left = 1024.0
+offset_top = 31.0
+offset_right = 1343.0
+offset_bottom = 62.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Inner" type="Panel" parent="Root/ProgressPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_inner")
 
 [node name="XPLabel" type="Label" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 10.0
-offset_bottom = 8.0
+offset_left = 9.0
+offset_top = 8.0
+offset_right = 30.0
+offset_bottom = 22.0
 theme_override_colors/font_color = Color(0.737, 0.749, 0.529, 1)
-theme_override_font_sizes/font_size = 3
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 10
 text = "XP"
 
 [node name="XPBar" type="ProgressBar" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 3.0
-offset_right = 83.0
-offset_bottom = 8.0
+offset_left = 38.0
+offset_top = 8.0
+offset_right = 252.0
+offset_bottom = 22.0
 show_percentage = false
 max_value = 60.0
 theme_override_styles/background = SubResource("StyleBoxFlat_xp_bg")
@@ -219,21 +253,24 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_xp_fill")
 
 [node name="XPValue" type="Label" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 86.0
-offset_top = 2.0
-offset_right = 105.0
-offset_bottom = 9.0
+offset_left = 260.0
+offset_top = 7.0
+offset_right = 310.0
+offset_bottom = 23.0
 theme_override_colors/font_color = Color(0.886, 0.875, 0.69, 1)
-theme_override_font_sizes/font_size = 3
-text = "0/60"
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 10
+text = "0 / 60"
 horizontal_alignment = 2
 
 [node name="VineTL" type="TextureRect" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 6.0
-offset_bottom = 6.0
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 18.0
+offset_bottom = 18.0
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
@@ -242,70 +279,81 @@ texture_filter = 1
 
 [node name="VineBR" type="TextureRect" parent="Root/ProgressPanel"]
 layout_mode = 0
-offset_left = 102.0
-offset_top = 5.0
-offset_right = 110.0
-offset_bottom = 13.0
+offset_left = 301.0
+offset_top = 13.0
+offset_right = 325.0
+offset_bottom = 37.0
 rotation = 3.141593
-pivot_offset = Vector2(4, 4)
+pivot_offset = Vector2(12, 12)
 mouse_filter = 2
 texture = ExtResource("4_vine")
 expand_mode = 1
 stretch_mode = 0
 texture_filter = 1
 
-[node name="SPRune" type="Label" parent="Root"]
-layout_mode = 0
-offset_left = 453.0
-offset_top = 11.0
-offset_right = 458.0
-offset_bottom = 19.0
-theme_override_colors/font_color = Color(0.878, 0.749, 0.337, 1)
-theme_override_font_sizes/font_size = 4
-text = "+"
+[node name="SPRune" type="Polygon2D" parent="Root"]
+position = Vector2(1360, 39)
+polygon = PackedVector2Array(4, 0, 7, 0, 7, 3, 10, 3, 10, 6, 13, 6, 13, 9, 10, 9, 10, 12, 7, 12, 7, 16, 4, 16, 4, 12, 1, 12, 1, 9, -2, 9, -2, 6, 1, 6, 1, 3, 4, 3)
+color = Color(0.776, 0.627, 0.267, 1)
 
 [node name="SPValue" type="Label" parent="Root"]
 layout_mode = 0
-offset_left = 459.0
-offset_top = 11.0
-offset_right = 472.0
-offset_bottom = 19.0
+offset_left = 1379.0
+offset_top = 35.0
+offset_right = 1416.0
+offset_bottom = 57.0
 theme_override_colors/font_color = Color(0.878, 0.749, 0.337, 1)
-theme_override_font_sizes/font_size = 4
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 12
 text = "0 SP"
 horizontal_alignment = 2
 
 [node name="ObjectivePanel" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 376.0
-offset_top = 30.0
-offset_right = 472.0
-offset_bottom = 39.0
+offset_left = 1127.0
+offset_top = 89.0
+offset_right = 1416.0
+offset_bottom = 115.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_objective")
+
+[node name="Diamond" type="Polygon2D" parent="Root/ObjectivePanel"]
+position = Vector2(17, 13)
+rotation = 0.785398
+polygon = PackedVector2Array(-5, -5, 5, -5, 5, 5, -5, 5)
+color = Color(0.843, 0.737, 0.322, 1)
+
+[node name="DiamondInner" type="Polygon2D" parent="Root/ObjectivePanel"]
+position = Vector2(17, 13)
+rotation = 0.785398
+polygon = PackedVector2Array(-3, -3, 3, -3, 3, 3, -3, 3)
+color = Color(0.09, 0.161, 0.106, 1)
 
 [node name="Objective" type="Label" parent="Root/ObjectivePanel"]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 2.0
-offset_right = 92.0
-offset_bottom = 7.0
-theme_override_fonts/font = ExtResource("3_font_bold")
+offset_left = 35.0
+offset_top = 6.0
+offset_right = 278.0
+offset_bottom = 21.0
 theme_override_colors/font_color = Color(0.788, 0.827, 0.604, 1)
-theme_override_font_sizes/font_size = 3
+theme_override_colors/font_shadow_color = Color(0.02, 0.086, 0.075, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 8
 text = "DEFEAT THE FOREST GUARDIANS"
-horizontal_alignment = 1
 
 [node name="Toast" type="Label" parent="Root"]
 visible = false
 layout_mode = 0
-offset_left = 142.0
-offset_top = 247.0
-offset_right = 338.0
-offset_bottom = 257.0
+offset_left = 500.0
+offset_top = 728.0
+offset_right = 940.0
+offset_bottom = 758.0
 theme_override_colors/font_color = Color(0.894, 0.929, 0.741, 1)
 theme_override_colors/font_shadow_color = Color(0.01, 0.04, 0.02, 1)
 theme_override_constants/shadow_offset_x = 1
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 3
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 9
 text = "THE PATH BEYOND IS NOT YET FORMED."
 horizontal_alignment = 1

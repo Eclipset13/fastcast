@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/emerald_forest.gd" id="1_forest_script"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
@@ -16,7 +16,6 @@
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/trees/tree-large-d.png" id="14_tree_d"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/runestone-start.png" id="15_runestone"]
 [ext_resource type="Texture2D" path="res://assets/biomes/emerald-forest/props/fallen-log-mid.png" id="16_fallen_log"]
-[ext_resource type="PackedScene" path="res://scenes/ui/world_hud.tscn" id="17_world_hud"]
 [ext_resource type="PackedScene" path="res://scenes/world/forest_portal.tscn" id="18_portal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
@@ -273,8 +272,6 @@ position = Vector2(2510, 237)
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(110, 208)
-
-[node name="HUD" parent="." instance=ExtResource("17_world_hud")]
 
 [node name="BattlePresentation" type="Node2D" parent="."]
 script = ExtResource("8_battle_presentation")
