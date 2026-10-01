@@ -59,7 +59,7 @@ func _hover_slot(slot_id: String, hovered: bool) -> void:
 	tween.tween_property(
 		slot.get_node("Beam"),
 		"modulate:a",
-		0.10 if hovered else 0.045,
+		0.14 if hovered else 0.09,
 		0.12
 	)
 	_slot_tweens[slot_id] = tween
@@ -153,7 +153,7 @@ func _back_to_character_select() -> void:
 		).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(slot, "scale", Vector2.ONE, 0.28)
 		tween.tween_property(slot, "modulate", Color.WHITE, 0.24)
-		tween.tween_property(slot.get_node("Beam"), "modulate:a", 0.045, 0.24)
+		tween.tween_property(slot.get_node("Beam"), "modulate:a", 0.09, 0.24)
 		_slot_tweens[slot_id] = tween
 
 		var button := slot.get_node("HitArea") as Button

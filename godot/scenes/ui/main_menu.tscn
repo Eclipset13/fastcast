@@ -1,15 +1,16 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-v2.png" id="2_bg"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-runesinger.png" id="3_pr"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-berserker.png" id="4_pb"]
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-wayfarer.png" id="5_pw"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-wayfarer-v2.png" id="5_pw"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/runesinger.png" id="6_runesinger"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/berserker.png" id="7_berserker"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/wayfarer.png" id="8_wayfarer"]
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="9_regular"]
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-700-normal.woff2" id="10_bold"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/title-ref.png" id="11_title"]
 
 [sub_resource type="StyleBoxFlat" id="Style_exit"]
 bg_color = Color(0.025, 0.035, 0.075, 0.72)
@@ -95,7 +96,7 @@ layout_mode = 0
 offset_right = 480.0
 offset_bottom = 270.0
 mouse_filter = 2
-color = Color(0.015, 0.02, 0.06, 0.08)
+color = Color(0.015, 0.02, 0.06, 0.035)
 
 [node name="Characters" type="Control" parent="."]
 layout_mode = 0
@@ -110,11 +111,11 @@ offset_bottom = 270.0
 pivot_offset = Vector2(80, 135)
 
 [node name="Beam" type="ColorRect" parent="Characters/Runesinger"]
-modulate = Color(1, 1, 1, 0.045)
+modulate = Color(1, 1, 1, 0.09)
 layout_mode = 0
-offset_left = 34.0
-offset_top = 34.0
-offset_right = 126.0
+offset_left = 47.0
+offset_top = 24.0
+offset_right = 113.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.66, 0.36, 0.95, 1)
@@ -122,9 +123,9 @@ color = Color(0.66, 0.36, 0.95, 1)
 [node name="BeamLeft" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.26)
 layout_mode = 0
-offset_left = 33.0
-offset_top = 27.0
-offset_right = 34.0
+offset_left = 46.0
+offset_top = 18.0
+offset_right = 47.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.74, 0.50, 1, 1)
@@ -132,9 +133,9 @@ color = Color(0.74, 0.50, 1, 1)
 [node name="BeamRight" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.18)
 layout_mode = 0
-offset_left = 126.0
-offset_top = 27.0
-offset_right = 127.0
+offset_left = 113.0
+offset_top = 18.0
+offset_right = 114.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.74, 0.50, 1, 1)
@@ -143,9 +144,9 @@ color = Color(0.74, 0.50, 1, 1)
 modulate = Color(1, 1, 1, 0.52)
 layout_mode = 0
 offset_left = 74.0
-offset_top = 70.0
+offset_top = 62.0
 offset_right = 86.0
-offset_bottom = 82.0
+offset_bottom = 74.0
 rotation = 0.785398
 pivot_offset = Vector2(6, 6)
 mouse_filter = 2
@@ -160,12 +161,46 @@ offset_bottom = 9.0
 mouse_filter = 2
 color = Color(0.075, 0.055, 0.13, 0.92)
 
+[node name="RuneLine" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.34)
+layout_mode = 0
+offset_left = 79.5
+offset_top = 28.0
+offset_right = 80.5
+offset_bottom = 185.0
+mouse_filter = 2
+color = Color(0.78, 0.58, 1, 1)
+
+[node name="RuneSmall1" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.68)
+layout_mode = 0
+offset_left = 77.0
+offset_top = 82.0
+offset_right = 83.0
+offset_bottom = 88.0
+rotation = 0.785398
+pivot_offset = Vector2(3, 3)
+mouse_filter = 2
+color = Color(0.78, 0.58, 1, 1)
+
+[node name="RuneSmall2" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.48)
+layout_mode = 0
+offset_left = 78.0
+offset_top = 96.0
+offset_right = 82.0
+offset_bottom = 100.0
+rotation = 0.785398
+pivot_offset = Vector2(2, 2)
+mouse_filter = 2
+color = Color(0.78, 0.58, 1, 1)
+
 [node name="Platform" type="TextureRect" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_left = -4.0
-offset_top = 194.0
-offset_right = 164.0
-offset_bottom = 318.0
+offset_left = -2.0
+offset_top = 187.0
+offset_right = 162.0
+offset_bottom = 308.0
 mouse_filter = 2
 texture = ExtResource("3_pr")
 expand_mode = 1
@@ -174,10 +209,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_left = 50.0
-offset_top = 104.0
-offset_right = 110.0
-offset_bottom = 193.0
+offset_left = 52.0
+offset_top = 107.0
+offset_right = 108.0
+offset_bottom = 190.0
 mouse_filter = 2
 texture = ExtResource("6_runesinger")
 expand_mode = 1
@@ -200,11 +235,11 @@ offset_bottom = 270.0
 pivot_offset = Vector2(80, 135)
 
 [node name="Beam" type="ColorRect" parent="Characters/Berserker"]
-modulate = Color(1, 1, 1, 0.045)
+modulate = Color(1, 1, 1, 0.09)
 layout_mode = 0
-offset_left = 34.0
-offset_top = 34.0
-offset_right = 126.0
+offset_left = 47.0
+offset_top = 24.0
+offset_right = 113.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.98, 0.22, 0.18, 1)
@@ -212,9 +247,9 @@ color = Color(0.98, 0.22, 0.18, 1)
 [node name="BeamLeft" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.26)
 layout_mode = 0
-offset_left = 33.0
-offset_top = 27.0
-offset_right = 34.0
+offset_left = 46.0
+offset_top = 18.0
+offset_right = 47.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(1, 0.35, 0.25, 1)
@@ -222,9 +257,9 @@ color = Color(1, 0.35, 0.25, 1)
 [node name="BeamRight" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.18)
 layout_mode = 0
-offset_left = 126.0
-offset_top = 27.0
-offset_right = 127.0
+offset_left = 113.0
+offset_top = 18.0
+offset_right = 114.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(1, 0.35, 0.25, 1)
@@ -233,9 +268,9 @@ color = Color(1, 0.35, 0.25, 1)
 modulate = Color(1, 1, 1, 0.52)
 layout_mode = 0
 offset_left = 74.0
-offset_top = 70.0
+offset_top = 62.0
 offset_right = 86.0
-offset_bottom = 82.0
+offset_bottom = 74.0
 rotation = 0.785398
 pivot_offset = Vector2(6, 6)
 mouse_filter = 2
@@ -250,12 +285,46 @@ offset_bottom = 9.0
 mouse_filter = 2
 color = Color(0.13, 0.035, 0.04, 0.92)
 
+[node name="RuneLine" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.34)
+layout_mode = 0
+offset_left = 79.5
+offset_top = 28.0
+offset_right = 80.5
+offset_bottom = 185.0
+mouse_filter = 2
+color = Color(1, 0.34, 0.22, 1)
+
+[node name="RuneSmall1" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.68)
+layout_mode = 0
+offset_left = 77.0
+offset_top = 82.0
+offset_right = 83.0
+offset_bottom = 88.0
+rotation = 0.785398
+pivot_offset = Vector2(3, 3)
+mouse_filter = 2
+color = Color(1, 0.34, 0.22, 1)
+
+[node name="RuneSmall2" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.48)
+layout_mode = 0
+offset_left = 78.0
+offset_top = 96.0
+offset_right = 82.0
+offset_bottom = 100.0
+rotation = 0.785398
+pivot_offset = Vector2(2, 2)
+mouse_filter = 2
+color = Color(1, 0.34, 0.22, 1)
+
 [node name="Platform" type="TextureRect" parent="Characters/Berserker"]
 layout_mode = 0
-offset_left = -8.0
-offset_top = 193.0
-offset_right = 168.0
-offset_bottom = 323.0
+offset_left = -7.0
+offset_top = 184.0
+offset_right = 167.0
+offset_bottom = 313.0
 mouse_filter = 2
 texture = ExtResource("4_pb")
 expand_mode = 1
@@ -264,10 +333,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Berserker"]
 layout_mode = 0
-offset_left = 30.0
-offset_top = 105.0
-offset_right = 130.0
-offset_bottom = 195.0
+offset_left = 35.0
+offset_top = 104.0
+offset_right = 125.0
+offset_bottom = 185.0
 mouse_filter = 2
 texture = ExtResource("7_berserker")
 expand_mode = 1
@@ -290,11 +359,11 @@ offset_bottom = 270.0
 pivot_offset = Vector2(80, 135)
 
 [node name="Beam" type="ColorRect" parent="Characters/Wayfarer"]
-modulate = Color(1, 1, 1, 0.045)
+modulate = Color(1, 1, 1, 0.09)
 layout_mode = 0
-offset_left = 34.0
-offset_top = 34.0
-offset_right = 126.0
+offset_left = 47.0
+offset_top = 24.0
+offset_right = 113.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.16, 0.63, 1, 1)
@@ -302,9 +371,9 @@ color = Color(0.16, 0.63, 1, 1)
 [node name="BeamLeft" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.26)
 layout_mode = 0
-offset_left = 33.0
-offset_top = 27.0
-offset_right = 34.0
+offset_left = 46.0
+offset_top = 18.0
+offset_right = 47.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.30, 0.75, 1, 1)
@@ -312,9 +381,9 @@ color = Color(0.30, 0.75, 1, 1)
 [node name="BeamRight" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.18)
 layout_mode = 0
-offset_left = 126.0
-offset_top = 27.0
-offset_right = 127.0
+offset_left = 113.0
+offset_top = 18.0
+offset_right = 114.0
 offset_bottom = 236.0
 mouse_filter = 2
 color = Color(0.30, 0.75, 1, 1)
@@ -323,9 +392,9 @@ color = Color(0.30, 0.75, 1, 1)
 modulate = Color(1, 1, 1, 0.52)
 layout_mode = 0
 offset_left = 74.0
-offset_top = 70.0
+offset_top = 62.0
 offset_right = 86.0
-offset_bottom = 82.0
+offset_bottom = 74.0
 rotation = 0.785398
 pivot_offset = Vector2(6, 6)
 mouse_filter = 2
@@ -340,12 +409,46 @@ offset_bottom = 9.0
 mouse_filter = 2
 color = Color(0.025, 0.075, 0.13, 0.92)
 
+[node name="RuneLine" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.34)
+layout_mode = 0
+offset_left = 79.5
+offset_top = 28.0
+offset_right = 80.5
+offset_bottom = 185.0
+mouse_filter = 2
+color = Color(0.30, 0.78, 1, 1)
+
+[node name="RuneSmall1" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.68)
+layout_mode = 0
+offset_left = 77.0
+offset_top = 82.0
+offset_right = 83.0
+offset_bottom = 88.0
+rotation = 0.785398
+pivot_offset = Vector2(3, 3)
+mouse_filter = 2
+color = Color(0.30, 0.78, 1, 1)
+
+[node name="RuneSmall2" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.48)
+layout_mode = 0
+offset_left = 78.0
+offset_top = 96.0
+offset_right = 82.0
+offset_bottom = 100.0
+rotation = 0.785398
+pivot_offset = Vector2(2, 2)
+mouse_filter = 2
+color = Color(0.30, 0.78, 1, 1)
+
 [node name="Platform" type="TextureRect" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_left = -4.0
-offset_top = 194.0
-offset_right = 164.0
-offset_bottom = 318.0
+offset_left = -2.0
+offset_top = 188.0
+offset_right = 162.0
+offset_bottom = 312.0
 mouse_filter = 2
 texture = ExtResource("5_pw")
 expand_mode = 1
@@ -354,10 +457,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_left = 27.0
-offset_top = 105.0
-offset_right = 133.0
-offset_bottom = 195.0
+offset_left = 31.0
+offset_top = 104.0
+offset_right = 129.0
+offset_bottom = 188.0
 mouse_filter = 2
 texture = ExtResource("8_wayfarer")
 expand_mode = 1
@@ -378,29 +481,26 @@ offset_right = 480.0
 offset_bottom = 62.0
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="Header"]
+[node name="Title" type="TextureRect" parent="Header"]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 12.0
-offset_right = 360.0
-offset_bottom = 37.0
-theme_override_fonts/font = ExtResource("10_bold")
-theme_override_colors/font_color = Color(0.94, 0.91, 0.83, 1)
-theme_override_colors/font_shadow_color = Color(0.04, 0.035, 0.09, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 18
-text = "FASTCAST"
-horizontal_alignment = 1
+offset_left = 145.0
+offset_top = 5.0
+offset_right = 335.0
+offset_bottom = 61.0
+mouse_filter = 2
+texture = ExtResource("11_title")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
 
 [node name="Prompt" type="Label" parent="Header"]
 layout_mode = 0
-offset_left = 130.0
-offset_top = 40.0
-offset_right = 350.0
-offset_bottom = 50.0
+offset_left = 140.0
+offset_top = 58.0
+offset_right = 340.0
+offset_bottom = 68.0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_colors/font_color = Color(0.72, 0.76, 0.84, 1)
+theme_override_colors/font_color = Color(0.82, 0.80, 0.88, 0.92)
 theme_override_colors/font_shadow_color = Color(0.025, 0.03, 0.07, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
@@ -410,15 +510,15 @@ horizontal_alignment = 1
 
 [node name="ExitButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 452.0
-offset_top = 10.0
-offset_right = 470.0
-offset_bottom = 28.0
+offset_left = 454.0
+offset_top = 7.0
+offset_right = 469.0
+offset_bottom = 22.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("10_bold")
 theme_override_colors/font_color = Color(0.88, 0.87, 0.91, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 6
 theme_override_styles/normal = SubResource("Style_exit")
 theme_override_styles/hover = SubResource("Style_exit_hover")
 theme_override_styles/pressed = SubResource("Style_exit_hover")
