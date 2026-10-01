@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.webp" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd-v2.webp" id="2_bg"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-runesinger.png" id="3_pr"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-berserker.png" id="4_pb"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-wayfarer-v2.png" id="5_pw"]
