@@ -1,0 +1,536 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-runesinger.png" id="3_pr"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-berserker.png" id="4_pb"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-wayfarer.png" id="5_pw"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/runesinger.png" id="6_runesinger"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/berserker.png" id="7_berserker"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/wayfarer.png" id="8_wayfarer"]
+[ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="9_regular"]
+[ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-700-normal.woff2" id="10_bold"]
+
+[sub_resource type="StyleBoxFlat" id="Style_exit"]
+bg_color = Color(0.025, 0.035, 0.075, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.72, 0.82, 0.75)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="Style_exit_hover"]
+bg_color = Color(0.12, 0.10, 0.19, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.91, 0.82, 1, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="Style_action_panel"]
+bg_color = Color(0.018, 0.027, 0.065, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.47, 0.63, 0.72)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_action_button"]
+bg_color = Color(0.035, 0.047, 0.09, 0.78)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.33, 0.47, 0.68)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="Style_action_hover"]
+bg_color = Color(0.13, 0.10, 0.19, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.82, 0.72, 0.96, 0.95)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="DarkVeil" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(0.015, 0.02, 0.06, 0.18)
+
+[node name="Characters" type="Control" parent="."]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+
+[node name="Runesinger" type="Control" parent="Characters"]
+layout_mode = 0
+offset_right = 160.0
+offset_bottom = 270.0
+pivot_offset = Vector2(80, 135)
+
+[node name="Beam" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.18)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 55.0
+offset_right = 136.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.66, 0.36, 0.95, 1)
+
+[node name="BeamLeft" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.32)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 47.0
+offset_right = 25.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.74, 0.50, 1, 1)
+
+[node name="BeamRight" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.16)
+layout_mode = 0
+offset_left = 135.0
+offset_top = 47.0
+offset_right = 136.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.74, 0.50, 1, 1)
+
+[node name="Rune" type="ColorRect" parent="Characters/Runesinger"]
+modulate = Color(1, 1, 1, 0.52)
+layout_mode = 0
+offset_left = 73.0
+offset_top = 70.0
+offset_right = 87.0
+offset_bottom = 84.0
+rotation = 0.785398
+pivot_offset = Vector2(7, 7)
+mouse_filter = 2
+color = Color(0.78, 0.58, 1, 1)
+
+[node name="RuneInner" type="ColorRect" parent="Characters/Runesinger/Rune"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 11.0
+offset_bottom = 11.0
+mouse_filter = 2
+color = Color(0.075, 0.055, 0.13, 0.92)
+
+[node name="Platform" type="TextureRect" parent="Characters/Runesinger"]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 157.0
+offset_right = 162.0
+offset_bottom = 278.0
+mouse_filter = 2
+texture = ExtResource("3_pr")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="Character" type="TextureRect" parent="Characters/Runesinger"]
+layout_mode = 0
+offset_left = 37.0
+offset_top = 76.0
+offset_right = 123.0
+offset_bottom = 204.0
+mouse_filter = 2
+texture = ExtResource("6_runesinger")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="HitArea" type="Button" parent="Characters/Runesinger"]
+layout_mode = 0
+offset_top = 48.0
+offset_right = 160.0
+offset_bottom = 270.0
+focus_mode = 0
+flat = true
+
+[node name="Berserker" type="Control" parent="Characters"]
+layout_mode = 0
+offset_left = 160.0
+offset_right = 320.0
+offset_bottom = 270.0
+pivot_offset = Vector2(80, 135)
+
+[node name="Beam" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.18)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 55.0
+offset_right = 136.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.98, 0.22, 0.18, 1)
+
+[node name="BeamLeft" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.32)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 47.0
+offset_right = 25.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(1, 0.35, 0.25, 1)
+
+[node name="BeamRight" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.16)
+layout_mode = 0
+offset_left = 135.0
+offset_top = 47.0
+offset_right = 136.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(1, 0.35, 0.25, 1)
+
+[node name="Rune" type="ColorRect" parent="Characters/Berserker"]
+modulate = Color(1, 1, 1, 0.52)
+layout_mode = 0
+offset_left = 73.0
+offset_top = 70.0
+offset_right = 87.0
+offset_bottom = 84.0
+rotation = 0.785398
+pivot_offset = Vector2(7, 7)
+mouse_filter = 2
+color = Color(1, 0.34, 0.22, 1)
+
+[node name="RuneInner" type="ColorRect" parent="Characters/Berserker/Rune"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 11.0
+offset_bottom = 11.0
+mouse_filter = 2
+color = Color(0.13, 0.035, 0.04, 0.92)
+
+[node name="Platform" type="TextureRect" parent="Characters/Berserker"]
+layout_mode = 0
+offset_left = -7.0
+offset_top = 151.0
+offset_right = 167.0
+offset_bottom = 280.0
+mouse_filter = 2
+texture = ExtResource("4_pb")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="Character" type="TextureRect" parent="Characters/Berserker"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 76.0
+offset_right = 149.0
+offset_bottom = 200.0
+mouse_filter = 2
+texture = ExtResource("7_berserker")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="HitArea" type="Button" parent="Characters/Berserker"]
+layout_mode = 0
+offset_top = 48.0
+offset_right = 160.0
+offset_bottom = 270.0
+focus_mode = 0
+flat = true
+
+[node name="Wayfarer" type="Control" parent="Characters"]
+layout_mode = 0
+offset_left = 320.0
+offset_right = 480.0
+offset_bottom = 270.0
+pivot_offset = Vector2(80, 135)
+
+[node name="Beam" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.18)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 55.0
+offset_right = 136.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.16, 0.63, 1, 1)
+
+[node name="BeamLeft" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.32)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 47.0
+offset_right = 25.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.30, 0.75, 1, 1)
+
+[node name="BeamRight" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.16)
+layout_mode = 0
+offset_left = 135.0
+offset_top = 47.0
+offset_right = 136.0
+offset_bottom = 244.0
+mouse_filter = 2
+color = Color(0.30, 0.75, 1, 1)
+
+[node name="Rune" type="ColorRect" parent="Characters/Wayfarer"]
+modulate = Color(1, 1, 1, 0.52)
+layout_mode = 0
+offset_left = 73.0
+offset_top = 70.0
+offset_right = 87.0
+offset_bottom = 84.0
+rotation = 0.785398
+pivot_offset = Vector2(7, 7)
+mouse_filter = 2
+color = Color(0.30, 0.78, 1, 1)
+
+[node name="RuneInner" type="ColorRect" parent="Characters/Wayfarer/Rune"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 11.0
+offset_bottom = 11.0
+mouse_filter = 2
+color = Color(0.025, 0.075, 0.13, 0.92)
+
+[node name="Platform" type="TextureRect" parent="Characters/Wayfarer"]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 156.0
+offset_right = 162.0
+offset_bottom = 280.0
+mouse_filter = 2
+texture = ExtResource("5_pw")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="Character" type="TextureRect" parent="Characters/Wayfarer"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 76.0
+offset_right = 153.0
+offset_bottom = 200.0
+mouse_filter = 2
+texture = ExtResource("8_wayfarer")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 1
+
+[node name="HitArea" type="Button" parent="Characters/Wayfarer"]
+layout_mode = 0
+offset_top = 48.0
+offset_right = 160.0
+offset_bottom = 270.0
+focus_mode = 0
+flat = true
+
+[node name="Header" type="Control" parent="."]
+layout_mode = 0
+offset_right = 480.0
+offset_bottom = 62.0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Header"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 8.0
+offset_right = 380.0
+offset_bottom = 38.0
+theme_override_fonts/font = ExtResource("10_bold")
+theme_override_colors/font_color = Color(0.94, 0.91, 0.83, 1)
+theme_override_colors/font_shadow_color = Color(0.04, 0.035, 0.09, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "FASTCAST"
+horizontal_alignment = 1
+
+[node name="Prompt" type="Label" parent="Header"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 40.0
+offset_right = 360.0
+offset_bottom = 54.0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_colors/font_color = Color(0.72, 0.76, 0.84, 1)
+theme_override_colors/font_shadow_color = Color(0.025, 0.03, 0.07, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 6
+text = "CHOOSE YOUR CHARACTER"
+horizontal_alignment = 1
+
+[node name="ExitButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 452.0
+offset_top = 10.0
+offset_right = 470.0
+offset_bottom = 28.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("10_bold")
+theme_override_colors/font_color = Color(0.88, 0.87, 0.91, 1)
+theme_override_colors/font_hover_color = Color(1, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 7
+theme_override_styles/normal = SubResource("Style_exit")
+theme_override_styles/hover = SubResource("Style_exit_hover")
+theme_override_styles/pressed = SubResource("Style_exit_hover")
+text = "X"
+
+[node name="ActionMenu" type="Control" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 136.0
+offset_bottom = 148.0
+
+[node name="Panel" type="Panel" parent="ActionMenu"]
+layout_mode = 0
+offset_right = 136.0
+offset_bottom = 148.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Style_action_panel")
+
+[node name="ClassName" type="Label" parent="ActionMenu"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 129.0
+offset_bottom = 22.0
+theme_override_fonts/font = ExtResource("10_bold")
+theme_override_colors/font_color = Color(0.92, 0.88, 0.98, 1)
+theme_override_colors/font_shadow_color = Color(0.03, 0.025, 0.07, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 7
+text = "RUNESINGER"
+horizontal_alignment = 1
+
+[node name="Rule" type="ColorRect" parent="ActionMenu"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 25.0
+offset_right = 127.0
+offset_bottom = 26.0
+mouse_filter = 2
+color = Color(0.47, 0.45, 0.63, 0.55)
+
+[node name="Buttons" type="VBoxContainer" parent="ActionMenu"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 31.0
+offset_right = 127.0
+offset_bottom = 127.0
+theme_override_constants/separation = 2
+
+[node name="NewGame" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(118, 17)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("10_bold")
+theme_override_font_sizes/font_size = 5
+theme_override_styles/normal = SubResource("Style_action_button")
+theme_override_styles/hover = SubResource("Style_action_hover")
+theme_override_styles/pressed = SubResource("Style_action_hover")
+text = "NEW GAME"
+
+[node name="Saves" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(118, 17)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_font_sizes/font_size = 5
+theme_override_styles/normal = SubResource("Style_action_button")
+theme_override_styles/hover = SubResource("Style_action_hover")
+theme_override_styles/pressed = SubResource("Style_action_hover")
+text = "SAVES"
+
+[node name="Settings" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(118, 17)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_font_sizes/font_size = 5
+theme_override_styles/normal = SubResource("Style_action_button")
+theme_override_styles/hover = SubResource("Style_action_hover")
+theme_override_styles/pressed = SubResource("Style_action_hover")
+text = "SETTINGS"
+
+[node name="Controls" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(118, 17)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_font_sizes/font_size = 5
+theme_override_styles/normal = SubResource("Style_action_button")
+theme_override_styles/hover = SubResource("Style_action_hover")
+theme_override_styles/pressed = SubResource("Style_action_hover")
+text = "CONTROLS"
+
+[node name="Back" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(118, 17)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_font_sizes/font_size = 5
+theme_override_styles/normal = SubResource("Style_action_button")
+theme_override_styles/hover = SubResource("Style_action_hover")
+theme_override_styles/pressed = SubResource("Style_action_hover")
+text = "BACK"
+
+[node name="Status" type="Label" parent="ActionMenu"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 132.0
+offset_right = 131.0
+offset_bottom = 143.0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_colors/font_color = Color(0.68, 0.72, 0.81, 1)
+theme_override_font_sizes/font_size = 4
+horizontal_alignment = 1
