@@ -13,6 +13,7 @@ var _slot_tweens: Dictionary = {}
 
 
 func _ready() -> void:
+	get_window().content_scale_size = Vector2i(1440, 810)
 	for slot_id in SLOT_IDS:
 		var slot := _slot(slot_id)
 		_slot_home[slot_id] = slot.position
@@ -83,20 +84,20 @@ func _select_character(slot_id: String) -> void:
 
 	match slot_id:
 		"runesinger":
-			_move_slot("runesinger", Vector2(-5.0, 0.0), true)
-			_move_slot("berserker", Vector2(303.0, 0.0), false)
-			_move_slot("wayfarer", Vector2(455.0, 0.0), false)
-			_action_menu.position = Vector2(174.0, 87.0)
+			_move_slot("runesinger", Vector2(-15.0, 0.0), true)
+			_move_slot("berserker", Vector2(909.0, 0.0), false)
+			_move_slot("wayfarer", Vector2(1365.0, 0.0), false)
+			_action_menu.position = Vector2(522.0, 261.0)
 		"berserker":
-			_move_slot("runesinger", Vector2(-138.0, 0.0), false)
-			_move_slot("berserker", Vector2(160.0, 0.0), true)
-			_move_slot("wayfarer", Vector2(458.0, 0.0), false)
-			_action_menu.position = Vector2(326.0, 87.0)
+			_move_slot("runesinger", Vector2(-414.0, 0.0), false)
+			_move_slot("berserker", Vector2(480.0, 0.0), true)
+			_move_slot("wayfarer", Vector2(1374.0, 0.0), false)
+			_action_menu.position = Vector2(978.0, 261.0)
 		"wayfarer":
-			_move_slot("runesinger", Vector2(-142.0, 0.0), false)
-			_move_slot("berserker", Vector2(8.0, 0.0), false)
-			_move_slot("wayfarer", Vector2(325.0, 0.0), true)
-			_action_menu.position = Vector2(174.0, 87.0)
+			_move_slot("runesinger", Vector2(-426.0, 0.0), false)
+			_move_slot("berserker", Vector2(24.0, 0.0), false)
+			_move_slot("wayfarer", Vector2(975.0, 0.0), true)
+			_action_menu.position = Vector2(522.0, 261.0)
 
 	await get_tree().create_timer(0.16).timeout
 	_action_menu.modulate.a = 0.0
@@ -107,7 +108,7 @@ func _select_character(slot_id: String) -> void:
 	menu_tween.tween_property(
 		_action_menu,
 		"position:y",
-		_action_menu.position.y - 4.0,
+		_action_menu.position.y - 12.0,
 		0.20
 	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
@@ -168,6 +169,7 @@ func _new_game() -> void:
 	if _selected.is_empty():
 		return
 	GameSession.selected_class = _selected
+	get_window().content_scale_size = Vector2i(480, 270)
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 

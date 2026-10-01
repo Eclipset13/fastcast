@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-v2.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.webp" id="2_bg"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-runesinger.png" id="3_pr"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-berserker.png" id="4_pb"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/platform-wayfarer-v2.png" id="5_pw"]
@@ -14,63 +14,63 @@
 
 [sub_resource type="StyleBoxFlat" id="Style_exit"]
 bg_color = Color(0.025, 0.035, 0.075, 0.72)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
 border_color = Color(0.72, 0.72, 0.82, 0.75)
-corner_radius_top_left = 1
-corner_radius_top_right = 1
-corner_radius_bottom_right = 1
-corner_radius_bottom_left = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxFlat" id="Style_exit_hover"]
 bg_color = Color(0.12, 0.10, 0.19, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
 border_color = Color(0.91, 0.82, 1, 1)
-corner_radius_top_left = 1
-corner_radius_top_right = 1
-corner_radius_bottom_right = 1
-corner_radius_bottom_left = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxFlat" id="Style_action_panel"]
 bg_color = Color(0.018, 0.027, 0.065, 0.86)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
 border_color = Color(0.42, 0.47, 0.63, 0.72)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="Style_action_button"]
 bg_color = Color(0.035, 0.047, 0.09, 0.78)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
 border_color = Color(0.28, 0.33, 0.47, 0.68)
-corner_radius_top_left = 1
-corner_radius_top_right = 1
-corner_radius_bottom_right = 1
-corner_radius_bottom_left = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxFlat" id="Style_action_hover"]
 bg_color = Color(0.13, 0.10, 0.19, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
 border_color = Color(0.82, 0.72, 0.96, 0.95)
-corner_radius_top_left = 1
-corner_radius_top_right = 1
-corner_radius_bottom_right = 1
-corner_radius_bottom_left = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -83,124 +83,124 @@ script = ExtResource("1_script")
 
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 0
-offset_right = 480.0
-offset_bottom = 270.0
+offset_right = 1440.0
+offset_bottom = 810.0
 mouse_filter = 2
 texture = ExtResource("2_bg")
 expand_mode = 1
 stretch_mode = 0
-texture_filter = 1
+texture_filter = 2
 
 [node name="DarkVeil" type="ColorRect" parent="."]
 layout_mode = 0
-offset_right = 480.0
-offset_bottom = 270.0
+offset_right = 1440.0
+offset_bottom = 810.0
 mouse_filter = 2
 color = Color(0.015, 0.02, 0.06, 0.035)
 
 [node name="Characters" type="Control" parent="."]
 layout_mode = 0
-offset_right = 480.0
-offset_bottom = 270.0
+offset_right = 1440.0
+offset_bottom = 810.0
 mouse_filter = 2
 
 [node name="Runesinger" type="Control" parent="Characters"]
 layout_mode = 0
-offset_right = 160.0
-offset_bottom = 270.0
-pivot_offset = Vector2(80, 135)
+offset_right = 480.0
+offset_bottom = 810.0
+pivot_offset = Vector2(240, 405)
 
 [node name="Beam" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.09)
 layout_mode = 0
-offset_left = 47.0
-offset_top = 24.0
-offset_right = 113.0
-offset_bottom = 236.0
+offset_left = 141.0
+offset_top = 72.0
+offset_right = 339.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.66, 0.36, 0.95, 1)
 
 [node name="BeamLeft" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.26)
 layout_mode = 0
-offset_left = 46.0
-offset_top = 18.0
-offset_right = 47.0
-offset_bottom = 236.0
+offset_left = 138.0
+offset_top = 54.0
+offset_right = 141.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.74, 0.50, 1, 1)
 
 [node name="BeamRight" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.18)
 layout_mode = 0
-offset_left = 113.0
-offset_top = 18.0
-offset_right = 114.0
-offset_bottom = 236.0
+offset_left = 339.0
+offset_top = 54.0
+offset_right = 342.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.74, 0.50, 1, 1)
 
 [node name="Rune" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.52)
 layout_mode = 0
-offset_left = 74.0
-offset_top = 62.0
-offset_right = 86.0
-offset_bottom = 74.0
+offset_left = 222.0
+offset_top = 186.0
+offset_right = 258.0
+offset_bottom = 222.0
 rotation = 0.785398
-pivot_offset = Vector2(6, 6)
+pivot_offset = Vector2(18, 18)
 mouse_filter = 2
 color = Color(0.78, 0.58, 1, 1)
 
 [node name="RuneInner" type="ColorRect" parent="Characters/Runesinger/Rune"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 9.0
-offset_bottom = 9.0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 27.0
+offset_bottom = 27.0
 mouse_filter = 2
 color = Color(0.075, 0.055, 0.13, 0.92)
 
 [node name="RuneLine" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.34)
 layout_mode = 0
-offset_left = 79.5
-offset_top = 28.0
-offset_right = 80.5
-offset_bottom = 185.0
+offset_left = 238.5
+offset_top = 84.0
+offset_right = 241.5
+offset_bottom = 555.0
 mouse_filter = 2
 color = Color(0.78, 0.58, 1, 1)
 
 [node name="RuneSmall1" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.68)
 layout_mode = 0
-offset_left = 77.0
-offset_top = 82.0
-offset_right = 83.0
-offset_bottom = 88.0
+offset_left = 231.0
+offset_top = 246.0
+offset_right = 249.0
+offset_bottom = 264.0
 rotation = 0.785398
-pivot_offset = Vector2(3, 3)
+pivot_offset = Vector2(9, 9)
 mouse_filter = 2
 color = Color(0.78, 0.58, 1, 1)
 
 [node name="RuneSmall2" type="ColorRect" parent="Characters/Runesinger"]
 modulate = Color(1, 1, 1, 0.48)
 layout_mode = 0
-offset_left = 78.0
-offset_top = 96.0
-offset_right = 82.0
-offset_bottom = 100.0
+offset_left = 234.0
+offset_top = 288.0
+offset_right = 246.0
+offset_bottom = 300.0
 rotation = 0.785398
-pivot_offset = Vector2(2, 2)
+pivot_offset = Vector2(6, 6)
 mouse_filter = 2
 color = Color(0.78, 0.58, 1, 1)
 
 [node name="Platform" type="TextureRect" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_left = -2.0
-offset_top = 187.0
-offset_right = 162.0
-offset_bottom = 308.0
+offset_left = -6.0
+offset_top = 561.0
+offset_right = 486.0
+offset_bottom = 924.0
 mouse_filter = 2
 texture = ExtResource("3_pr")
 expand_mode = 1
@@ -209,10 +209,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_left = 52.0
-offset_top = 107.0
-offset_right = 108.0
-offset_bottom = 190.0
+offset_left = 156.0
+offset_top = 321.0
+offset_right = 324.0
+offset_bottom = 570.0
 mouse_filter = 2
 texture = ExtResource("6_runesinger")
 expand_mode = 1
@@ -221,110 +221,110 @@ texture_filter = 1
 
 [node name="HitArea" type="Button" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_top = 58.0
-offset_right = 160.0
-offset_bottom = 230.0
+offset_top = 174.0
+offset_right = 480.0
+offset_bottom = 690.0
 focus_mode = 0
 flat = true
 
 [node name="Berserker" type="Control" parent="Characters"]
 layout_mode = 0
-offset_left = 160.0
-offset_right = 320.0
-offset_bottom = 270.0
-pivot_offset = Vector2(80, 135)
+offset_left = 480.0
+offset_right = 960.0
+offset_bottom = 810.0
+pivot_offset = Vector2(240, 405)
 
 [node name="Beam" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.09)
 layout_mode = 0
-offset_left = 47.0
-offset_top = 24.0
-offset_right = 113.0
-offset_bottom = 236.0
+offset_left = 141.0
+offset_top = 72.0
+offset_right = 339.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.98, 0.22, 0.18, 1)
 
 [node name="BeamLeft" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.26)
 layout_mode = 0
-offset_left = 46.0
-offset_top = 18.0
-offset_right = 47.0
-offset_bottom = 236.0
+offset_left = 138.0
+offset_top = 54.0
+offset_right = 141.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(1, 0.35, 0.25, 1)
 
 [node name="BeamRight" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.18)
 layout_mode = 0
-offset_left = 113.0
-offset_top = 18.0
-offset_right = 114.0
-offset_bottom = 236.0
+offset_left = 339.0
+offset_top = 54.0
+offset_right = 342.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(1, 0.35, 0.25, 1)
 
 [node name="Rune" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.52)
 layout_mode = 0
-offset_left = 74.0
-offset_top = 62.0
-offset_right = 86.0
-offset_bottom = 74.0
+offset_left = 222.0
+offset_top = 186.0
+offset_right = 258.0
+offset_bottom = 222.0
 rotation = 0.785398
-pivot_offset = Vector2(6, 6)
+pivot_offset = Vector2(18, 18)
 mouse_filter = 2
 color = Color(1, 0.34, 0.22, 1)
 
 [node name="RuneInner" type="ColorRect" parent="Characters/Berserker/Rune"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 9.0
-offset_bottom = 9.0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 27.0
+offset_bottom = 27.0
 mouse_filter = 2
 color = Color(0.13, 0.035, 0.04, 0.92)
 
 [node name="RuneLine" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.34)
 layout_mode = 0
-offset_left = 79.5
-offset_top = 28.0
-offset_right = 80.5
-offset_bottom = 185.0
+offset_left = 238.5
+offset_top = 84.0
+offset_right = 241.5
+offset_bottom = 555.0
 mouse_filter = 2
 color = Color(1, 0.34, 0.22, 1)
 
 [node name="RuneSmall1" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.68)
 layout_mode = 0
-offset_left = 77.0
-offset_top = 82.0
-offset_right = 83.0
-offset_bottom = 88.0
+offset_left = 231.0
+offset_top = 246.0
+offset_right = 249.0
+offset_bottom = 264.0
 rotation = 0.785398
-pivot_offset = Vector2(3, 3)
+pivot_offset = Vector2(9, 9)
 mouse_filter = 2
 color = Color(1, 0.34, 0.22, 1)
 
 [node name="RuneSmall2" type="ColorRect" parent="Characters/Berserker"]
 modulate = Color(1, 1, 1, 0.48)
 layout_mode = 0
-offset_left = 78.0
-offset_top = 96.0
-offset_right = 82.0
-offset_bottom = 100.0
+offset_left = 234.0
+offset_top = 288.0
+offset_right = 246.0
+offset_bottom = 300.0
 rotation = 0.785398
-pivot_offset = Vector2(2, 2)
+pivot_offset = Vector2(6, 6)
 mouse_filter = 2
 color = Color(1, 0.34, 0.22, 1)
 
 [node name="Platform" type="TextureRect" parent="Characters/Berserker"]
 layout_mode = 0
-offset_left = -7.0
-offset_top = 184.0
-offset_right = 167.0
-offset_bottom = 313.0
+offset_left = -21.0
+offset_top = 552.0
+offset_right = 501.0
+offset_bottom = 939.0
 mouse_filter = 2
 texture = ExtResource("4_pb")
 expand_mode = 1
@@ -333,10 +333,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Berserker"]
 layout_mode = 0
-offset_left = 35.0
-offset_top = 104.0
-offset_right = 125.0
-offset_bottom = 185.0
+offset_left = 105.0
+offset_top = 312.0
+offset_right = 375.0
+offset_bottom = 555.0
 mouse_filter = 2
 texture = ExtResource("7_berserker")
 expand_mode = 1
@@ -345,110 +345,110 @@ texture_filter = 1
 
 [node name="HitArea" type="Button" parent="Characters/Berserker"]
 layout_mode = 0
-offset_top = 58.0
-offset_right = 160.0
-offset_bottom = 230.0
+offset_top = 174.0
+offset_right = 480.0
+offset_bottom = 690.0
 focus_mode = 0
 flat = true
 
 [node name="Wayfarer" type="Control" parent="Characters"]
 layout_mode = 0
-offset_left = 320.0
-offset_right = 480.0
-offset_bottom = 270.0
-pivot_offset = Vector2(80, 135)
+offset_left = 960.0
+offset_right = 1440.0
+offset_bottom = 810.0
+pivot_offset = Vector2(240, 405)
 
 [node name="Beam" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.09)
 layout_mode = 0
-offset_left = 47.0
-offset_top = 24.0
-offset_right = 113.0
-offset_bottom = 236.0
+offset_left = 141.0
+offset_top = 72.0
+offset_right = 339.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.16, 0.63, 1, 1)
 
 [node name="BeamLeft" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.26)
 layout_mode = 0
-offset_left = 46.0
-offset_top = 18.0
-offset_right = 47.0
-offset_bottom = 236.0
+offset_left = 138.0
+offset_top = 54.0
+offset_right = 141.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.30, 0.75, 1, 1)
 
 [node name="BeamRight" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.18)
 layout_mode = 0
-offset_left = 113.0
-offset_top = 18.0
-offset_right = 114.0
-offset_bottom = 236.0
+offset_left = 339.0
+offset_top = 54.0
+offset_right = 342.0
+offset_bottom = 708.0
 mouse_filter = 2
 color = Color(0.30, 0.75, 1, 1)
 
 [node name="Rune" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.52)
 layout_mode = 0
-offset_left = 74.0
-offset_top = 62.0
-offset_right = 86.0
-offset_bottom = 74.0
+offset_left = 222.0
+offset_top = 186.0
+offset_right = 258.0
+offset_bottom = 222.0
 rotation = 0.785398
-pivot_offset = Vector2(6, 6)
+pivot_offset = Vector2(18, 18)
 mouse_filter = 2
 color = Color(0.30, 0.78, 1, 1)
 
 [node name="RuneInner" type="ColorRect" parent="Characters/Wayfarer/Rune"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 9.0
-offset_bottom = 9.0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 27.0
+offset_bottom = 27.0
 mouse_filter = 2
 color = Color(0.025, 0.075, 0.13, 0.92)
 
 [node name="RuneLine" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.34)
 layout_mode = 0
-offset_left = 79.5
-offset_top = 28.0
-offset_right = 80.5
-offset_bottom = 185.0
+offset_left = 238.5
+offset_top = 84.0
+offset_right = 241.5
+offset_bottom = 555.0
 mouse_filter = 2
 color = Color(0.30, 0.78, 1, 1)
 
 [node name="RuneSmall1" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.68)
 layout_mode = 0
-offset_left = 77.0
-offset_top = 82.0
-offset_right = 83.0
-offset_bottom = 88.0
+offset_left = 231.0
+offset_top = 246.0
+offset_right = 249.0
+offset_bottom = 264.0
 rotation = 0.785398
-pivot_offset = Vector2(3, 3)
+pivot_offset = Vector2(9, 9)
 mouse_filter = 2
 color = Color(0.30, 0.78, 1, 1)
 
 [node name="RuneSmall2" type="ColorRect" parent="Characters/Wayfarer"]
 modulate = Color(1, 1, 1, 0.48)
 layout_mode = 0
-offset_left = 78.0
-offset_top = 96.0
-offset_right = 82.0
-offset_bottom = 100.0
+offset_left = 234.0
+offset_top = 288.0
+offset_right = 246.0
+offset_bottom = 300.0
 rotation = 0.785398
-pivot_offset = Vector2(2, 2)
+pivot_offset = Vector2(6, 6)
 mouse_filter = 2
 color = Color(0.30, 0.78, 1, 1)
 
 [node name="Platform" type="TextureRect" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_left = -2.0
-offset_top = 188.0
-offset_right = 162.0
-offset_bottom = 312.0
+offset_left = -6.0
+offset_top = 564.0
+offset_right = 486.0
+offset_bottom = 936.0
 mouse_filter = 2
 texture = ExtResource("5_pw")
 expand_mode = 1
@@ -457,10 +457,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_left = 31.0
-offset_top = 104.0
-offset_right = 129.0
-offset_bottom = 188.0
+offset_left = 93.0
+offset_top = 312.0
+offset_right = 387.0
+offset_bottom = 564.0
 mouse_filter = 2
 texture = ExtResource("8_wayfarer")
 expand_mode = 1
@@ -469,24 +469,24 @@ texture_filter = 1
 
 [node name="HitArea" type="Button" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_top = 58.0
-offset_right = 160.0
-offset_bottom = 230.0
+offset_top = 174.0
+offset_right = 480.0
+offset_bottom = 690.0
 focus_mode = 0
 flat = true
 
 [node name="Header" type="Control" parent="."]
 layout_mode = 0
-offset_right = 480.0
-offset_bottom = 62.0
+offset_right = 1440.0
+offset_bottom = 186.0
 mouse_filter = 2
 
 [node name="Title" type="TextureRect" parent="Header"]
 layout_mode = 0
-offset_left = 145.0
-offset_top = 5.0
-offset_right = 335.0
-offset_bottom = 61.0
+offset_left = 435.0
+offset_top = 15.0
+offset_right = 1005.0
+offset_bottom = 183.0
 mouse_filter = 2
 texture = ExtResource("11_title")
 expand_mode = 1
@@ -495,30 +495,30 @@ texture_filter = 1
 
 [node name="Prompt" type="Label" parent="Header"]
 layout_mode = 0
-offset_left = 140.0
-offset_top = 58.0
-offset_right = 340.0
-offset_bottom = 68.0
+offset_left = 420.0
+offset_top = 174.0
+offset_right = 1020.0
+offset_bottom = 204.0
 theme_override_fonts/font = ExtResource("9_regular")
 theme_override_colors/font_color = Color(0.82, 0.80, 0.88, 0.92)
 theme_override_colors/font_shadow_color = Color(0.025, 0.03, 0.07, 1)
-theme_override_constants/shadow_offset_x = 1
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 5
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 15
 text = "CHOOSE YOUR CHARACTER"
 horizontal_alignment = 1
 
 [node name="ExitButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 454.0
-offset_top = 7.0
-offset_right = 469.0
-offset_bottom = 22.0
+offset_left = 1362.0
+offset_top = 21.0
+offset_right = 1407.0
+offset_bottom = 66.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("10_bold")
 theme_override_colors/font_color = Color(0.88, 0.87, 0.91, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("Style_exit")
 theme_override_styles/hover = SubResource("Style_exit_hover")
 theme_override_styles/pressed = SubResource("Style_exit_hover")
@@ -527,98 +527,98 @@ text = "X"
 [node name="ActionMenu" type="Control" parent="."]
 visible = false
 layout_mode = 0
-offset_right = 136.0
-offset_bottom = 148.0
+offset_right = 408.0
+offset_bottom = 444.0
 
 [node name="Panel" type="Panel" parent="ActionMenu"]
 layout_mode = 0
-offset_right = 136.0
-offset_bottom = 148.0
+offset_right = 408.0
+offset_bottom = 444.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Style_action_panel")
 
 [node name="ClassName" type="Label" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = 129.0
-offset_bottom = 22.0
+offset_left = 21.0
+offset_top = 21.0
+offset_right = 387.0
+offset_bottom = 66.0
 theme_override_fonts/font = ExtResource("10_bold")
 theme_override_colors/font_color = Color(0.92, 0.88, 0.98, 1)
 theme_override_colors/font_shadow_color = Color(0.03, 0.025, 0.07, 1)
-theme_override_constants/shadow_offset_x = 1
-theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 7
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 21
 text = "RUNESINGER"
 horizontal_alignment = 1
 
 [node name="Rule" type="ColorRect" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 25.0
-offset_right = 127.0
-offset_bottom = 26.0
+offset_left = 27.0
+offset_top = 75.0
+offset_right = 381.0
+offset_bottom = 78.0
 mouse_filter = 2
 color = Color(0.47, 0.45, 0.63, 0.55)
 
 [node name="Buttons" type="VBoxContainer" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 31.0
-offset_right = 127.0
-offset_bottom = 127.0
+offset_left = 27.0
+offset_top = 93.0
+offset_right = 381.0
+offset_bottom = 381.0
 theme_override_constants/separation = 2
 
 [node name="NewGame" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(118, 17)
+custom_minimum_size = Vector2(354, 51)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("10_bold")
-theme_override_font_sizes/font_size = 5
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "NEW GAME"
 
 [node name="Saves" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(118, 17)
+custom_minimum_size = Vector2(354, 51)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 5
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SAVES"
 
 [node name="Settings" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(118, 17)
+custom_minimum_size = Vector2(354, 51)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 5
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SETTINGS"
 
 [node name="Controls" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(118, 17)
+custom_minimum_size = Vector2(354, 51)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 5
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "CONTROLS"
 
 [node name="Back" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(118, 17)
+custom_minimum_size = Vector2(354, 51)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 5
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
@@ -626,11 +626,11 @@ text = "BACK"
 
 [node name="Status" type="Label" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 132.0
-offset_right = 131.0
-offset_bottom = 143.0
+offset_left = 15.0
+offset_top = 396.0
+offset_right = 393.0
+offset_bottom = 429.0
 theme_override_fonts/font = ExtResource("9_regular")
 theme_override_colors/font_color = Color(0.68, 0.72, 0.81, 1)
-theme_override_font_sizes/font_size = 4
+theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
