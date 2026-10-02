@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.png" id="2_bg"]
@@ -12,7 +12,6 @@
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-700-normal.woff2" id="10_bold"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/title-ref.png" id="11_title"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-runesinger.png" id="12_ar"]
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-berserker.png" id="13_ab"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-wayfarer.png" id="14_aw"]
 
 [sub_resource type="StyleBoxFlat" id="Style_exit"]
@@ -166,14 +165,14 @@ offset_bottom = 810.0
 pivot_offset = Vector2(240, 405)
 
 [node name="Aura" type="TextureRect" parent="Characters/Berserker"]
-modulate = Color(1, 1, 1, 0.84)
+modulate = Color(1, 0.22, 0.06, 0.9)
 layout_mode = 0
 offset_left = 135.0
 offset_top = 42.0
 offset_right = 345.0
 offset_bottom = 672.0
 mouse_filter = 2
-texture = ExtResource("13_ab")
+texture = ExtResource("12_ar")
 expand_mode = 1
 stretch_mode = 0
 texture_filter = 2
