@@ -3,6 +3,13 @@ extends CharacterBody2D
 const MAGE_WALK := preload("res://assets/characters/mage/mage-walk.png")
 const MAGE_RUN := preload("res://assets/characters/mage/mage-run.png")
 const MAGE_JUMP := preload("res://assets/characters/mage/mage-jump.png")
+const DASH_AFTERIMAGE_SHADER := preload("res://shaders/player/dash_afterimage.gdshader")
+
+const DASH_AFTERIMAGE_INTERVAL := 0.028
+const DASH_AFTERIMAGE_LIFETIME := 0.20
+const DASH_AFTERIMAGE_MIN_DISTANCE := 3.0
+const DASH_AFTERIMAGE_COLOR := Color8(143, 234, 255)
+const DASH_AFTERIMAGE_GLOW := Color8(38, 191, 255)
 
 @export var move_speed: float = 92.0
 @export var ground_acceleration: float = 900.0
@@ -28,6 +35,9 @@ var _jump_requested: bool = false
 var _dash_requested: bool = false
 var _spawn_position: Vector2
 var _run_animation_time: float = 0.0
+var _dash_afterimage_elapsed: float = 0.0
+var _dash_afterimage_last_position: Vector2 = Vector2.ZERO
+var _dash_afterimage_has_position: bool = false
 
 
 func _ready() -> void:
@@ -43,6 +53,8 @@ func set_control(enabled: bool) -> void:
 	if not enabled:
 		velocity = Vector2.ZERO
 		_run_animation_time = 0.0
+		_dash_afterimage_elapsed = 0.0
+		_dash_afterimage_has_position = false
 		_show_idle()
 
 
@@ -58,6 +70,8 @@ func reset_to_spawn() -> void:
 	_dash_cooldown_left = 0.0
 	_air_dash_available = true
 	_run_animation_time = 0.0
+	_dash_afterimage_elapsed = 0.0
+	_dash_afterimage_has_position = false
 	_show_idle()
 
 
@@ -69,6 +83,8 @@ func prepare_for_battle_position(world_position: Vector2) -> void:
 	_jump_requested = false
 	_dash_requested = false
 	_run_animation_time = 0.0
+	_dash_afterimage_elapsed = 0.0
+	_dash_afterimage_has_position = false
 	_show_idle()
 
 
@@ -128,6 +144,10 @@ func _physics_process(delta: float) -> void:
 			_air_dash_available = false
 		_dash_time_left = dash_duration
 		_dash_cooldown_left = dash_cooldown
+		_dash_afterimage_elapsed = 0.0
+		_dash_afterimage_has_position = false
+		_show_dash()
+		_emit_dash_afterimage(true)
 		_continue_dash(delta)
 		return
 
@@ -156,7 +176,68 @@ func _continue_dash(delta: float) -> void:
 	move_and_slide()
 	_dash_time_left = maxf(_dash_time_left - delta, 0.0)
 	_show_dash()
+
+	_dash_afterimage_elapsed += delta
+	if _dash_afterimage_elapsed >= DASH_AFTERIMAGE_INTERVAL:
+		_dash_afterimage_elapsed = fmod(_dash_afterimage_elapsed, DASH_AFTERIMAGE_INTERVAL)
+		_emit_dash_afterimage(false)
+
 	_check_fall_respawn()
+
+
+func _emit_dash_afterimage(force: bool) -> void:
+	if _visual.texture == null:
+		return
+
+	var current_position := _visual.global_position
+	if not force and _dash_afterimage_has_position:
+		if current_position.distance_to(_dash_afterimage_last_position) < DASH_AFTERIMAGE_MIN_DISTANCE:
+			return
+
+	_dash_afterimage_last_position = current_position
+	_dash_afterimage_has_position = true
+
+	var world_parent := get_parent()
+	if world_parent == null:
+		return
+
+	# Browser version used a filled cyan silhouette with additive glow. Recreate it
+	# with a bright core and two slightly expanded halo silhouettes.
+	var halo_far := _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.07, 1.14)
+	var halo_near := _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.12, 1.07)
+	var core := _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.55, 1.0)
+
+	for ghost in [halo_far, halo_near, core]:
+		world_parent.add_child(ghost)
+		ghost.global_transform = _visual.global_transform
+		ghost.z_index = z_index - 1
+		if not is_equal_approx(ghost.scale.x, 0.0):
+			var layer_scale: float = float(ghost.get_meta("afterimage_scale", 1.0))
+			ghost.scale *= layer_scale
+		ghost.remove_meta("afterimage_scale")
+		var tween := ghost.create_tween()
+		tween.tween_property(ghost, "modulate:a", 0.0, DASH_AFTERIMAGE_LIFETIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.finished.connect(ghost.queue_free)
+
+
+func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float) -> Sprite2D:
+	var ghost := Sprite2D.new()
+	ghost.texture = _visual.texture
+	ghost.centered = _visual.centered
+	ghost.offset = _visual.offset
+	ghost.region_enabled = _visual.region_enabled
+	ghost.region_rect = _visual.region_rect
+	ghost.flip_h = _visual.flip_h
+	ghost.flip_v = _visual.flip_v
+	ghost.texture_filter = _visual.texture_filter
+	ghost.modulate = Color(1.0, 1.0, 1.0, alpha)
+	ghost.set_meta("afterimage_scale", scale_multiplier)
+
+	var material := ShaderMaterial.new()
+	material.shader = DASH_AFTERIMAGE_SHADER
+	material.set_shader_parameter("silhouette_color", color)
+	ghost.material = material
+	return ghost
 
 
 func _update_visual(delta: float) -> void:
@@ -235,6 +316,8 @@ func _check_fall_respawn() -> void:
 	_dash_cooldown_left = 0.0
 	_air_dash_available = true
 	_run_animation_time = 0.0
+	_dash_afterimage_elapsed = 0.0
+	_dash_afterimage_has_position = false
 	_show_idle()
 
 
