@@ -172,6 +172,10 @@ func _select_character(slot_id: String) -> void:
 		var button := _slot(id).get_node("HitArea") as Button
 		button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		(_slot(id).get_node("Character") as Control).scale = Vector2.ONE
+		_fade_slot_runes(id, 0.0, 0.12)
+
+	# Let the rune columns disappear in place before any character/platform movement.
+	await get_tree().create_timer(0.12).timeout
 
 	_move_slot(slot_id, SELECTED_SLOT_POSITION, true, SELECTED_SLOT_SCALE)
 
@@ -220,20 +224,6 @@ func _move_slot(slot_id: String, target: Vector2, chosen: bool, target_scale: Ve
 		Color.WHITE if chosen else Color(0.42, 0.45, 0.56, 0.38),
 		0.30
 	)
-	tween.tween_property(
-		slot.get_node("Aura"),
-		"modulate:a",
-		0.96 if chosen else 0.18,
-		0.28
-	)
-	var underglow := slot.get_node_or_null("Underglow")
-	if underglow != null:
-		tween.tween_property(
-			underglow,
-			"modulate:a",
-			0.34 if chosen else 0.06,
-			0.28
-		)
 	_slot_tweens[slot_id] = tween
 
 
@@ -267,10 +257,7 @@ func _back_to_character_select() -> void:
 		).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(slot, "scale", Vector2.ONE, 0.36)
 		tween.tween_property(slot, "modulate", Color.WHITE, 0.30)
-		tween.tween_property(slot.get_node("Aura"), "modulate:a", AURA_ALPHA, 0.30)
-		var underglow := slot.get_node_or_null("Underglow")
-		if underglow != null:
-			tween.tween_property(underglow, "modulate:a", 0.24, 0.30)
+		_fade_slot_runes(slot_id, 0.0, 0.01)
 		_slot_tweens[slot_id] = tween
 
 		var button := slot.get_node("HitArea") as Button
@@ -286,6 +273,26 @@ func _back_to_character_select() -> void:
 	_prompt.add_theme_color_override("font_color", Color(0.82, 0.80, 0.88, 0.92))
 	var prompt_tween := create_tween()
 	prompt_tween.tween_property(_prompt, "modulate:a", 1.0, 0.24)
+
+	# Restore the rune columns only after all slots are back at their home positions.
+	await get_tree().create_timer(0.40).timeout
+	if _selected.is_empty():
+		for slot_id in SLOT_IDS:
+			_fade_slot_runes(slot_id, AURA_ALPHA, 0.20)
+
+
+func _fade_slot_runes(slot_id: String, target_alpha: float, duration: float) -> void:
+	var slot := _slot(slot_id)
+	var aura := slot.get_node_or_null("Aura") as CanvasItem
+	if aura != null:
+		var aura_tween := create_tween()
+		aura_tween.tween_property(aura, "modulate:a", target_alpha, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	var underglow := slot.get_node_or_null("Underglow") as CanvasItem
+	if underglow != null:
+		var underglow_target: float = 0.0 if target_alpha <= 0.001 else 0.24
+		var underglow_tween := create_tween()
+		underglow_tween.tween_property(underglow, "modulate:a", underglow_target, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 func _apply_action_theme(slot_id: String) -> void:
