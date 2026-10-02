@@ -112,22 +112,22 @@ func _process(delta: float) -> void:
 		var vortex_progress: float = 1.0 - pow(1.0 - vortex_raw, 2.0)
 		energy_strength = vortex_progress
 
-		_energy.modulate.a = vortex_progress * 1.1
-		_outer_alpha = vortex_progress * 0.42
-		_outer_scale = 0.94 + vortex_progress * 0.24
-		_inner_alpha = 0.12 + vortex_progress * 0.62
-		_inner_scale = 0.9 + vortex_progress * 0.28
-		_ground_alpha = vortex_progress * 0.68
+		_energy.modulate.a = vortex_progress
+		_outer_alpha = vortex_progress * 0.12
+		_outer_scale = 0.98 + vortex_progress * 0.14
+		_inner_alpha = 0.04 + vortex_progress * 0.20
+		_inner_scale = 0.96 + vortex_progress * 0.14
+		_ground_alpha = vortex_progress * 0.12
 
 		if progress >= 1.0:
 			_finish_activation()
 	else:
-		_energy.modulate.a = 1.0 + sin(_time_ms * 0.003) * 0.08
-		_outer_alpha = 0.46 * pulse
-		_outer_scale = 1.06 + sin(_time_ms * 0.0026) * 0.07
-		_inner_alpha = 0.82 * pulse
-		_inner_scale = 1.14 + sin(_time_ms * 0.0038) * 0.08
-		_ground_alpha = 0.7 * pulse
+		_energy.modulate.a = 0.92 + sin(_time_ms * 0.003) * 0.05
+		_outer_alpha = 0.11 * pulse
+		_outer_scale = 1.02 + sin(_time_ms * 0.0026) * 0.035
+		_inner_alpha = 0.21 * pulse
+		_inner_scale = 1.06 + sin(_time_ms * 0.0038) * 0.045
+		_ground_alpha = 0.11 * pulse
 
 	_update_orbit_particles(delta)
 	_update_particles(delta)
@@ -164,9 +164,9 @@ func _draw() -> void:
 
 	var center := Vector2(0.0, -ENERGY_CENTER_OFFSET_Y)
 
-	_draw_ellipse(center, 79.0 * _outer_scale, 88.0 * _outer_scale, Color(GLOW_COLOR.r, GLOW_COLOR.g, GLOW_COLOR.b, _outer_alpha))
-	_draw_ellipse(center, 53.0 * _inner_scale, 69.0 * _inner_scale, Color(GLOW_COLOR.r, GLOW_COLOR.g, GLOW_COLOR.b, _inner_alpha))
-	_draw_ellipse(Vector2(0.0, -5.0), 83.0, 17.0, Color(GLOW_COLOR.r, GLOW_COLOR.g, GLOW_COLOR.b, _ground_alpha))
+	_draw_soft_ellipse(center, 82.0 * _outer_scale, 92.0 * _outer_scale, GLOW_COLOR, _outer_alpha, 14)
+	_draw_soft_ellipse(center, 55.0 * _inner_scale, 72.0 * _inner_scale, Color8(143, 224, 126), _inner_alpha, 12)
+	_draw_soft_ellipse(Vector2(0.0, -5.0), 90.0, 18.0, GLOW_COLOR, _ground_alpha, 10)
 
 	for particle in _orbit_particles:
 		var angle: float = float(particle["angle"])
@@ -193,9 +193,34 @@ func _draw() -> void:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _draw_ellipse(center: Vector2, radius_x: float, radius_y: float, color: Color) -> void:
-	draw_set_transform(center, 0.0, Vector2(radius_x, radius_y))
-	draw_circle(Vector2.ZERO, 1.0, color)
+func _draw_soft_ellipse(
+	center: Vector2,
+	radius_x: float,
+	radius_y: float,
+	color: Color,
+	alpha: float,
+	steps: int
+) -> void:
+	if alpha <= 0.0 or steps <= 0:
+		return
+
+	# Draw from the faint outer edge toward the core. Each layer is deliberately
+	# low-alpha so additive blending builds a smooth falloff instead of a disc.
+	for index in range(steps):
+		var t: float = float(index) / float(maxi(steps - 1, 1))
+		var scale_value: float = lerpf(1.0, 0.34, t)
+		var layer_alpha: float = alpha * lerpf(0.025, 0.12, t * t)
+		draw_set_transform(
+			center,
+			0.0,
+			Vector2(radius_x * scale_value, radius_y * scale_value)
+		)
+		draw_circle(
+			Vector2.ZERO,
+			1.0,
+			Color(color.r, color.g, color.b, layer_alpha)
+		)
+
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
