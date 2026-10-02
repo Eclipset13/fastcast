@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.png" id="2_bg"]
@@ -10,9 +10,32 @@
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/wayfarer.png" id="8_wayfarer"]
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-400-normal.woff2" id="9_regular"]
 [ext_resource type="FontFile" path="res://assets/fonts/silkscreen-latin-700-normal.woff2" id="10_bold"]
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/title-ref.png" id="11_title"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-runesinger.png" id="12_ar"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-berserker.png" id="13_ab"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-wayfarer.png" id="14_aw"]
+
+[sub_resource type="SystemFont" id="Font_title"]
+font_names = PackedStringArray("Georgia", "Noto Serif", "DejaVu Serif", "serif")
+
+[sub_resource type="StyleBoxEmpty" id="Style_hit"]
+
+[sub_resource type="Shader" id="Shader_aura"]
+code = "shader_type canvas_item;
+uniform float header_clearance = 0.0;
+void fragment() {
+    vec4 art = COLOR;
+    float rune = 1.0 - smoothstep(0.09, 0.18, abs(UV.y - 0.37));
+    art.a *= mix(0.24, 0.95, rune);
+    art.a *= mix(1.0, smoothstep(0.26, 0.36, UV.y), header_clearance);
+    COLOR = art;
+}"
+
+[sub_resource type="ShaderMaterial" id="Material_aura"]
+shader = SubResource("Shader_aura")
+
+[sub_resource type="ShaderMaterial" id="Material_aura_center"]
+shader = SubResource("Shader_aura")
+shader_parameter/header_clearance = 1.0
 
 [sub_resource type="StyleBoxFlat" id="Style_exit"]
 bg_color = Color(0.025, 0.035, 0.075, 0.72)
@@ -82,6 +105,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
+texture_filter = 1
+clip_contents = true
 
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 0
@@ -98,7 +123,7 @@ layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 810.0
 mouse_filter = 2
-color = Color(0.015, 0.02, 0.06, 0.035)
+color = Color(0.015, 0.02, 0.06, 0.18)
 
 [node name="Characters" type="Control" parent="."]
 layout_mode = 0
@@ -108,29 +133,31 @@ mouse_filter = 2
 
 [node name="Runesinger" type="Control" parent="Characters"]
 layout_mode = 0
-offset_right = 480.0
+offset_left = 26.0
+offset_right = 506.0
 offset_bottom = 810.0
-pivot_offset = Vector2(240, 405)
+pivot_offset = Vector2(240, 604)
 
 [node name="Aura" type="TextureRect" parent="Characters/Runesinger"]
+material = SubResource("Material_aura")
 modulate = Color(1, 1, 1, 0.84)
 layout_mode = 0
-offset_left = 135.0
-offset_top = 42.0
-offset_right = 345.0
-offset_bottom = 672.0
+offset_left = 120.0
+offset_top = -65.0
+offset_right = 360.0
+offset_bottom = 655.0
 mouse_filter = 2
 texture = ExtResource("12_ar")
 expand_mode = 1
 stretch_mode = 0
-texture_filter = 2
+texture_filter = 1
 
 [node name="Platform" type="TextureRect" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_left = -6.0
-offset_top = 561.0
-offset_right = 486.0
-offset_bottom = 924.0
+offset_left = 35.0
+offset_top = 471.5
+offset_right = 445.0
+offset_bottom = 774.0
 mouse_filter = 2
 texture = ExtResource("3_pr")
 expand_mode = 1
@@ -139,10 +166,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Runesinger"]
 layout_mode = 0
-offset_left = 156.0
-offset_top = 451.0
-offset_right = 324.0
-offset_bottom = 700.0
+offset_left = 130.0
+offset_top = 352.0
+offset_right = 302.0
+offset_bottom = 608.0
 mouse_filter = 2
 texture = ExtResource("6_runesinger")
 expand_mode = 1
@@ -156,33 +183,38 @@ offset_right = 480.0
 offset_bottom = 735.0
 focus_mode = 0
 flat = true
+theme_override_styles/normal = SubResource("Style_hit")
+theme_override_styles/hover = SubResource("Style_hit")
+theme_override_styles/pressed = SubResource("Style_hit")
+theme_override_styles/disabled = SubResource("Style_hit")
 
 [node name="Berserker" type="Control" parent="Characters"]
 layout_mode = 0
 offset_left = 480.0
 offset_right = 960.0
 offset_bottom = 810.0
-pivot_offset = Vector2(240, 405)
+pivot_offset = Vector2(240, 604)
 
 [node name="Aura" type="TextureRect" parent="Characters/Berserker"]
-modulate = Color(1, 0.22, 0.06, 0.9)
+material = SubResource("Material_aura_center")
+modulate = Color(1, 1, 1, 0.84)
 layout_mode = 0
-offset_left = 135.0
-offset_top = 42.0
-offset_right = 345.0
-offset_bottom = 672.0
+offset_left = 120.0
+offset_top = -65.0
+offset_right = 360.0
+offset_bottom = 655.0
 mouse_filter = 2
-texture = ExtResource("12_ar")
+texture = ExtResource("13_ab")
 expand_mode = 1
 stretch_mode = 0
-texture_filter = 2
+texture_filter = 1
 
 [node name="Platform" type="TextureRect" parent="Characters/Berserker"]
 layout_mode = 0
-offset_left = -21.0
-offset_top = 552.0
-offset_right = 501.0
-offset_bottom = 939.0
+offset_left = 22.5
+offset_top = 489.0
+offset_right = 457.5
+offset_bottom = 811.5
 mouse_filter = 2
 texture = ExtResource("4_pb")
 expand_mode = 1
@@ -191,10 +223,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Berserker"]
 layout_mode = 0
-offset_left = 105.0
-offset_top = 452.0
-offset_right = 375.0
-offset_bottom = 695.0
+offset_left = 112.0
+offset_top = 366.0
+offset_right = 388.0
+offset_bottom = 614.0
 mouse_filter = 2
 texture = ExtResource("7_berserker")
 expand_mode = 1
@@ -208,33 +240,38 @@ offset_right = 480.0
 offset_bottom = 735.0
 focus_mode = 0
 flat = true
+theme_override_styles/normal = SubResource("Style_hit")
+theme_override_styles/hover = SubResource("Style_hit")
+theme_override_styles/pressed = SubResource("Style_hit")
+theme_override_styles/disabled = SubResource("Style_hit")
 
 [node name="Wayfarer" type="Control" parent="Characters"]
 layout_mode = 0
-offset_left = 960.0
-offset_right = 1440.0
+offset_left = 934.0
+offset_right = 1414.0
 offset_bottom = 810.0
-pivot_offset = Vector2(240, 405)
+pivot_offset = Vector2(240, 604)
 
 [node name="Aura" type="TextureRect" parent="Characters/Wayfarer"]
+material = SubResource("Material_aura")
 modulate = Color(1, 1, 1, 0.84)
 layout_mode = 0
-offset_left = 135.0
-offset_top = 42.0
-offset_right = 345.0
-offset_bottom = 672.0
+offset_left = 120.0
+offset_top = -65.0
+offset_right = 360.0
+offset_bottom = 655.0
 mouse_filter = 2
 texture = ExtResource("14_aw")
 expand_mode = 1
 stretch_mode = 0
-texture_filter = 2
+texture_filter = 1
 
 [node name="Platform" type="TextureRect" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_left = -6.0
-offset_top = 564.0
-offset_right = 486.0
-offset_bottom = 936.0
+offset_left = 35.0
+offset_top = 471.5
+offset_right = 445.0
+offset_bottom = 781.5
 mouse_filter = 2
 texture = ExtResource("5_pw")
 expand_mode = 1
@@ -243,10 +280,10 @@ texture_filter = 1
 
 [node name="Character" type="TextureRect" parent="Characters/Wayfarer"]
 layout_mode = 0
-offset_left = 93.0
-offset_top = 452.0
-offset_right = 387.0
-offset_bottom = 704.0
+offset_left = 78.0
+offset_top = 360.0
+offset_right = 368.0
+offset_bottom = 608.0
 mouse_filter = 2
 texture = ExtResource("8_wayfarer")
 expand_mode = 1
@@ -260,6 +297,10 @@ offset_right = 480.0
 offset_bottom = 735.0
 focus_mode = 0
 flat = true
+theme_override_styles/normal = SubResource("Style_hit")
+theme_override_styles/hover = SubResource("Style_hit")
+theme_override_styles/pressed = SubResource("Style_hit")
+theme_override_styles/disabled = SubResource("Style_hit")
 
 [node name="Header" type="Control" parent="."]
 layout_mode = 0
@@ -267,48 +308,52 @@ offset_right = 1440.0
 offset_bottom = 186.0
 mouse_filter = 2
 
-[node name="Title" type="TextureRect" parent="Header"]
+[node name="Title" type="Label" parent="Header"]
 layout_mode = 0
-offset_left = 530.0
-offset_top = 24.0
-offset_right = 910.0
-offset_bottom = 136.0
+offset_left = 474.0
+offset_top = 58.0
+offset_right = 966.0
+offset_bottom = 148.0
 mouse_filter = 2
-texture = ExtResource("11_title")
-expand_mode = 1
-stretch_mode = 0
-texture_filter = 1
+theme_override_fonts/font = SubResource("Font_title")
+theme_override_colors/font_color = Color(0.95, 0.83, 0.91, 1)
+theme_override_colors/font_shadow_color = Color(0.025, 0.02, 0.06, 1)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 70
+text = "FASTCAST"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Prompt" type="Label" parent="Header"]
 layout_mode = 0
 offset_left = 420.0
-offset_top = 150.0
+offset_top = 159.0
 offset_right = 1020.0
-offset_bottom = 180.0
+offset_bottom = 181.0
 theme_override_fonts/font = ExtResource("9_regular")
 theme_override_colors/font_color = Color(0.82, 0.80, 0.88, 0.92)
 theme_override_colors/font_shadow_color = Color(0.025, 0.03, 0.07, 1)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 15
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
 text = "CHOOSE YOUR CHARACTER"
 horizontal_alignment = 1
 
 [node name="ExitButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1362.0
+offset_left = 1371.0
 offset_top = 21.0
-offset_right = 1407.0
-offset_bottom = 66.0
+offset_right = 1419.0
+offset_bottom = 69.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("10_bold")
 theme_override_colors/font_color = Color(0.88, 0.87, 0.91, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("Style_exit")
 theme_override_styles/hover = SubResource("Style_exit_hover")
 theme_override_styles/pressed = SubResource("Style_exit_hover")
-text = "X"
+tooltip_text = "Exit Fastcast"
 
 [node name="ActionMenu" type="Control" parent="."]
 visible = false
