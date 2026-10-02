@@ -23,11 +23,11 @@ shader = ExtResource("15_bg_shader")
 
 [sub_resource type="ShaderMaterial" id="Material_color_grade"]
 shader = ExtResource("18_color_grade")
-shader_parameter/saturation = 1.5
-shader_parameter/vibrance = 0.46
-shader_parameter/contrast = 1.08
-shader_parameter/brightness = 0.015
-shader_parameter/shadow_depth = 0.035
+shader_parameter/saturation = 1.18
+shader_parameter/vibrance = 0.14
+shader_parameter/contrast = 1.03
+shader_parameter/brightness = 0.005
+shader_parameter/shadow_depth = 0.012
 
 [sub_resource type="SystemFont" id="Font_title"]
 font_names = PackedStringArray("Georgia", "Noto Serif", "DejaVu Serif", "serif")

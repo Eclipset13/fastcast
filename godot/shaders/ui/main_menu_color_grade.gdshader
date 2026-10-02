@@ -1,11 +1,11 @@
 shader_type canvas_item;
 
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
-uniform float saturation : hint_range(0.0, 2.5) = 1.38;
-uniform float vibrance : hint_range(0.0, 1.5) = 0.36;
-uniform float contrast : hint_range(0.5, 1.8) = 1.10;
-uniform float brightness : hint_range(-0.25, 0.25) = 0.015;
-uniform float shadow_depth : hint_range(0.0, 0.35) = 0.06;
+uniform float saturation : hint_range(0.0, 2.5) = 1.18;
+uniform float vibrance : hint_range(0.0, 1.5) = 0.14;
+uniform float contrast : hint_range(0.5, 1.8) = 1.03;
+uniform float brightness : hint_range(-0.25, 0.25) = 0.005;
+uniform float shadow_depth : hint_range(0.0, 0.35) = 0.012;
 
 void fragment() {
 	vec4 source = texture(screen_texture, SCREEN_UV);
