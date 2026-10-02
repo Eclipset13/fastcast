@@ -30,6 +30,7 @@ var _state: int = PortalState.DORMANT
 var _activation_time: float = 0.0
 var _animation_time: float = 0.0
 var _orbit_phase: float = 0.0
+var _activation_burst: float = 0.0
 var _player: CharacterBody2D = null
 
 
@@ -56,6 +57,7 @@ func activate() -> void:
 	_state = PortalState.ACTIVATING
 	_activation_time = 0.0
 	_animation_time = 0.0
+	_activation_burst = 1.0
 	_energy.visible = true
 	_energy.modulate.a = 0.0
 	queue_redraw()
@@ -71,6 +73,7 @@ func _process(delta: float) -> void:
 
 	_animation_time += delta
 	_orbit_phase += delta * 0.9
+	_activation_burst = maxf(0.0, _activation_burst - delta * 0.72)
 	_set_energy_frame(int(floor(_animation_time * FRAME_RATE)) % FRAME_COUNT)
 
 	if _state == PortalState.ACTIVATING:
@@ -112,28 +115,61 @@ func _draw() -> void:
 		strength = clampf(_activation_time / ACTIVATION_DURATION, 0.0, 1.0)
 
 	var pulse: float = 0.92 + sin(Time.get_ticks_msec() * 0.0032) * 0.08
-	var glow := Color(0.43, 0.79, 0.47, 0.16 * strength * pulse)
+	var center := Vector2(0.0, -ENERGY_CENTER_OFFSET_Y)
 
-	draw_set_transform(Vector2(0.0, -ENERGY_CENTER_OFFSET_Y), 0.0, Vector2(1.0, 1.18))
-	draw_circle(Vector2.ZERO, 58.0, glow)
-	draw_circle(Vector2.ZERO, 39.0, Color(0.61, 0.87, 0.48, 0.16 * strength * pulse))
+	# Layered portal bloom.
+	draw_set_transform(center, 0.0, Vector2(1.0, 1.18))
+	draw_circle(Vector2.ZERO, 62.0, Color(0.34, 0.78, 0.42, 0.10 * strength * pulse))
+	draw_circle(Vector2.ZERO, 48.0, Color(0.43, 0.86, 0.47, 0.13 * strength * pulse))
+	draw_circle(Vector2.ZERO, 34.0, Color(0.68, 0.96, 0.56, 0.14 * strength * pulse))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
+	# Ground spill makes the portal feel connected to the floor.
 	draw_set_transform(Vector2(0.0, -5.0), 0.0, Vector2(1.0, 0.22))
-	draw_circle(Vector2.ZERO, 72.0, Color(0.43, 0.79, 0.47, 0.12 * strength))
+	draw_circle(Vector2.ZERO, 76.0, Color(0.43, 0.79, 0.47, 0.11 * strength))
+	draw_circle(Vector2.ZERO, 52.0, Color(0.65, 0.93, 0.52, 0.08 * strength))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
-	var particle_count := 20
-	for index in range(particle_count):
-		var angle: float = _orbit_phase * (0.72 + float(index % 4) * 0.08) + TAU * float(index) / float(particle_count)
-		var radius: float = 16.0 + float((index * 7) % 24)
-		var point := Vector2(
-			cos(angle) * radius,
-			-ENERGY_CENTER_OFFSET_Y + sin(angle) * radius * 1.45
-		)
+	# Two layers of orbiting magical fragments.
+	for index in range(30):
+		var direction: float = -1.0 if index % 2 else 1.0
+		var angle: float = _orbit_phase * direction * (0.66 + float(index % 5) * 0.055) + TAU * float(index) / 30.0
+		var radius_x: float = 20.0 + float((index * 7) % 31)
+		var radius_y: float = 27.0 + float((index * 11) % 39)
+		var point := center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y)
+		var twinkle: float = 0.62 + sin(_animation_time * 4.2 + float(index) * 1.37) * 0.28
+		var size: float = 1.0 if index % 6 else 2.0
+		var color := Color(0.64, 0.95, 0.54, maxf(0.0, twinkle) * 0.66 * strength)
+		draw_rect(Rect2(point - Vector2.ONE * size * 0.5, Vector2.ONE * size), color)
+
+	# Sparks rise through and above the arch.
+	for index in range(22):
+		var speed: float = 0.12 + float(index % 6) * 0.014
+		var phase: float = fposmod(_animation_time * speed + float(index) * 0.103, 1.0)
+		var base_x: float = sin(float(index) * 14.31) * 39.0
+		var drift: float = sin(_animation_time * (0.72 + float(index % 4) * 0.08) + float(index) * 0.9) * 6.0
+		var point := Vector2(base_x + drift, -18.0 - phase * 176.0)
+		var fade: float = sin(phase * PI)
 		var size: float = 1.0 if index % 5 else 2.0
-		var color := Color(0.62, 0.89, 0.53, (0.45 + float(index % 4) * 0.12) * strength)
-		draw_rect(Rect2(point - Vector2(size * 0.5, size * 0.5), Vector2(size, size)), color)
+		var alpha: float = fade * (0.24 + float(index % 4) * 0.065) * strength
+		draw_rect(
+			Rect2(point - Vector2.ONE * size * 0.5, Vector2.ONE * size),
+			Color(0.59, 0.95, 0.46, alpha)
+		)
+
+	# Fast edge sparks trace the outer portal silhouette.
+	for index in range(12):
+		var angle: float = -_animation_time * (1.0 + float(index % 3) * 0.08) + TAU * float(index) / 12.0
+		var point := center + Vector2(cos(angle) * 54.0, sin(angle) * 74.0)
+		var alpha: float = (0.28 + sin(_animation_time * 5.0 + float(index)) * 0.16) * strength
+		draw_rect(Rect2(point - Vector2(0.75, 0.75), Vector2(1.5, 1.5)), Color(0.78, 1.0, 0.61, alpha))
+
+	# One short expanding wave when the portal wakes up.
+	if _activation_burst > 0.0:
+		var burst_progress: float = 1.0 - _activation_burst
+		var radius: float = 30.0 + burst_progress * 64.0
+		var alpha: float = _activation_burst * 0.34
+		draw_arc(center, radius, 0.0, TAU, 48, Color(0.68, 1.0, 0.55, alpha), 1.0)
 
 
 func _configure_art() -> void:
