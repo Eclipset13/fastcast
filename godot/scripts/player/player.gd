@@ -5,11 +5,12 @@ const MAGE_RUN := preload("res://assets/characters/mage/mage-run.png")
 const MAGE_JUMP := preload("res://assets/characters/mage/mage-jump.png")
 const DASH_AFTERIMAGE_SHADER := preload("res://shaders/player/dash_afterimage.gdshader")
 
-const DASH_AFTERIMAGE_INTERVAL := 0.028
-const DASH_AFTERIMAGE_LIFETIME := 0.20
-const DASH_AFTERIMAGE_MIN_DISTANCE := 3.0
-const DASH_AFTERIMAGE_COLOR := Color8(143, 234, 255)
-const DASH_AFTERIMAGE_GLOW := Color8(38, 191, 255)
+const DASH_AFTERIMAGE_INTERVAL := 0.030
+const DASH_AFTERIMAGE_LIFETIME := 0.24
+const DASH_AFTERIMAGE_MIN_DISTANCE := 2.5
+const DASH_AFTERIMAGE_SPEED_THRESHOLD := 8.0
+const DASH_AFTERIMAGE_COLOR := Color(0.56, 0.918, 1.0, 1.0)
+const DASH_AFTERIMAGE_GLOW := Color(0.19, 0.73, 1.0, 1.0)
 
 @export var move_speed: float = 92.0
 @export var ground_acceleration: float = 900.0
@@ -38,6 +39,7 @@ var _run_animation_time: float = 0.0
 var _dash_afterimage_elapsed: float = 0.0
 var _dash_afterimage_last_position: Vector2 = Vector2.ZERO
 var _dash_afterimage_has_position: bool = false
+var _dash_trail_active: bool = false
 
 
 func _ready() -> void:
@@ -55,6 +57,7 @@ func set_control(enabled: bool) -> void:
 		_run_animation_time = 0.0
 		_dash_afterimage_elapsed = 0.0
 		_dash_afterimage_has_position = false
+		_dash_trail_active = false
 		_show_idle()
 
 
@@ -72,6 +75,7 @@ func reset_to_spawn() -> void:
 	_run_animation_time = 0.0
 	_dash_afterimage_elapsed = 0.0
 	_dash_afterimage_has_position = false
+	_dash_trail_active = false
 	_show_idle()
 
 
@@ -85,6 +89,7 @@ func prepare_for_battle_position(world_position: Vector2) -> void:
 	_run_animation_time = 0.0
 	_dash_afterimage_elapsed = 0.0
 	_dash_afterimage_has_position = false
+	_dash_trail_active = false
 	_show_idle()
 
 
@@ -146,6 +151,7 @@ func _physics_process(delta: float) -> void:
 		_dash_cooldown_left = dash_cooldown
 		_dash_afterimage_elapsed = 0.0
 		_dash_afterimage_has_position = false
+		_dash_trail_active = true
 		_show_dash()
 		_emit_dash_afterimage(true)
 		_continue_dash(delta)
@@ -166,6 +172,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, air_acceleration * 0.25 * delta)
 
 	move_and_slide()
+	_update_dash_afterimage(delta)
 	_update_visual(delta)
 	_check_fall_respawn()
 
@@ -177,12 +184,25 @@ func _continue_dash(delta: float) -> void:
 	_dash_time_left = maxf(_dash_time_left - delta, 0.0)
 	_show_dash()
 
+	_update_dash_afterimage(delta)
+	_check_fall_respawn()
+
+
+func _update_dash_afterimage(delta: float) -> void:
+	if not _dash_trail_active:
+		return
+
 	_dash_afterimage_elapsed += delta
-	if _dash_afterimage_elapsed >= DASH_AFTERIMAGE_INTERVAL:
-		_dash_afterimage_elapsed = fmod(_dash_afterimage_elapsed, DASH_AFTERIMAGE_INTERVAL)
+	while _dash_afterimage_elapsed >= DASH_AFTERIMAGE_INTERVAL:
+		_dash_afterimage_elapsed -= DASH_AFTERIMAGE_INTERVAL
 		_emit_dash_afterimage(false)
 
-	_check_fall_respawn()
+	# Keep the trail alive after the fixed dash timer while dash momentum is still
+	# above normal running speed. This matches the visible acceleration window.
+	if _dash_time_left <= 0.0 and absf(velocity.x) <= move_speed + DASH_AFTERIMAGE_SPEED_THRESHOLD:
+		_dash_trail_active = false
+		_dash_afterimage_elapsed = 0.0
+		_dash_afterimage_has_position = false
 
 
 func _emit_dash_afterimage(force: bool) -> void:
@@ -201,11 +221,10 @@ func _emit_dash_afterimage(force: bool) -> void:
 	if world_parent == null:
 		return
 
-	# Browser version used a filled cyan silhouette with additive glow. Recreate it
-	# with a bright core and two slightly expanded halo silhouettes.
-	var halo_far: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.07, 1.14)
-	var halo_near: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.12, 1.07)
-	var core: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.55, 1.0)
+	# Soft browser-style cyan echo: translucent core plus broad blurred halo.
+	var halo_far: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.025, 1.12, 2.8)
+	var halo_near: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.045, 1.06, 1.9)
+	var core: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.12, 1.0, 1.1)
 	var ghosts: Array[Sprite2D] = [halo_far, halo_near, core]
 
 	for ghost: Sprite2D in ghosts:
@@ -221,7 +240,7 @@ func _emit_dash_afterimage(force: bool) -> void:
 		tween.finished.connect(ghost.queue_free)
 
 
-func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float) -> Sprite2D:
+func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float, blur_radius: float) -> Sprite2D:
 	var ghost: Sprite2D = Sprite2D.new()
 	ghost.texture = _visual.texture
 	ghost.centered = _visual.centered
@@ -237,6 +256,7 @@ func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float)
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = DASH_AFTERIMAGE_SHADER
 	material.set_shader_parameter("silhouette_color", color)
+	material.set_shader_parameter("blur_radius", blur_radius)
 	ghost.material = material
 	return ghost
 
@@ -319,6 +339,7 @@ func _check_fall_respawn() -> void:
 	_run_animation_time = 0.0
 	_dash_afterimage_elapsed = 0.0
 	_dash_afterimage_has_position = false
+	_dash_trail_active = false
 	_show_idle()
 
 
