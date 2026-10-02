@@ -203,11 +203,12 @@ func _emit_dash_afterimage(force: bool) -> void:
 
 	# Browser version used a filled cyan silhouette with additive glow. Recreate it
 	# with a bright core and two slightly expanded halo silhouettes.
-	var halo_far := _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.07, 1.14)
-	var halo_near := _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.12, 1.07)
-	var core := _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.55, 1.0)
+	var halo_far: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.07, 1.14)
+	var halo_near: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.12, 1.07)
+	var core: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.55, 1.0)
+	var ghosts: Array[Sprite2D] = [halo_far, halo_near, core]
 
-	for ghost in [halo_far, halo_near, core]:
+	for ghost: Sprite2D in ghosts:
 		world_parent.add_child(ghost)
 		ghost.global_transform = _visual.global_transform
 		ghost.z_index = z_index - 1
@@ -215,13 +216,13 @@ func _emit_dash_afterimage(force: bool) -> void:
 			var layer_scale: float = float(ghost.get_meta("afterimage_scale", 1.0))
 			ghost.scale *= layer_scale
 		ghost.remove_meta("afterimage_scale")
-		var tween := ghost.create_tween()
+		var tween: Tween = ghost.create_tween()
 		tween.tween_property(ghost, "modulate:a", 0.0, DASH_AFTERIMAGE_LIFETIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.finished.connect(ghost.queue_free)
 
 
 func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float) -> Sprite2D:
-	var ghost := Sprite2D.new()
+	var ghost: Sprite2D = Sprite2D.new()
 	ghost.texture = _visual.texture
 	ghost.centered = _visual.centered
 	ghost.offset = _visual.offset
@@ -233,7 +234,7 @@ func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float)
 	ghost.modulate = Color(1.0, 1.0, 1.0, alpha)
 	ghost.set_meta("afterimage_scale", scale_multiplier)
 
-	var material := ShaderMaterial.new()
+	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = DASH_AFTERIMAGE_SHADER
 	material.set_shader_parameter("silhouette_color", color)
 	ghost.material = material
