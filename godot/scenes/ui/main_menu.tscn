@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.png" id="2_bg"]
@@ -16,9 +16,18 @@
 [ext_resource type="Shader" path="res://shaders/ui/main_menu_background.gdshader" id="15_bg_shader"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu_particles.gd" id="16_particles"]
 [ext_resource type="Script" path="res://scripts/ui/character_selection_lighting.gd" id="17_selection_lighting"]
+[ext_resource type="Shader" path="res://shaders/ui/main_menu_color_grade.gdshader" id="18_color_grade"]
 
 [sub_resource type="ShaderMaterial" id="Material_background"]
 shader = ExtResource("15_bg_shader")
+
+[sub_resource type="ShaderMaterial" id="Material_color_grade"]
+shader = ExtResource("18_color_grade")
+shader_parameter/saturation = 1.5
+shader_parameter/vibrance = 0.46
+shader_parameter/contrast = 1.08
+shader_parameter/brightness = 0.015
+shader_parameter/shadow_depth = 0.035
 
 [sub_resource type="SystemFont" id="Font_title"]
 font_names = PackedStringArray("Georgia", "Noto Serif", "DejaVu Serif", "serif")
@@ -523,3 +532,13 @@ theme_override_fonts/font = ExtResource("9_regular")
 theme_override_colors/font_color = Color(0.68, 0.72, 0.81, 1)
 theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
+
+
+[node name="MenuColorGrade" type="ColorRect" parent="."]
+z_index = 1000
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 810.0
+mouse_filter = 2
+material = SubResource("Material_color_grade")
+color = Color(1, 1, 1, 1)
