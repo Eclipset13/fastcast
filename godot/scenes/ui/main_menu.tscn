@@ -371,6 +371,7 @@ text = "CHOOSE YOUR CHARACTER"
 horizontal_alignment = 1
 
 [node name="ExitButton" type="Button" parent="."]
+z_index = 20
 layout_mode = 0
 offset_left = 1371.0
 offset_top = 21.0
@@ -388,99 +389,117 @@ tooltip_text = "Exit Fastcast"
 
 [node name="ActionMenu" type="Control" parent="."]
 visible = false
+z_index = 8
 layout_mode = 0
-offset_right = 408.0
-offset_bottom = 444.0
+offset_right = 430.0
+offset_bottom = 774.0
 
 [node name="Panel" type="Panel" parent="ActionMenu"]
 layout_mode = 0
-offset_right = 408.0
-offset_bottom = 444.0
+offset_right = 430.0
+offset_bottom = 774.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Style_action_panel")
 
+[node name="Decoration" type="Control" parent="ActionMenu"]
+layout_mode = 0
+offset_right = 430.0
+offset_bottom = 774.0
+mouse_filter = 2
+
 [node name="ClassName" type="Label" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 21.0
-offset_top = 21.0
-offset_right = 387.0
-offset_bottom = 66.0
+offset_left = 34.0
+offset_top = 126.0
+offset_right = 396.0
+offset_bottom = 168.0
 theme_override_fonts/font = ExtResource("10_bold")
 theme_override_colors/font_color = Color(0.92, 0.88, 0.98, 1)
 theme_override_colors/font_shadow_color = Color(0.03, 0.025, 0.07, 1)
-theme_override_constants/shadow_offset_x = 3
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 21
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
 text = "RUNESINGER"
 horizontal_alignment = 1
 
 [node name="Rule" type="ColorRect" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 27.0
-offset_top = 75.0
-offset_right = 381.0
-offset_bottom = 78.0
+offset_left = 48.0
+offset_top = 179.0
+offset_right = 382.0
+offset_bottom = 181.0
 mouse_filter = 2
 color = Color(0.47, 0.45, 0.63, 0.55)
 
 [node name="Buttons" type="VBoxContainer" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 27.0
-offset_top = 93.0
-offset_right = 381.0
-offset_bottom = 381.0
-theme_override_constants/separation = 2
+offset_left = 38.0
+offset_top = 218.0
+offset_right = 392.0
+offset_bottom = 632.0
+theme_override_constants/separation = 10
 
 [node name="NewGame" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 51)
+custom_minimum_size = Vector2(354, 62)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("10_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "NEW GAME"
 
 [node name="Saves" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 51)
+custom_minimum_size = Vector2(354, 56)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SAVES"
 
 [node name="Settings" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 51)
+custom_minimum_size = Vector2(354, 56)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SETTINGS"
 
 [node name="Controls" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 51)
+custom_minimum_size = Vector2(354, 56)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "CONTROLS"
 
-[node name="Back" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 51)
+[node name="Skills" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(354, 56)
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("9_regular")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("Style_action_button")
+theme_override_styles/hover = SubResource("Style_action_hover")
+theme_override_styles/pressed = SubResource("Style_action_hover")
+text = "SKILLS"
+
+[node name="Back" type="Button" parent="ActionMenu/Buttons"]
+custom_minimum_size = Vector2(354, 56)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("9_regular")
+theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("Style_action_button")
 theme_override_styles/hover = SubResource("Style_action_hover")
 theme_override_styles/pressed = SubResource("Style_action_hover")
@@ -488,10 +507,10 @@ text = "BACK"
 
 [node name="Status" type="Label" parent="ActionMenu"]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 396.0
-offset_right = 393.0
-offset_bottom = 429.0
+offset_left = 28.0
+offset_top = 704.0
+offset_right = 402.0
+offset_bottom = 740.0
 theme_override_fonts/font = ExtResource("9_regular")
 theme_override_colors/font_color = Color(0.68, 0.72, 0.81, 1)
 theme_override_font_sizes/font_size = 12
