@@ -1,7 +1,6 @@
 extends Control
 
 const SLOT_IDS: Array[String] = ["runesinger", "berserker", "wayfarer"]
-const AURA_COLORS: Array[Color] = [Color("c38aef"), Color("ef5841"), Color("48bbef")]
 const AURA_ALPHA := 0.74
 
 @onready var _prompt: Label = $Header/Prompt
@@ -46,12 +45,6 @@ func _ready() -> void:
 		underglow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(underglow)
 		slot.move_child(underglow, 1)
-		var lines := Control.new()
-		lines.name = "RuneLines"
-		lines.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(lines)
-		slot.move_child(lines, 2)
-		lines.draw.connect(_draw_rune_lines.bind(lines, AURA_COLORS[SLOT_IDS.find(slot_id)]))
 		_slot_home[slot_id] = slot.position
 		var button := slot.get_node("HitArea") as Button
 		button.pressed.connect(_select_character.bind(slot_id))
@@ -69,14 +62,6 @@ func _ready() -> void:
 
 	_action_menu.visible = false
 	_status.text = ""
-
-
-func _draw_rune_lines(canvas: Control, tint: Color) -> void:
-	for x in [180.0, 300.0]:
-		for y in range(0, 810, 6):
-			var strength := 0.36 + 0.26 * sin(float(y) / 810.0 * PI)
-			canvas.draw_rect(Rect2(x - 2, y, 5, 6), Color(tint, strength * 0.08))
-			canvas.draw_rect(Rect2(x, y, 1, 6), Color(tint, strength))
 
 
 func _draw_title_ornament() -> void:

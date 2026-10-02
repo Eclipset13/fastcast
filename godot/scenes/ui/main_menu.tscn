@@ -137,10 +137,10 @@ offset_right = 1440.0
 offset_bottom = 810.0
 mouse_filter = 2
 script = ExtResource("16_particles")
-particle_count = 96
-speed_min = 8.0
-speed_max = 22.0
-alpha_scale = 0.34
+particle_count = 150
+speed_min = 10.0
+speed_max = 26.0
+alpha_scale = 0.66
 seed_offset = 31
 
 [node name="Characters" type="Control" parent="."]
@@ -326,10 +326,10 @@ offset_right = 1440.0
 offset_bottom = 810.0
 mouse_filter = 2
 script = ExtResource("16_particles")
-particle_count = 30
-speed_min = 15.0
-speed_max = 34.0
-alpha_scale = 0.24
+particle_count = 56
+speed_min = 18.0
+speed_max = 42.0
+alpha_scale = 0.54
 foreground = true
 seed_offset = 97
 
