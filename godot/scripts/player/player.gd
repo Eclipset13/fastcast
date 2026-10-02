@@ -5,7 +5,7 @@ const MAGE_RUN := preload("res://assets/characters/mage/mage-run.png")
 const MAGE_JUMP := preload("res://assets/characters/mage/mage-jump.png")
 const DASH_AFTERIMAGE_SHADER := preload("res://shaders/player/dash_afterimage.gdshader")
 
-const DASH_AFTERIMAGE_INTERVAL := 0.030
+const DASH_AFTERIMAGE_INTERVAL := 0.034
 const DASH_AFTERIMAGE_LIFETIME := 0.24
 const DASH_AFTERIMAGE_MIN_DISTANCE := 2.5
 const DASH_AFTERIMAGE_SPEED_THRESHOLD := 8.0
@@ -221,26 +221,22 @@ func _emit_dash_afterimage(force: bool) -> void:
 	if world_parent == null:
 		return
 
-	# Soft browser-style cyan echo: translucent core plus broad blurred halo.
-	var halo_far: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.025, 1.12, 2.8)
-	var halo_near: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.045, 1.06, 1.9)
-	var core: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.12, 1.0, 1.1)
+	# Exact-size translucent echo. No layer is scaled beyond the character silhouette.
+	var halo_far: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.012, 2.6)
+	var halo_near: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_GLOW, 0.020, 1.7)
+	var core: Sprite2D = _make_afterimage_layer(DASH_AFTERIMAGE_COLOR, 0.060, 0.95)
 	var ghosts: Array[Sprite2D] = [halo_far, halo_near, core]
 
 	for ghost: Sprite2D in ghosts:
 		world_parent.add_child(ghost)
 		ghost.global_transform = _visual.global_transform
 		ghost.z_index = z_index - 1
-		if not is_equal_approx(ghost.scale.x, 0.0):
-			var layer_scale: float = float(ghost.get_meta("afterimage_scale", 1.0))
-			ghost.scale *= layer_scale
-		ghost.remove_meta("afterimage_scale")
 		var tween: Tween = ghost.create_tween()
 		tween.tween_property(ghost, "modulate:a", 0.0, DASH_AFTERIMAGE_LIFETIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.finished.connect(ghost.queue_free)
 
 
-func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float, blur_radius: float) -> Sprite2D:
+func _make_afterimage_layer(color: Color, alpha: float, blur_radius: float) -> Sprite2D:
 	var ghost: Sprite2D = Sprite2D.new()
 	ghost.texture = _visual.texture
 	ghost.centered = _visual.centered
@@ -251,7 +247,6 @@ func _make_afterimage_layer(color: Color, alpha: float, scale_multiplier: float,
 	ghost.flip_v = _visual.flip_v
 	ghost.texture_filter = _visual.texture_filter
 	ghost.modulate = Color(1.0, 1.0, 1.0, alpha)
-	ghost.set_meta("afterimage_scale", scale_multiplier)
 
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = DASH_AFTERIMAGE_SHADER
