@@ -205,6 +205,7 @@ func _on_spellcraft_closed() -> void:
 
 
 func _on_spell_upgraded(spell_id: String) -> void:
+	_runestone.call("notify_upgrade_purchased")
 	var preview: Dictionary = _combat_controller.call("get_spell_preview", spell_id)
 	if preview.is_empty():
 		return

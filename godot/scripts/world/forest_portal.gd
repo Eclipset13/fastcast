@@ -16,6 +16,14 @@ const INTERACTION_RADIUS := 68.0
 const FRAME_RATE := 10.0
 const FRAME_COUNT := 8
 
+const GLOW_COLOR := Color8(109, 201, 119)
+const PARTICLE_COLORS := [
+	Color8(109, 201, 119),
+	Color8(155, 219, 122),
+	Color8(156, 227, 134),
+	Color8(209, 249, 133),
+]
+
 enum PortalState {
 	DORMANT,
 	ACTIVATING,
@@ -29,9 +37,21 @@ enum PortalState {
 var _state: int = PortalState.DORMANT
 var _activation_time: float = 0.0
 var _animation_time: float = 0.0
-var _orbit_phase: float = 0.0
-var _activation_burst: float = 0.0
+var _time_ms: float = 0.0
+var _next_particle_at: float = INF
 var _player: CharacterBody2D = null
+
+var _outer_alpha: float = 0.0
+var _outer_scale: float = 1.0
+var _inner_alpha: float = 0.06
+var _inner_scale: float = 1.0
+var _ground_alpha: float = 0.0
+
+var _orbit_particles: Array[Dictionary] = []
+var _particles: Array[Dictionary] = []
+var _activation_pulse: Line2D = null
+var _activation_pulse_age: float = 0.0
+var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
@@ -39,6 +59,11 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		set_process(false)
 		return
+
+	_rng.randomize()
+	var additive := CanvasItemMaterial.new()
+	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	material = additive
 
 	_prompt.visible = false
 	_energy.visible = false
@@ -57,9 +82,11 @@ func activate() -> void:
 	_state = PortalState.ACTIVATING
 	_activation_time = 0.0
 	_animation_time = 0.0
-	_activation_burst = 1.0
+	_time_ms = 0.0
+	_next_particle_at = 170.0
 	_energy.visible = true
 	_energy.modulate.a = 0.0
+	_create_orbit_particles()
 	queue_redraw()
 
 
@@ -72,21 +99,46 @@ func _process(delta: float) -> void:
 		return
 
 	_animation_time += delta
-	_orbit_phase += delta * 0.9
-	_activation_burst = maxf(0.0, _activation_burst - delta * 0.72)
+	_time_ms += delta * 1000.0
 	_set_energy_frame(int(floor(_animation_time * FRAME_RATE)) % FRAME_COUNT)
+
+	var pulse: float = 0.92 + sin(_time_ms * 0.0032) * 0.08
+	var energy_strength: float = 1.0
 
 	if _state == PortalState.ACTIVATING:
 		_activation_time += delta
 		var progress: float = clampf(_activation_time / ACTIVATION_DURATION, 0.0, 1.0)
-		var eased: float = 1.0 - pow(1.0 - progress, 2.0)
-		_energy.modulate.a = eased
-		_frame.modulate = Color(1.0, 1.0 + eased * 0.08, 1.0, 1.0)
+		var vortex_raw: float = clampf((progress - 0.34) / 0.56, 0.0, 1.0)
+		var vortex_progress: float = 1.0 - pow(1.0 - vortex_raw, 2.0)
+		energy_strength = vortex_progress
+
+		_energy.modulate.a = vortex_progress * 1.1
+		_outer_alpha = vortex_progress * 0.42
+		_outer_scale = 0.94 + vortex_progress * 0.24
+		_inner_alpha = 0.12 + vortex_progress * 0.62
+		_inner_scale = 0.9 + vortex_progress * 0.28
+		_ground_alpha = vortex_progress * 0.68
+
 		if progress >= 1.0:
-			_state = PortalState.ACTIVE
+			_finish_activation()
 	else:
-		var pulse: float = 0.92 + sin(Time.get_ticks_msec() * 0.0032) * 0.08
-		_energy.modulate.a = pulse
+		_energy.modulate.a = 1.0 + sin(_time_ms * 0.003) * 0.08
+		_outer_alpha = 0.46 * pulse
+		_outer_scale = 1.06 + sin(_time_ms * 0.0026) * 0.07
+		_inner_alpha = 0.82 * pulse
+		_inner_scale = 1.14 + sin(_time_ms * 0.0038) * 0.08
+		_ground_alpha = 0.7 * pulse
+
+	_update_orbit_particles(delta)
+	_update_particles(delta)
+	_update_activation_pulse(delta)
+
+	if _time_ms >= _next_particle_at:
+		_emit_particle(_state == PortalState.ACTIVE)
+		if _state == PortalState.ACTIVE:
+			_next_particle_at = _time_ms + float(_rng.randi_range(28, 60))
+		else:
+			_next_particle_at = _time_ms + float(_rng.randi_range(80, 120))
 
 	_update_prompt()
 	queue_redraw()
@@ -110,66 +162,220 @@ func _draw() -> void:
 	if _state == PortalState.DORMANT:
 		return
 
-	var strength: float = 1.0
-	if _state == PortalState.ACTIVATING:
-		strength = clampf(_activation_time / ACTIVATION_DURATION, 0.0, 1.0)
-
-	var pulse: float = 0.92 + sin(Time.get_ticks_msec() * 0.0032) * 0.08
 	var center := Vector2(0.0, -ENERGY_CENTER_OFFSET_Y)
 
-	# Layered portal bloom.
-	draw_set_transform(center, 0.0, Vector2(1.0, 1.18))
-	draw_circle(Vector2.ZERO, 62.0, Color(0.34, 0.78, 0.42, 0.10 * strength * pulse))
-	draw_circle(Vector2.ZERO, 48.0, Color(0.43, 0.86, 0.47, 0.13 * strength * pulse))
-	draw_circle(Vector2.ZERO, 34.0, Color(0.68, 0.96, 0.56, 0.14 * strength * pulse))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	_draw_ellipse(center, 79.0 * _outer_scale, 88.0 * _outer_scale, Color(GLOW_COLOR.r, GLOW_COLOR.g, GLOW_COLOR.b, _outer_alpha))
+	_draw_ellipse(center, 53.0 * _inner_scale, 69.0 * _inner_scale, Color(GLOW_COLOR.r, GLOW_COLOR.g, GLOW_COLOR.b, _inner_alpha))
+	_draw_ellipse(Vector2(0.0, -5.0), 83.0, 17.0, Color(GLOW_COLOR.r, GLOW_COLOR.g, GLOW_COLOR.b, _ground_alpha))
 
-	# Ground spill makes the portal feel connected to the floor.
-	draw_set_transform(Vector2(0.0, -5.0), 0.0, Vector2(1.0, 0.22))
-	draw_circle(Vector2.ZERO, 76.0, Color(0.43, 0.79, 0.47, 0.11 * strength))
-	draw_circle(Vector2.ZERO, 52.0, Color(0.65, 0.93, 0.52, 0.08 * strength))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-
-	# Two layers of orbiting magical fragments.
-	for index in range(30):
-		var direction: float = -1.0 if index % 2 else 1.0
-		var angle: float = _orbit_phase * direction * (0.66 + float(index % 5) * 0.055) + TAU * float(index) / 30.0
-		var radius_x: float = 20.0 + float((index * 7) % 31)
-		var radius_y: float = 27.0 + float((index * 11) % 39)
-		var point := center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y)
-		var twinkle: float = 0.62 + sin(_animation_time * 4.2 + float(index) * 1.37) * 0.28
-		var size: float = 1.0 if index % 6 else 2.0
-		var color := Color(0.64, 0.95, 0.54, maxf(0.0, twinkle) * 0.66 * strength)
-		draw_rect(Rect2(point - Vector2.ONE * size * 0.5, Vector2.ONE * size), color)
-
-	# Sparks rise through and above the arch.
-	for index in range(22):
-		var speed: float = 0.12 + float(index % 6) * 0.014
-		var phase: float = fposmod(_animation_time * speed + float(index) * 0.103, 1.0)
-		var base_x: float = sin(float(index) * 14.31) * 39.0
-		var drift: float = sin(_animation_time * (0.72 + float(index % 4) * 0.08) + float(index) * 0.9) * 6.0
-		var point := Vector2(base_x + drift, -18.0 - phase * 176.0)
-		var fade: float = sin(phase * PI)
-		var size: float = 1.0 if index % 5 else 2.0
-		var alpha: float = fade * (0.24 + float(index % 4) * 0.065) * strength
-		draw_rect(
-			Rect2(point - Vector2.ONE * size * 0.5, Vector2.ONE * size),
-			Color(0.59, 0.95, 0.46, alpha)
+	for particle in _orbit_particles:
+		var angle: float = float(particle["angle"])
+		var radius: float = float(particle["radius"]) + sin(_time_ms * 0.0022 + float(particle["phase"])) * 3.4
+		var point := center + Vector2(
+			cos(angle) * radius,
+			sin(angle) * radius * float(particle["vertical_scale"])
 		)
+		if not _inside_opening(point):
+			continue
 
-	# Fast edge sparks trace the outer portal silhouette.
-	for index in range(12):
-		var angle: float = -_animation_time * (1.0 + float(index % 3) * 0.08) + TAU * float(index) / 12.0
-		var point := center + Vector2(cos(angle) * 54.0, sin(angle) * 74.0)
-		var alpha: float = (0.28 + sin(_animation_time * 5.0 + float(index)) * 0.16) * strength
-		draw_rect(Rect2(point - Vector2(0.75, 0.75), Vector2(1.5, 1.5)), Color(0.78, 1.0, 0.61, alpha))
+		var spin: float = angle + _time_ms * 0.0028 * float(particle["spin"])
+		var scale_value: float = 1.0 + sin(_time_ms * 0.006 + float(particle["phase"])) * 0.7
+		var alpha: float = float(particle["strength"]) * float(particle["base_alpha"]) * (
+			0.9 + sin(_time_ms * 0.004 + float(particle["phase"])) * 0.28
+		)
+		var size: float = float(particle["size"]) * scale_value
+		var color_index: int = int(particle["color_index"])
+		var base_color: Color = PARTICLE_COLORS[color_index]
+		var color := Color(base_color.r, base_color.g, base_color.b, alpha)
 
-	# One short expanding wave when the portal wakes up.
-	if _activation_burst > 0.0:
-		var burst_progress: float = 1.0 - _activation_burst
-		var radius: float = 30.0 + burst_progress * 64.0
-		var alpha: float = _activation_burst * 0.34
-		draw_arc(center, radius, 0.0, TAU, 48, Color(0.68, 1.0, 0.55, alpha), 1.0)
+		draw_set_transform(point, spin, Vector2.ONE)
+		draw_rect(Rect2(Vector2(-size * 0.5, -size * 0.5), Vector2(size, size)), color)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _draw_ellipse(center: Vector2, radius_x: float, radius_y: float, color: Color) -> void:
+	draw_set_transform(center, 0.0, Vector2(radius_x, radius_y))
+	draw_circle(Vector2.ZERO, 1.0, color)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _finish_activation() -> void:
+	if _state == PortalState.ACTIVE:
+		return
+
+	_state = PortalState.ACTIVE
+	_next_particle_at = _time_ms
+	_create_activation_pulse()
+
+
+func _create_orbit_particles() -> void:
+	if not _orbit_particles.is_empty():
+		return
+
+	var count: int = 52
+	for index in range(count):
+		var size: float = 6.0 if index % 8 == 0 else (4.0 if index % 4 == 0 else 2.0)
+		_orbit_particles.append({
+			"angle": float(index) / float(count) * TAU + _rng.randf_range(-0.18, 0.18),
+			"radius": _rng.randf_range(16.0, 42.0),
+			"vertical_scale": _rng.randf_range(1.2, 1.8),
+			"speed": _rng.randf_range(0.5, 1.2),
+			"phase": _rng.randf_range(0.0, TAU),
+			"base_alpha": _rng.randf_range(0.7, 1.1),
+			"spin": _rng.randf_range(-1.4, 1.4),
+			"size": size,
+			"color_index": index % PARTICLE_COLORS.size(),
+			"strength": 0.0,
+		})
+
+
+func _update_orbit_particles(delta: float) -> void:
+	var strength: float = 1.0
+	if _state == PortalState.ACTIVATING:
+		var progress: float = clampf(_activation_time / ACTIVATION_DURATION, 0.0, 1.0)
+		var raw: float = clampf((progress - 0.34) / 0.56, 0.0, 1.0)
+		strength = 1.0 - pow(1.0 - raw, 2.0)
+
+	for index in range(_orbit_particles.size()):
+		var particle: Dictionary = _orbit_particles[index]
+		particle["angle"] = float(particle["angle"]) + float(particle["speed"]) * delta * 1.2
+		particle["strength"] = strength
+		_orbit_particles[index] = particle
+
+
+func _emit_particle(full_strength: bool) -> void:
+	var burst_count: int = _rng.randi_range(14, 26) if full_strength else _rng.randi_range(6, 10)
+	var center := Vector2(0.0, -ENERGY_CENTER_OFFSET_Y)
+
+	for _index in range(burst_count):
+		var angle: float = _rng.randf_range(-PI, PI)
+		var base_position := center + Vector2(
+			cos(angle) * float(_rng.randi_range(8, 30)),
+			sin(angle) * float(_rng.randi_range(10, 42))
+		)
+		var leaf: bool = _rng.randf() < 0.28
+		var width: float
+		var height: float
+		if leaf:
+			width = 8.0
+			height = 3.0
+		else:
+			width = 5.0 if _rng.randf() < 0.35 else 2.0
+			height = 5.0 if _rng.randf() < 0.35 else 2.0
+
+		var color_index: int = 3 if _rng.randf() < 0.12 else _rng.randi_range(0, 2)
+		var shape := Polygon2D.new()
+		shape.polygon = PackedVector2Array([
+			Vector2(-width * 0.5, -height * 0.5),
+			Vector2(width * 0.5, -height * 0.5),
+			Vector2(width * 0.5, height * 0.5),
+			Vector2(-width * 0.5, height * 0.5),
+		])
+		shape.color = PARTICLE_COLORS[color_index]
+		shape.position = base_position
+		shape.rotation = _rng.randf_range(-0.6, 0.6) if leaf else angle
+		shape.modulate.a = 0.95 if full_strength else 0.55
+		shape.z_index = 5
+		var additive := CanvasItemMaterial.new()
+		additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		shape.material = additive
+		add_child(shape)
+
+		var duration: float = float(_rng.randi_range(420, 1100)) / 1000.0
+		var drift := Vector2(
+			cos(angle) * float(_rng.randi_range(52, 128)),
+			sin(angle) * float(_rng.randi_range(38, 92)) - float(_rng.randi_range(18, 54))
+		)
+		_particles.append({
+			"node": shape,
+			"start": base_position,
+			"delta": drift,
+			"start_rotation": shape.rotation,
+			"rotation_delta": _rng.randf_range(-2.6, 2.6),
+			"start_scale": 1.5 if leaf else 1.0,
+			"start_alpha": 1.0 if full_strength else 0.55,
+			"age": 0.0,
+			"duration": duration,
+		})
+
+
+func _update_particles(delta: float) -> void:
+	for index in range(_particles.size() - 1, -1, -1):
+		var particle: Dictionary = _particles[index]
+		var node := particle["node"] as Polygon2D
+		if node == null or not is_instance_valid(node):
+			_particles.remove_at(index)
+			continue
+
+		var age: float = float(particle["age"]) + delta
+		var duration: float = float(particle["duration"])
+		var t: float = clampf(age / duration, 0.0, 1.0)
+		var sine_out: float = sin(t * PI * 0.5)
+		node.position = (particle["start"] as Vector2) + (particle["delta"] as Vector2) * sine_out
+		node.rotation = float(particle["start_rotation"]) + float(particle["rotation_delta"]) * sine_out
+		var scale_value: float = lerpf(float(particle["start_scale"]), 0.0, sine_out)
+		node.scale = Vector2.ONE * scale_value
+		node.modulate.a = lerpf(float(particle["start_alpha"]), 0.0, sine_out)
+		particle["age"] = age
+
+		if t >= 1.0:
+			node.queue_free()
+			_particles.remove_at(index)
+		else:
+			_particles[index] = particle
+
+
+func _create_activation_pulse() -> void:
+	if _activation_pulse != null and is_instance_valid(_activation_pulse):
+		_activation_pulse.queue_free()
+
+	_activation_pulse = Line2D.new()
+	_activation_pulse.width = 2.0
+	_activation_pulse.default_color = Color(156.0 / 255.0, 227.0 / 255.0, 134.0 / 255.0, 0.7)
+	_activation_pulse.z_index = 6
+
+	var points := PackedVector2Array()
+	for index in range(49):
+		var angle: float = TAU * float(index) / 48.0
+		points.append(Vector2(cos(angle) * 43.0, sin(angle) * 62.0))
+	_activation_pulse.points = points
+	_activation_pulse.position = Vector2(0.0, -ENERGY_CENTER_OFFSET_Y)
+
+	var additive := CanvasItemMaterial.new()
+	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	_activation_pulse.material = additive
+	add_child(_activation_pulse)
+	_activation_pulse_age = 0.0
+
+
+func _update_activation_pulse(delta: float) -> void:
+	if _activation_pulse == null or not is_instance_valid(_activation_pulse):
+		return
+
+	_activation_pulse_age += delta
+	var t: float = clampf(_activation_pulse_age / 0.36, 0.0, 1.0)
+	var eased: float = sin(t * PI * 0.5)
+	_activation_pulse.scale = Vector2.ONE * lerpf(1.0, 1.32, eased)
+	_activation_pulse.modulate.a = 1.0 - eased
+
+	if t >= 1.0:
+		_activation_pulse.queue_free()
+		_activation_pulse = null
+
+
+func _inside_opening(point: Vector2) -> bool:
+	if point.x < -34.0 or point.x > 34.0 or point.y < -138.0 or point.y > -33.0:
+		return false
+
+	if point.y < -110.0 and absf(point.x) > 6.0:
+		var corner_x: float = 6.0 if point.x > 0.0 else -6.0
+		return Vector2(point.x - corner_x, point.y + 110.0).length() <= 28.0
+
+	if point.y > -41.0 and absf(point.x) > 26.0:
+		var corner_x: float = 26.0 if point.x > 0.0 else -26.0
+		return Vector2(point.x - corner_x, point.y + 41.0).length() <= 8.0
+
+	return true
 
 
 func _configure_art() -> void:
