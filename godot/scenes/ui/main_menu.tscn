@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.png" id="2_bg"]
@@ -13,6 +13,11 @@
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-runesinger.png" id="12_ar"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-berserker.png" id="13_ab"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-wayfarer.png" id="14_aw"]
+[ext_resource type="Shader" path="res://shaders/ui/main_menu_background.gdshader" id="15_bg_shader"]
+[ext_resource type="Script" path="res://scripts/ui/main_menu_particles.gd" id="16_particles"]
+
+[sub_resource type="ShaderMaterial" id="Material_background"]
+shader = ExtResource("15_bg_shader")
 
 [sub_resource type="SystemFont" id="Font_title"]
 font_names = PackedStringArray("Georgia", "Noto Serif", "DejaVu Serif", "serif")
@@ -109,6 +114,7 @@ texture_filter = 1
 clip_contents = true
 
 [node name="Background" type="TextureRect" parent="."]
+material = SubResource("Material_background")
 layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 810.0
@@ -124,6 +130,18 @@ offset_right = 1440.0
 offset_bottom = 810.0
 mouse_filter = 2
 color = Color(0.015, 0.02, 0.06, 0.18)
+
+[node name="BackgroundParticles" type="Control" parent="."]
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 810.0
+mouse_filter = 2
+script = ExtResource("16_particles")
+particle_count = 96
+speed_min = 8.0
+speed_max = 22.0
+alpha_scale = 0.34
+seed_offset = 31
 
 [node name="Characters" type="Control" parent="."]
 layout_mode = 0
@@ -301,6 +319,19 @@ theme_override_styles/normal = SubResource("Style_hit")
 theme_override_styles/hover = SubResource("Style_hit")
 theme_override_styles/pressed = SubResource("Style_hit")
 theme_override_styles/disabled = SubResource("Style_hit")
+
+[node name="ForegroundParticles" type="Control" parent="."]
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 810.0
+mouse_filter = 2
+script = ExtResource("16_particles")
+particle_count = 30
+speed_min = 15.0
+speed_max = 34.0
+alpha_scale = 0.24
+foreground = true
+seed_offset = 97
 
 [node name="Header" type="Control" parent="."]
 layout_mode = 0

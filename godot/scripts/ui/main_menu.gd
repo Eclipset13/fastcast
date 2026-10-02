@@ -5,6 +5,9 @@ const AURA_COLORS: Array[Color] = [Color("c38aef"), Color("ef5841"), Color("48bb
 const AURA_ALPHA := 0.74
 
 @onready var _prompt: Label = $Header/Prompt
+@onready var _background: TextureRect = $Background
+@onready var _background_particles: Control = $BackgroundParticles
+@onready var _foreground_particles: Control = $ForegroundParticles
 @onready var _action_menu: Control = $ActionMenu
 @onready var _action_title: Label = $ActionMenu/ClassName
 @onready var _status: Label = $ActionMenu/Status
@@ -12,10 +15,16 @@ const AURA_ALPHA := 0.74
 var _selected: String = ""
 var _slot_home: Dictionary = {}
 var _slot_tweens: Dictionary = {}
+var _background_blend: float = 0.0
+var _background_tween: Tween = null
 
 
 func _ready() -> void:
 	get_window().content_scale_size = Vector2i(1440, 810)
+	var background_material := _background.material as ShaderMaterial
+	if background_material != null:
+		background_material.set_shader_parameter("selection_blend", 0.0)
+		background_material.set_shader_parameter("selected_index", 0.0)
 	$Header.draw.connect(_draw_title_ornament)
 	$Header.queue_redraw()
 	$ExitButton.draw.connect(_draw_exit_icon)
@@ -144,6 +153,7 @@ func _select_character(slot_id: String) -> void:
 
 	_selected = slot_id
 	GameSession.selected_class = slot_id
+	_focus_background(slot_id)
 	_action_title.text = _display_name(slot_id)
 	_status.text = ""
 
@@ -211,6 +221,7 @@ func _back_to_character_select() -> void:
 	if _selected.is_empty():
 		return
 
+	_clear_background_focus()
 	_action_menu.visible = false
 	_status.text = ""
 
@@ -236,6 +247,53 @@ func _back_to_character_select() -> void:
 	_selected = ""
 	var prompt_tween := create_tween()
 	prompt_tween.tween_property(_prompt, "modulate:a", 1.0, 0.20)
+
+
+func _focus_background(slot_id: String) -> void:
+	var index := _slot_index(slot_id)
+	var background_material := _background.material as ShaderMaterial
+	if background_material != null:
+		background_material.set_shader_parameter("selected_index", float(index))
+
+	if _background_tween != null:
+		_background_tween.kill()
+	_background_tween = create_tween()
+	_background_tween.tween_method(
+		Callable(self, "_set_background_blend"),
+		_background_blend,
+		1.0,
+		0.55
+	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+	_background_particles.call("focus_class", index)
+	_foreground_particles.call("focus_class", index)
+
+
+func _clear_background_focus() -> void:
+	if _background_tween != null:
+		_background_tween.kill()
+	_background_tween = create_tween()
+	_background_tween.tween_method(
+		Callable(self, "_set_background_blend"),
+		_background_blend,
+		0.0,
+		0.45
+	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+	_background_particles.call("clear_focus")
+	_foreground_particles.call("clear_focus")
+
+
+func _set_background_blend(value: float) -> void:
+	_background_blend = clampf(value, 0.0, 1.0)
+	var background_material := _background.material as ShaderMaterial
+	if background_material != null:
+		background_material.set_shader_parameter("selection_blend", _background_blend)
+
+
+func _slot_index(slot_id: String) -> int:
+	var index := SLOT_IDS.find(slot_id)
+	return maxi(index, 0)
 
 
 func _new_game() -> void:
