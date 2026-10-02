@@ -2,6 +2,12 @@ extends Control
 
 const SLOT_IDS: Array[String] = ["runesinger", "berserker", "wayfarer"]
 const AURA_ALPHA := 0.74
+const SELECTION_GLOW_SHADER := preload("res://shaders/ui/character_selection_glow.gdshader")
+const SELECTION_GLOW_COLORS := {
+	"runesinger": Color("c987ff"),
+	"berserker": Color("ff5a43"),
+	"wayfarer": Color("50c9ff"),
+}
 const SELECTED_SLOT_POSITION := Vector2(18.0, -8.0)
 const SELECTED_SLOT_SCALE := Vector2(1.16, 1.16)
 const BACK_SLOT_POSITIONS := [Vector2(452.0, 126.0), Vector2(708.0, 126.0)]
@@ -63,6 +69,11 @@ func _ready() -> void:
 		underglow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(underglow)
 		slot.move_child(underglow, 1)
+
+		var selection_glow: ColorRect = _create_selection_glow(slot_id)
+		slot.add_child(selection_glow)
+		slot.move_child(selection_glow, 2)
+
 		_slot_home[slot_id] = slot.position
 		var button := slot.get_node("HitArea") as Button
 		button.pressed.connect(_select_character.bind(slot_id))
@@ -218,12 +229,20 @@ func _move_slot(slot_id: String, target: Vector2, chosen: bool, target_scale: Ve
 		target_scale,
 		0.38
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(
-		slot,
-		"modulate",
-		Color.WHITE if chosen else Color(0.42, 0.45, 0.56, 0.38),
-		0.30
-	)
+	var character := slot.get_node("Character") as CanvasItem
+	var platform := slot.get_node("Platform") as CanvasItem
+	var glow := slot.get_node_or_null("SelectionGlow") as CanvasItem
+	var dim_color := Color.WHITE if chosen else Color(0.42, 0.45, 0.56, 0.42)
+
+	tween.tween_property(character, "modulate", dim_color, 0.30)
+	tween.tween_property(platform, "modulate", dim_color, 0.30)
+	if glow != null:
+		tween.tween_property(
+			glow,
+			"modulate:a",
+			0.90 if chosen else 0.34,
+			0.34
+		)
 	_slot_tweens[slot_id] = tween
 
 
@@ -256,7 +275,13 @@ func _back_to_character_select() -> void:
 			0.40
 		).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(slot, "scale", Vector2.ONE, 0.36)
-		tween.tween_property(slot, "modulate", Color.WHITE, 0.30)
+		var character := slot.get_node("Character") as CanvasItem
+		var platform := slot.get_node("Platform") as CanvasItem
+		tween.tween_property(character, "modulate", Color.WHITE, 0.30)
+		tween.tween_property(platform, "modulate", Color.WHITE, 0.30)
+		var selection_glow := slot.get_node_or_null("SelectionGlow") as CanvasItem
+		if selection_glow != null:
+			tween.tween_property(selection_glow, "modulate:a", 0.0, 0.22)
 		_fade_slot_runes(slot_id, 0.0, 0.01)
 		_slot_tweens[slot_id] = tween
 
@@ -279,6 +304,25 @@ func _back_to_character_select() -> void:
 	if _selected.is_empty():
 		for slot_id in SLOT_IDS:
 			_fade_slot_runes(slot_id, AURA_ALPHA, 0.20)
+
+
+func _create_selection_glow(slot_id: String) -> ColorRect:
+	var glow := ColorRect.new()
+	glow.name = "SelectionGlow"
+	glow.position = Vector2(72.0, 112.0)
+	glow.size = Vector2(336.0, 610.0)
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glow.modulate.a = 0.0
+
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = SELECTION_GLOW_SHADER
+	material.set_shader_parameter(
+		"glow_color",
+		SELECTION_GLOW_COLORS.get(slot_id, Color("c987ff"))
+	)
+	material.set_shader_parameter("intensity", 1.0)
+	glow.material = material
+	return glow
 
 
 func _fade_slot_runes(slot_id: String, target_alpha: float, duration: float) -> void:
