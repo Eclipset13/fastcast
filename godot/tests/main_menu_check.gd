@@ -15,6 +15,11 @@ func _run() -> void:
 	await process_frame
 	assert(root.content_scale_size == Vector2i(1440, 810))
 	assert(menu.get_node("Background").texture.get_size() == Vector2(1440, 810))
+	assert(menu.get_node("Header/Title").get_theme_color("font_color") == Color.WHITE, "FASTCAST is pure white")
+	var lighting := menu.get_node("SelectionLighting")
+	assert(lighting.get_node("PrimaryGlow") != null)
+	assert(lighting.get_node("SecondaryGlowA") != null)
+	assert(lighting.get_node("SecondaryGlowB") != null)
 	# Source-space foot rows and platform planes, measured from the authored PNGs.
 	var feet: Array[float] = [126.0, 119.0, 122.0]
 	var surfaces: Array[float] = [53.0, 46.0, 53.0]
@@ -37,28 +42,43 @@ func _run() -> void:
 	for selected in range(3):
 		var button := menu.get_node("Characters/" + names[selected] + "/HitArea") as Button
 		button.pressed.emit()
-		await create_timer(0.65).timeout
+		await create_timer(0.75).timeout
 		assert(menu.get_node("ActionMenu").visible)
+		assert(menu.get_node("ActionMenu").position == Vector2(1010, 18))
+		assert(lighting.visible)
+		assert(float(lighting.get("selection_alpha")) > 0.99)
+		var background_slot := 0
 		for index in range(3):
 			var slot := menu.get_node("Characters/" + names[index]) as Control
+			var aura := slot.get_node("Aura") as CanvasItem
+			var rim := slot.get_node("CharacterRim") as CanvasItem
+			assert(aura.modulate.a < 0.01, "Old rune columns stay hidden while selected")
 			if index == selected:
-				assert(slot.position == homes[index])
-			elif index < selected:
-				assert(slot.position.x + slot.size.x < 0, "Left sections leave the viewport")
+				assert(slot.position == Vector2(55, -8))
+				assert(slot.scale == Vector2(1.24, 1.24))
+				assert(rim.modulate.a > 0.98)
 			else:
-				assert(slot.position.x > 1440, "Right sections leave the viewport")
+				assert(slot.position == [Vector2(390, 64), Vector2(650, 64)][background_slot])
+				assert(slot.scale == Vector2(0.62, 0.62))
+				assert(rim.modulate.a > 0.28 and rim.modulate.a < 0.32)
+				background_slot += 1
 		await _capture(names[selected].to_lower())
 		menu.get_node("ActionMenu/Buttons/Back").pressed.emit()
-		await create_timer(0.45).timeout
+		await create_timer(0.70).timeout
+		assert(not lighting.visible)
+		assert(not menu.get_node("ActionMenu").visible)
 		for index in range(3):
-			assert(menu.get_node("Characters/" + names[index]).position == homes[index])
+			var slot := menu.get_node("Characters/" + names[index]) as Control
+			assert(slot.position == homes[index])
+			assert(slot.scale == Vector2.ONE)
+			assert((slot.get_node("Aura") as CanvasItem).modulate.a > 0.70, "Rune columns return after Back")
 	menu.get_node("Characters/Runesinger/HitArea").pressed.emit()
-	await create_timer(0.5).timeout
+	await create_timer(0.75).timeout
 	menu.get_node("ActionMenu/Buttons/NewGame").pressed.emit()
 	await create_timer(1.0).timeout
 	assert(current_scene.scene_file_path == "res://scenes/main.tscn")
 	assert(root.content_scale_size == Vector2i(480, 270), "Gameplay restores its own viewport")
-	print("MENU CHECK PASS: resources, layout, three selections, back, New Game, gameplay viewport")
+	print("MENU CHECK PASS: resources, selection lighting, three selections, Back, New Game, gameplay viewport")
 	quit()
 
 

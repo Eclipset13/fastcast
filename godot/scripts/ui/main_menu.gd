@@ -8,11 +8,11 @@ const SELECTION_GLOW_COLORS := {
 	"berserker": Color("ff5a43"),
 	"wayfarer": Color("50c9ff"),
 }
-const SELECTED_SLOT_POSITION := Vector2(18.0, -8.0)
-const SELECTED_SLOT_SCALE := Vector2(1.16, 1.16)
-const BACK_SLOT_POSITIONS := [Vector2(452.0, 126.0), Vector2(708.0, 126.0)]
+const SELECTED_SLOT_POSITION := Vector2(55.0, -8.0)
+const SELECTED_SLOT_SCALE := Vector2(1.24, 1.24)
+const BACK_SLOT_POSITIONS := [Vector2(390.0, 64.0), Vector2(650.0, 64.0)]
 const BACK_SLOT_SCALE := Vector2(0.62, 0.62)
-const ACTION_MENU_OPEN_POSITION := Vector2(992.0, 18.0)
+const ACTION_MENU_OPEN_POSITION := Vector2(1010.0, 18.0)
 const ACTION_MENU_CLOSED_POSITION := Vector2(1452.0, 18.0)
 const CLASS_ACCENTS := {
 	"runesinger": Color("cb91ff"),
@@ -24,6 +24,7 @@ const CLASS_ACCENTS := {
 @onready var _background: TextureRect = $Background
 @onready var _background_particles: Control = $BackgroundParticles
 @onready var _foreground_particles: Control = $ForegroundParticles
+@onready var _selection_lighting: Control = $SelectionLighting
 @onready var _action_menu: Control = $ActionMenu
 @onready var _action_title: Label = $ActionMenu/ClassName
 @onready var _action_panel: Panel = $ActionMenu/Panel
@@ -70,16 +71,16 @@ func _ready() -> void:
 		slot.add_child(underglow)
 		slot.move_child(underglow, 1)
 
-		var selection_glow: ColorRect = _create_selection_glow(slot_id)
-		slot.add_child(selection_glow)
-		slot.move_child(selection_glow, 2)
+		var character := slot.get_node("Character") as TextureRect
+		var character_rim := _create_character_rim(slot_id, character)
+		slot.add_child(character_rim)
+		slot.move_child(character_rim, character.get_index())
 
 		_slot_home[slot_id] = slot.position
 		var button := slot.get_node("HitArea") as Button
 		button.pressed.connect(_select_character.bind(slot_id))
 		button.mouse_entered.connect(_hover_slot.bind(slot_id, true))
 		button.mouse_exited.connect(_hover_slot.bind(slot_id, false))
-		var character := slot.get_node("Character") as Control
 		character.pivot_offset = Vector2(240, 604) - character.position
 
 	$ExitButton.pressed.connect(_exit_game)
@@ -169,6 +170,7 @@ func _select_character(slot_id: String) -> void:
 	_selected = slot_id
 	GameSession.selected_class = slot_id
 	_focus_background(slot_id)
+	_selection_lighting.call("show_selection", slot_id)
 	_apply_action_theme(slot_id)
 	_action_title.text = _display_name(slot_id)
 	_status.text = ""
@@ -231,16 +233,16 @@ func _move_slot(slot_id: String, target: Vector2, chosen: bool, target_scale: Ve
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	var character := slot.get_node("Character") as CanvasItem
 	var platform := slot.get_node("Platform") as CanvasItem
-	var glow := slot.get_node_or_null("SelectionGlow") as CanvasItem
-	var dim_color := Color.WHITE if chosen else Color(0.42, 0.45, 0.56, 0.42)
+	var rim := slot.get_node_or_null("CharacterRim") as CanvasItem
+	var dim_color := Color.WHITE if chosen else Color(0.60, 0.62, 0.72, 0.50)
 
 	tween.tween_property(character, "modulate", dim_color, 0.30)
 	tween.tween_property(platform, "modulate", dim_color, 0.30)
-	if glow != null:
+	if rim != null:
 		tween.tween_property(
-			glow,
+			rim,
 			"modulate:a",
-			0.90 if chosen else 0.34,
+			1.0 if chosen else 0.30,
 			0.34
 		)
 	_slot_tweens[slot_id] = tween
@@ -251,6 +253,7 @@ func _back_to_character_select() -> void:
 		return
 
 	_clear_background_focus()
+	_selection_lighting.call("hide_selection")
 	_status.text = ""
 
 	var menu_tween := create_tween()
@@ -279,9 +282,9 @@ func _back_to_character_select() -> void:
 		var platform := slot.get_node("Platform") as CanvasItem
 		tween.tween_property(character, "modulate", Color.WHITE, 0.30)
 		tween.tween_property(platform, "modulate", Color.WHITE, 0.30)
-		var selection_glow := slot.get_node_or_null("SelectionGlow") as CanvasItem
-		if selection_glow != null:
-			tween.tween_property(selection_glow, "modulate:a", 0.0, 0.22)
+		var character_rim := slot.get_node_or_null("CharacterRim") as CanvasItem
+		if character_rim != null:
+			tween.tween_property(character_rim, "modulate:a", 0.0, 0.22)
 		_fade_slot_runes(slot_id, 0.0, 0.01)
 		_slot_tweens[slot_id] = tween
 
@@ -306,23 +309,27 @@ func _back_to_character_select() -> void:
 			_fade_slot_runes(slot_id, AURA_ALPHA, 0.20)
 
 
-func _create_selection_glow(slot_id: String) -> ColorRect:
-	var glow := ColorRect.new()
-	glow.name = "SelectionGlow"
-	glow.position = Vector2(72.0, 112.0)
-	glow.size = Vector2(336.0, 610.0)
-	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	glow.modulate.a = 0.0
+func _create_character_rim(slot_id: String, character: TextureRect) -> TextureRect:
+	var rim := TextureRect.new()
+	rim.name = "CharacterRim"
+	rim.position = character.position
+	rim.size = character.size
+	rim.texture = character.texture
+	rim.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rim.stretch_mode = character.stretch_mode
+	rim.texture_filter = character.texture_filter
+	rim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rim.modulate.a = 0.0
 
-	var material: ShaderMaterial = ShaderMaterial.new()
+	var material := ShaderMaterial.new()
 	material.shader = SELECTION_GLOW_SHADER
 	material.set_shader_parameter(
 		"glow_color",
 		SELECTION_GLOW_COLORS.get(slot_id, Color("c987ff"))
 	)
-	material.set_shader_parameter("intensity", 1.0)
-	glow.material = material
-	return glow
+	material.set_shader_parameter("intensity", 1.15)
+	rim.material = material
+	return rim
 
 
 func _fade_slot_runes(slot_id: String, target_alpha: float, duration: float) -> void:

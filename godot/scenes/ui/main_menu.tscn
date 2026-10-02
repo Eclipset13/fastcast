@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.png" id="2_bg"]
@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/aura-wayfarer.png" id="14_aw"]
 [ext_resource type="Shader" path="res://shaders/ui/main_menu_background.gdshader" id="15_bg_shader"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu_particles.gd" id="16_particles"]
+[ext_resource type="Script" path="res://scripts/ui/character_selection_lighting.gd" id="17_selection_lighting"]
 
 [sub_resource type="ShaderMaterial" id="Material_background"]
 shader = ExtResource("15_bg_shader")
@@ -142,6 +143,13 @@ speed_min = 10.0
 speed_max = 26.0
 alpha_scale = 0.66
 seed_offset = 31
+
+[node name="SelectionLighting" type="Control" parent="."]
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 810.0
+mouse_filter = 2
+script = ExtResource("17_selection_lighting")
 
 [node name="Characters" type="Control" parent="."]
 layout_mode = 0
