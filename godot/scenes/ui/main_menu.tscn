@@ -23,8 +23,8 @@ shader = ExtResource("15_bg_shader")
 
 [sub_resource type="ShaderMaterial" id="Material_color_grade"]
 shader = ExtResource("18_color_grade")
-shader_parameter/saturation = 1.24
-shader_parameter/vibrance = 0.18
+shader_parameter/saturation = 1.16
+shader_parameter/vibrance = 0.10
 shader_parameter/contrast = 1.0
 shader_parameter/brightness = 0.0
 shader_parameter/shadow_depth = 0.0
