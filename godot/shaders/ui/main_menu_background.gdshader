@@ -54,7 +54,7 @@ void fragment() {
 	// Keep the composition cinematic and readable around the UI edges.
 	float edge = min(min(UV.x, 1.0 - UV.x), min(UV.y, 1.0 - UV.y));
 	float vignette = smoothstep(0.0, 0.20, edge);
-	final_rgb *= mix(0.82, 1.0, vignette);
+	final_rgb *= mix(0.95, 1.0, vignette);
 
 	COLOR = vec4(final_rgb, source.a);
 }

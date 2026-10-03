@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/ui/main-menu/background-hd.png" id="2_bg"]
@@ -18,19 +18,36 @@
 [ext_resource type="Script" path="res://scripts/ui/character_selection_lighting.gd" id="17_selection_lighting"]
 [ext_resource type="Shader" path="res://shaders/ui/main_menu_color_grade.gdshader" id="18_color_grade"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/action-menu-panel.png" id="19_panel_art"]
+[ext_resource type="Shader" path="res://shaders/ui/action_menu_panel.gdshader" id="20_panel_shader"]
+[ext_resource type="Shader" path="res://shaders/ui/action_menu_glow.gdshader" id="21_panel_glow"]
+[ext_resource type="Script" path="res://scripts/ui/action_menu_button.gd" id="22_button_script"]
+
+[sub_resource type="AtlasTexture" id="Texture_panel_trimmed"]
+atlas = ExtResource("19_panel_art")
+region = Rect2(80, 8, 778, 1636)
+
+[sub_resource type="ShaderMaterial" id="Material_panel"]
+shader = ExtResource("20_panel_shader")
+
+[sub_resource type="ShaderMaterial" id="Material_panel_glow"]
+shader = ExtResource("21_panel_glow")
+shader_parameter/strength = 0.18
+
 [sub_resource type="ShaderMaterial" id="Material_background"]
 shader = ExtResource("15_bg_shader")
 
 [sub_resource type="ShaderMaterial" id="Material_color_grade"]
 shader = ExtResource("18_color_grade")
-shader_parameter/saturation = 1.16
-shader_parameter/vibrance = 0.10
-shader_parameter/contrast = 1.0
-shader_parameter/brightness = 0.0
-shader_parameter/shadow_depth = 0.0
+shader_parameter/saturation = 1.06
+shader_parameter/vibrance = 0.045
 
 [sub_resource type="SystemFont" id="Font_title"]
 font_names = PackedStringArray("Georgia", "Noto Serif", "DejaVu Serif", "serif")
+
+[sub_resource type="FontVariation" id="Font_prompt"]
+base_font = SubResource("Font_title")
+spacing_glyph = 4
 
 [sub_resource type="StyleBoxEmpty" id="Style_hit"]
 
@@ -76,42 +93,6 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="StyleBoxFlat" id="Style_action_panel"]
-bg_color = Color(0.018, 0.027, 0.065, 0.86)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.42, 0.47, 0.63, 0.72)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="Style_action_button"]
-bg_color = Color(0.035, 0.047, 0.09, 0.78)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.28, 0.33, 0.47, 0.68)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-
-[sub_resource type="StyleBoxFlat" id="Style_action_hover"]
-bg_color = Color(0.13, 0.10, 0.19, 0.92)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.82, 0.72, 0.96, 0.95)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-
 [node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -139,7 +120,7 @@ layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 810.0
 mouse_filter = 2
-color = Color(0.015, 0.02, 0.06, 0.18)
+color = Color(0.015, 0.02, 0.06, 0.05)
 
 [node name="BackgroundParticles" type="Control" parent="."]
 layout_mode = 0
@@ -351,6 +332,7 @@ foreground = true
 seed_offset = 97
 
 [node name="Header" type="Control" parent="."]
+z_index = 6
 layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 186.0
@@ -378,12 +360,12 @@ offset_left = 420.0
 offset_top = 159.0
 offset_right = 1020.0
 offset_bottom = 181.0
-theme_override_fonts/font = ExtResource("9_regular")
+theme_override_fonts/font = SubResource("Font_prompt")
 theme_override_colors/font_color = Color(0.82, 0.80, 0.88, 0.92)
 theme_override_colors/font_shadow_color = Color(0.025, 0.03, 0.07, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 16
 text = "CHOOSE YOUR CHARACTER"
 horizontal_alignment = 1
 
@@ -411,20 +393,30 @@ layout_mode = 0
 offset_right = 430.0
 offset_bottom = 774.0
 
-[node name="Panel" type="Panel" parent="ActionMenu"]
+[node name="Panel" type="TextureRect" parent="ActionMenu"]
+material = SubResource("Material_panel")
 layout_mode = 0
 offset_right = 430.0
 offset_bottom = 774.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("Style_action_panel")
+texture = SubResource("Texture_panel_trimmed")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 2
 
-[node name="Decoration" type="Control" parent="ActionMenu"]
+[node name="Decoration" type="TextureRect" parent="ActionMenu"]
+material = SubResource("Material_panel_glow")
 layout_mode = 0
 offset_right = 430.0
 offset_bottom = 774.0
 mouse_filter = 2
+texture = SubResource("Texture_panel_trimmed")
+expand_mode = 1
+stretch_mode = 0
+texture_filter = 2
 
 [node name="ClassName" type="Label" parent="ActionMenu"]
+visible = false
 layout_mode = 0
 offset_left = 34.0
 offset_top = 126.0
@@ -440,6 +432,7 @@ text = "RUNESINGER"
 horizontal_alignment = 1
 
 [node name="Rule" type="ColorRect" parent="ActionMenu"]
+visible = false
 layout_mode = 0
 offset_left = 48.0
 offset_top = 179.0
@@ -451,75 +444,63 @@ color = Color(0.47, 0.45, 0.63, 0.55)
 [node name="Buttons" type="VBoxContainer" parent="ActionMenu"]
 layout_mode = 0
 offset_left = 38.0
-offset_top = 218.0
+offset_top = 210.0
 offset_right = 392.0
-offset_bottom = 632.0
-theme_override_constants/separation = 10
+offset_bottom = 640.0
+theme_override_constants/separation = 4
 
 [node name="NewGame" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 62)
+custom_minimum_size = Vector2(354, 66)
 layout_mode = 2
-focus_mode = 0
-theme_override_fonts/font = ExtResource("10_bold")
+script = ExtResource("22_button_script")
+focus_mode = 2
+theme_override_fonts/font = SubResource("Font_title")
 theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("Style_action_button")
-theme_override_styles/hover = SubResource("Style_action_hover")
-theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "NEW GAME"
 
 [node name="Saves" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 56)
+custom_minimum_size = Vector2(354, 72)
 layout_mode = 2
-focus_mode = 0
-theme_override_fonts/font = ExtResource("9_regular")
+script = ExtResource("22_button_script")
+focus_mode = 2
+theme_override_fonts/font = SubResource("Font_title")
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("Style_action_button")
-theme_override_styles/hover = SubResource("Style_action_hover")
-theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SAVES"
 
 [node name="Settings" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 56)
+custom_minimum_size = Vector2(354, 72)
 layout_mode = 2
-focus_mode = 0
-theme_override_fonts/font = ExtResource("9_regular")
+script = ExtResource("22_button_script")
+focus_mode = 2
+theme_override_fonts/font = SubResource("Font_title")
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("Style_action_button")
-theme_override_styles/hover = SubResource("Style_action_hover")
-theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SETTINGS"
 
 [node name="Controls" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 56)
+custom_minimum_size = Vector2(354, 72)
 layout_mode = 2
-focus_mode = 0
-theme_override_fonts/font = ExtResource("9_regular")
+script = ExtResource("22_button_script")
+focus_mode = 2
+theme_override_fonts/font = SubResource("Font_title")
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("Style_action_button")
-theme_override_styles/hover = SubResource("Style_action_hover")
-theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "CONTROLS"
 
 [node name="Skills" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 56)
+custom_minimum_size = Vector2(354, 72)
 layout_mode = 2
-focus_mode = 0
-theme_override_fonts/font = ExtResource("9_regular")
+script = ExtResource("22_button_script")
+focus_mode = 2
+theme_override_fonts/font = SubResource("Font_title")
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("Style_action_button")
-theme_override_styles/hover = SubResource("Style_action_hover")
-theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "SKILLS"
 
 [node name="Back" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 56)
+custom_minimum_size = Vector2(354, 72)
 layout_mode = 2
-focus_mode = 0
-theme_override_fonts/font = ExtResource("9_regular")
+script = ExtResource("22_button_script")
+focus_mode = 2
+theme_override_fonts/font = SubResource("Font_title")
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("Style_action_button")
-theme_override_styles/hover = SubResource("Style_action_hover")
-theme_override_styles/pressed = SubResource("Style_action_hover")
 text = "BACK"
 
 [node name="Status" type="Label" parent="ActionMenu"]
@@ -535,7 +516,7 @@ horizontal_alignment = 1
 
 
 [node name="MenuColorGrade" type="ColorRect" parent="."]
-z_index = 1000
+z_index = 5
 layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 810.0

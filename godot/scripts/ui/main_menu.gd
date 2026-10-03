@@ -27,12 +27,14 @@ const CLASS_ACCENTS := {
 @onready var _selection_lighting: Control = $SelectionLighting
 @onready var _action_menu: Control = $ActionMenu
 @onready var _action_title: Label = $ActionMenu/ClassName
-@onready var _action_panel: Panel = $ActionMenu/Panel
-@onready var _action_decor: Control = $ActionMenu/Decoration
+@onready var _action_panel: TextureRect = $ActionMenu/Panel
+@onready var _action_decor: TextureRect = $ActionMenu/Decoration
 @onready var _action_rule: ColorRect = $ActionMenu/Rule
 @onready var _action_buttons: VBoxContainer = $ActionMenu/Buttons
 @onready var _status: Label = $ActionMenu/Status
 
+var _transitioning: bool = false
+var _menu_tween: Tween = null
 var _selected: String = ""
 var _slot_home: Dictionary = {}
 var _slot_tweens: Dictionary = {}
@@ -50,8 +52,6 @@ func _ready() -> void:
 	$Header.draw.connect(_draw_title_ornament)
 	$Header.queue_redraw()
 	$ExitButton.draw.connect(_draw_exit_icon)
-	_action_decor.draw.connect(_draw_action_panel_decor)
-	_action_decor.queue_redraw()
 	for slot_id in SLOT_IDS:
 		var slot := _slot(slot_id)
 		var aura := slot.get_node("Aura") as TextureRect
@@ -93,6 +93,7 @@ func _ready() -> void:
 
 	_action_menu.visible = false
 	_status.text = ""
+	_set_action_interactive(false)
 
 
 func _draw_title_ornament() -> void:
@@ -126,8 +127,9 @@ func _draw_title_ornament() -> void:
 
 func _draw_exit_icon() -> void:
 	var button := $ExitButton as Button
-	button.draw_line(Vector2(14, 14), Vector2(34, 34), Color("ddc5e7"), 3.0)
-	button.draw_line(Vector2(34, 14), Vector2(14, 34), Color("ddc5e7"), 3.0)
+	var ink: Color = Color("ddc5e7") if _selected.is_empty() else _action_accent.lightened(0.45)
+	button.draw_line(Vector2(14, 14), Vector2(34, 34), ink, 3.0)
+	button.draw_line(Vector2(34, 14), Vector2(14, 34), ink, 3.0)
 
 
 func _slot(slot_id: String) -> Control:
@@ -141,7 +143,7 @@ func _slot(slot_id: String) -> Control:
 
 
 func _hover_slot(slot_id: String, hovered: bool) -> void:
-	if not _selected.is_empty():
+	if not _selected.is_empty() or _transitioning:
 		return
 
 	var slot := _slot(slot_id)
@@ -164,54 +166,65 @@ func _hover_slot(slot_id: String, hovered: bool) -> void:
 
 
 func _select_character(slot_id: String) -> void:
-	if not _selected.is_empty():
+	if not _selected.is_empty() or _transitioning:
 		return
 
+	_transitioning = true
 	_selected = slot_id
 	GameSession.selected_class = slot_id
-	_focus_background(slot_id)
-	_selection_lighting.call("show_selection", slot_id)
 	_apply_action_theme(slot_id)
 	_action_title.text = _display_name(slot_id)
 	_status.text = ""
-
+	_set_action_interactive(false)
 	_prompt.text = "%s SELECTED" % _display_name(slot_id)
 	_prompt.add_theme_color_override("font_color", _action_accent.lightened(0.30))
 	_prompt.modulate.a = 0.0
-	var prompt_tween := create_tween()
-	prompt_tween.tween_property(_prompt, "modulate:a", 1.0, 0.28)
+	var prompt_tween: Tween = create_tween()
+	prompt_tween.tween_property(_prompt, "modulate:a", 1.0, 0.30).set_delay(0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
-	for id in SLOT_IDS:
-		var button := _slot(id).get_node("HitArea") as Button
-		button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for id: String in SLOT_IDS:
+		_kill_slot_tween(id)
+		var hit: Button = _slot(id).get_node("HitArea") as Button
+		hit.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hit.disabled = true
 		(_slot(id).get_node("Character") as Control).scale = Vector2.ONE
-		_fade_slot_runes(id, 0.0, 0.12)
+		_fade_slot_runes(id, 0.0, 0.14)
 
-	# Let the rune columns disappear in place before any character/platform movement.
-	await get_tree().create_timer(0.12).timeout
-
+	# Runes disappear in place; environmental color follows before movement.
+	await get_tree().create_timer(0.08).timeout
+	_focus_background(slot_id)
+	await get_tree().create_timer(0.06).timeout
 	_move_slot(slot_id, SELECTED_SLOT_POSITION, true, SELECTED_SLOT_SCALE)
+	var background_index: int = 0
+	for id: String in SLOT_IDS:
+		if id != slot_id:
+			_move_slot(id, BACK_SLOT_POSITIONS[background_index], false, BACK_SLOT_SCALE)
+			background_index += 1
 
-	var background_index := 0
-	for id in SLOT_IDS:
-		if id == slot_id:
-			continue
-		_move_slot(id, BACK_SLOT_POSITIONS[background_index], false, BACK_SLOT_SCALE)
-		background_index += 1
-
-	await get_tree().create_timer(0.10).timeout
+	await get_tree().create_timer(0.12).timeout
+	_selection_lighting.call("show_selection", slot_id)
+	await get_tree().create_timer(0.06).timeout
 	_action_menu.position = ACTION_MENU_CLOSED_POSITION
+	_action_menu.pivot_offset = Vector2(430, 387)
+	_action_menu.scale = Vector2(0.985, 1.0)
 	_action_menu.modulate.a = 0.0
+	_action_decor.modulate.a = 0.0
+	for child: Node in _action_buttons.get_children():
+		(child as CanvasItem).modulate.a = 0.0
 	_action_menu.visible = true
-	var menu_tween := create_tween()
-	menu_tween.set_parallel(true)
-	menu_tween.tween_property(
-		_action_menu,
-		"position",
-		ACTION_MENU_OPEN_POSITION,
-		0.36
-	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	menu_tween.tween_property(_action_menu, "modulate:a", 1.0, 0.26)
+	_menu_tween = create_tween().set_parallel(true)
+	_menu_tween.tween_property(_action_menu, "position", ACTION_MENU_OPEN_POSITION - Vector2(4, 0), 0.38).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	_menu_tween.tween_property(_action_menu, "position", ACTION_MENU_OPEN_POSITION, 0.08).set_delay(0.38).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_menu_tween.tween_property(_action_menu, "scale", Vector2.ONE, 0.46).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_menu_tween.tween_property(_action_menu, "modulate:a", 1.0, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_menu_tween.tween_property(_action_decor, "modulate:a", 1.0, 0.28).set_delay(0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	var row_index: int = 0
+	for child: Node in _action_buttons.get_children():
+		_menu_tween.tween_property(child, "modulate:a", 1.0, 0.20).set_delay(0.20 + row_index * 0.04).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		row_index += 1
+	await _menu_tween.finished
+	_transitioning = false
+	_set_action_interactive(true)
 
 
 func _move_slot(slot_id: String, target: Vector2, chosen: bool, target_scale: Vector2) -> void:
@@ -223,18 +236,18 @@ func _move_slot(slot_id: String, target: Vector2, chosen: bool, target_scale: Ve
 		slot,
 		"position",
 		target,
-		0.42
+		0.50
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(
 		slot,
 		"scale",
 		target_scale,
-		0.38
+		0.48
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	var character := slot.get_node("Character") as CanvasItem
 	var platform := slot.get_node("Platform") as CanvasItem
 	var rim := slot.get_node_or_null("CharacterRim") as CanvasItem
-	var dim_color := Color.WHITE if chosen else Color(0.60, 0.62, 0.72, 0.50)
+	var dim_color := Color.WHITE if chosen else Color(0.68, 0.70, 0.78, 0.65)
 
 	tween.tween_property(character, "modulate", dim_color, 0.30)
 	tween.tween_property(platform, "modulate", dim_color, 0.30)
@@ -249,64 +262,67 @@ func _move_slot(slot_id: String, target: Vector2, chosen: bool, target_scale: Ve
 
 
 func _back_to_character_select() -> void:
-	if _selected.is_empty():
+	if _selected.is_empty() or _transitioning:
 		return
 
-	_clear_background_focus()
-	_selection_lighting.call("hide_selection")
+	_transitioning = true
+	_set_action_interactive(false)
 	_status.text = ""
+	_menu_tween = create_tween().set_parallel(true)
+	var row_index: int = 0
+	var rows: Array[Node] = _action_buttons.get_children()
+	rows.reverse()
+	for child: Node in rows:
+		_menu_tween.tween_property(child, "modulate:a", 0.0, 0.12).set_delay(row_index * 0.025).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		row_index += 1
+	_menu_tween.tween_property(_action_decor, "modulate:a", 0.0, 0.18).set_delay(0.08).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	_menu_tween.tween_property(_action_menu, "position", ACTION_MENU_CLOSED_POSITION, 0.38).set_delay(0.18).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN_OUT)
+	_menu_tween.tween_property(_action_menu, "modulate:a", 0.0, 0.28).set_delay(0.24).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
-	var menu_tween := create_tween()
-	menu_tween.set_parallel(true)
-	menu_tween.tween_property(
-		_action_menu,
-		"position",
-		ACTION_MENU_CLOSED_POSITION,
-		0.28
-	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	menu_tween.tween_property(_action_menu, "modulate:a", 0.0, 0.20)
-
-	for slot_id in SLOT_IDS:
-		var slot := _slot(slot_id)
+	# Restore the world once the panel has started leaving, with hit areas locked.
+	await get_tree().create_timer(0.22).timeout
+	_selection_lighting.call("hide_selection")
+	_clear_background_focus()
+	var return_tween: Tween = create_tween().set_parallel(true)
+	for slot_id: String in SLOT_IDS:
+		var slot: Control = _slot(slot_id)
 		_kill_slot_tween(slot_id)
-		var tween := create_tween()
-		tween.set_parallel(true)
-		tween.tween_property(
-			slot,
-			"position",
-			_slot_home[slot_id],
-			0.40
-		).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(slot, "scale", Vector2.ONE, 0.36)
-		var character := slot.get_node("Character") as CanvasItem
-		var platform := slot.get_node("Platform") as CanvasItem
-		tween.tween_property(character, "modulate", Color.WHITE, 0.30)
-		tween.tween_property(platform, "modulate", Color.WHITE, 0.30)
-		var character_rim := slot.get_node_or_null("CharacterRim") as CanvasItem
-		if character_rim != null:
-			tween.tween_property(character_rim, "modulate:a", 0.0, 0.22)
-		_fade_slot_runes(slot_id, 0.0, 0.01)
-		_slot_tweens[slot_id] = tween
-
-		var button := slot.get_node("HitArea") as Button
-		button.mouse_filter = Control.MOUSE_FILTER_STOP
-
+		return_tween.tween_property(slot, "position", _slot_home[slot_id], 0.48).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN_OUT)
+		return_tween.tween_property(slot, "scale", Vector2.ONE, 0.48).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN_OUT)
+		return_tween.tween_property(slot.get_node("Character"), "modulate", Color.WHITE, 0.36).set_trans(Tween.TRANS_SINE)
+		return_tween.tween_property(slot.get_node("Platform"), "modulate", Color.WHITE, 0.36).set_trans(Tween.TRANS_SINE)
+		var rim: CanvasItem = slot.get_node_or_null("CharacterRim") as CanvasItem
+		if rim != null:
+			return_tween.tween_property(rim, "modulate:a", 0.0, 0.28).set_trans(Tween.TRANS_SINE)
+	await return_tween.finished
+	_action_menu.visible = false
 	_selected = ""
-	menu_tween.finished.connect(func() -> void:
-		if _selected.is_empty():
-			_action_menu.visible = false
-	)
-
 	_prompt.text = "CHOOSE YOUR CHARACTER"
 	_prompt.add_theme_color_override("font_color", Color(0.82, 0.80, 0.88, 0.92))
-	var prompt_tween := create_tween()
-	prompt_tween.tween_property(_prompt, "modulate:a", 1.0, 0.24)
+	for slot_id: String in SLOT_IDS:
+		_fade_slot_runes(slot_id, AURA_ALPHA, 0.22)
+	await get_tree().create_timer(0.22).timeout
+	for slot_id: String in SLOT_IDS:
+		var hit: Button = _slot(slot_id).get_node("HitArea") as Button
+		hit.disabled = false
+		hit.mouse_filter = Control.MOUSE_FILTER_STOP
+	_transitioning = false
 
-	# Restore the rune columns only after all slots are back at their home positions.
-	await get_tree().create_timer(0.40).timeout
-	if _selected.is_empty():
-		for slot_id in SLOT_IDS:
-			_fade_slot_runes(slot_id, AURA_ALPHA, 0.20)
+
+func _set_action_interactive(enabled: bool) -> void:
+	for child: Node in _action_buttons.get_children():
+		var button: Button = child as Button
+		button.disabled = not enabled
+		button.mouse_filter = Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
+		if not enabled:
+			button.release_focus()
+			button.call("reset_hover")
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and not _selected.is_empty():
+		_back_to_character_select()
+		get_viewport().set_input_as_handled()
 
 
 func _create_character_rim(slot_id: String, character: TextureRect) -> TextureRect:
@@ -327,7 +343,7 @@ func _create_character_rim(slot_id: String, character: TextureRect) -> TextureRe
 		"glow_color",
 		SELECTION_GLOW_COLORS.get(slot_id, Color("c987ff"))
 	)
-	material.set_shader_parameter("intensity", 1.15)
+	material.set_shader_parameter("intensity", 0.82)
 	rim.material = material
 	return rim
 
@@ -348,124 +364,19 @@ func _fade_slot_runes(slot_id: String, target_alpha: float, duration: float) -> 
 
 func _apply_action_theme(slot_id: String) -> void:
 	_action_accent = CLASS_ACCENTS.get(slot_id, Color("cb91ff"))
-	_action_rule.color = Color(_action_accent.r, _action_accent.g, _action_accent.b, 0.48)
+	var exit_button: Button = $ExitButton as Button
+	for state: String in ["normal", "hover", "pressed"]:
+		var exit_style: StyleBoxFlat = exit_button.get_theme_stylebox(state).duplicate() as StyleBoxFlat
+		exit_style.border_color = Color(_action_accent.lightened(0.25), 0.75 if state == "normal" else 1.0)
+		exit_button.add_theme_stylebox_override(state, exit_style)
+	exit_button.queue_redraw()
 	_action_title.add_theme_color_override("font_color", _action_accent.lightened(0.28))
 	_status.add_theme_color_override("font_color", _action_accent.lightened(0.18))
-
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(
-		0.015 + _action_accent.r * 0.035,
-		0.018 + _action_accent.g * 0.025,
-		0.045 + _action_accent.b * 0.045,
-		0.91
-	)
-	panel_style.border_color = Color(_action_accent.r, _action_accent.g, _action_accent.b, 0.72)
-	panel_style.set_border_width_all(2)
-	panel_style.corner_radius_top_left = 3
-	panel_style.corner_radius_top_right = 3
-	panel_style.corner_radius_bottom_left = 3
-	panel_style.corner_radius_bottom_right = 3
-	_action_panel.add_theme_stylebox_override("panel", panel_style)
-
-	for child in _action_buttons.get_children():
-		if not (child is Button):
-			continue
-		var button := child as Button
-		var featured: bool = button.name == "NewGame"
-
-		var normal_style := StyleBoxFlat.new()
-		normal_style.bg_color = Color(
-			_action_accent.r * (0.085 if featured else 0.025),
-			_action_accent.g * (0.065 if featured else 0.025),
-			_action_accent.b * (0.11 if featured else 0.055),
-			0.74 if featured else 0.28
-		)
-		normal_style.border_color = Color(
-			_action_accent.r,
-			_action_accent.g,
-			_action_accent.b,
-			0.88 if featured else 0.22
-		)
-		normal_style.set_border_width_all(2 if featured else 1)
-		normal_style.corner_radius_top_left = 2
-		normal_style.corner_radius_top_right = 2
-		normal_style.corner_radius_bottom_left = 2
-		normal_style.corner_radius_bottom_right = 2
-
-		var hover_style := normal_style.duplicate() as StyleBoxFlat
-		hover_style.bg_color = Color(
-			_action_accent.r * 0.16,
-			_action_accent.g * 0.12,
-			_action_accent.b * 0.19,
-			0.92
-		)
-		hover_style.border_color = Color(_action_accent.r, _action_accent.g, _action_accent.b, 0.95)
-		hover_style.set_border_width_all(2)
-
-		button.add_theme_stylebox_override("normal", normal_style)
-		button.add_theme_stylebox_override("hover", hover_style)
-		button.add_theme_stylebox_override("pressed", hover_style)
-		button.add_theme_color_override("font_color", Color(0.86, 0.82, 0.91, 1.0))
-		button.add_theme_color_override("font_hover_color", _action_accent.lightened(0.36))
-		button.add_theme_color_override("font_pressed_color", _action_accent.lightened(0.42))
-
-	_action_decor.queue_redraw()
-
-
-func _draw_action_panel_decor() -> void:
-	var canvas := _action_decor
-	var width := canvas.size.x
-	var height := canvas.size.y
-	var accent := _action_accent
-	var faint := Color(accent.r, accent.g, accent.b, 0.28)
-	var bright := Color(accent.r, accent.g, accent.b, 0.78)
-
-	# Double vertical rune rails.
-	for x in [12.0, 18.0, width - 18.0, width - 12.0]:
-		canvas.draw_line(Vector2(x, 18), Vector2(x, height - 18), faint, 1.0)
-
-	# Corner brackets.
-	var corner := 24.0
-	for side_x in [1.0, -1.0]:
-		for side_y in [1.0, -1.0]:
-			var origin := Vector2(
-				18.0 if side_x > 0.0 else width - 18.0,
-				18.0 if side_y > 0.0 else height - 18.0
-			)
-			canvas.draw_line(origin, origin + Vector2(side_x * corner, 0), bright, 2.0)
-			canvas.draw_line(origin, origin + Vector2(0, side_y * corner), bright, 2.0)
-
-	# Top hanging rune.
-	var center_x := width * 0.5
-	canvas.draw_line(Vector2(center_x, 18), Vector2(center_x, 80), faint, 1.0)
-	for y in [38.0, 58.0, 82.0]:
-		var size := 6.0 if y != 58.0 else 10.0
-		var p := Vector2(center_x, y)
-		canvas.draw_polyline(PackedVector2Array([
-			p + Vector2(0, -size),
-			p + Vector2(size, 0),
-			p + Vector2(0, size),
-			p + Vector2(-size, 0),
-			p + Vector2(0, -size),
-		]), bright, 2.0)
-	canvas.draw_circle(Vector2(center_x, 103), 15.0, Color(accent.r, accent.g, accent.b, 0.10))
-	canvas.draw_arc(Vector2(center_x, 103), 14.0, 0.0, TAU, 32, bright, 1.5)
-
-	# Small side runes and lower anchor.
-	for y in [205.0, 383.0, 563.0]:
-		for x in [18.0, width - 18.0]:
-			var p := Vector2(x, y)
-			canvas.draw_polyline(PackedVector2Array([
-				p + Vector2(0, -5), p + Vector2(5, 0), p + Vector2(0, 5),
-				p + Vector2(-5, 0), p + Vector2(0, -5),
-			]), bright, 1.5)
-
-	var anchor := Vector2(center_x, height - 28.0)
-	canvas.draw_line(Vector2(center_x, height - 82.0), Vector2(center_x, height - 38.0), faint, 1.0)
-	canvas.draw_polyline(PackedVector2Array([
-		anchor + Vector2(0, -8), anchor + Vector2(8, 0), anchor + Vector2(0, 8),
-		anchor + Vector2(-8, 0), anchor + Vector2(0, -8),
-	]), bright, 2.0)
+	for art: TextureRect in [_action_panel, _action_decor]:
+		var shader_material: ShaderMaterial = art.material as ShaderMaterial
+		shader_material.set_shader_parameter("accent", _action_accent)
+	for child: Node in _action_buttons.get_children():
+		child.call("set_accent", _action_accent)
 
 
 func _focus_background(slot_id: String) -> void:
@@ -516,7 +427,7 @@ func _slot_index(slot_id: String) -> int:
 
 
 func _new_game() -> void:
-	if _selected.is_empty():
+	if _selected.is_empty() or _transitioning:
 		return
 	GameSession.selected_class = _selected
 	get_window().content_scale_size = Vector2i(480, 270)
