@@ -17,9 +17,11 @@ func _run() -> void:
 	assert(menu.get_node("Background").texture.get_size() == Vector2(1440, 810))
 	assert(menu.get_node("Header/Title").get_theme_color("font_color") == Color.WHITE, "FASTCAST is pure white")
 	var lighting := menu.get_node("SelectionLighting")
-	assert(lighting.get_node("PrimaryGlow") != null)
-	assert(lighting.get_node("SecondaryGlowA") != null)
-	assert(lighting.get_node("SecondaryGlowB") != null)
+	for slot_label: String in ["Runesinger", "Berserker", "Wayfarer"]:
+		assert(lighting.get_node(slot_label + "Glow") != null)
+	assert(lighting.visible, "Three class glows are already active at startup")
+	for strength: float in lighting.get("_strengths"):
+		assert(is_equal_approx(strength, 0.62))
 	# Source-space foot rows and platform planes, measured from the authored PNGs.
 	var feet: Array[float] = [126.0, 119.0, 122.0]
 	var surfaces: Array[float] = [53.0, 46.0, 53.0]
@@ -42,11 +44,13 @@ func _run() -> void:
 	for selected in range(3):
 		var button := menu.get_node("Characters/" + names[selected] + "/HitArea") as Button
 		button.pressed.emit()
-		await create_timer(0.75).timeout
+		await create_timer(1.05).timeout
 		assert(menu.get_node("ActionMenu").visible)
-		assert(menu.get_node("ActionMenu").position == Vector2(1010, 18))
+		assert(menu.get_node("ActionMenu").position == Vector2(1010, 4))
 		assert(lighting.visible)
-		assert(float(lighting.get("selection_alpha")) > 0.99)
+		var strengths: Array = lighting.get("_strengths")
+		for index: int in range(3):
+			assert(is_equal_approx(float(strengths[index]), 1.0 if index == selected else 0.31))
 		var background_slot := 0
 		for index in range(3):
 			var slot := menu.get_node("Characters/" + names[index]) as Control
@@ -64,8 +68,10 @@ func _run() -> void:
 				background_slot += 1
 		await _capture(names[selected].to_lower())
 		menu.get_node("ActionMenu/Buttons/Back").pressed.emit()
-		await create_timer(0.70).timeout
-		assert(not lighting.visible)
+		await create_timer(1.05).timeout
+		assert(lighting.visible, "BACK restores three active glows")
+		for strength: float in lighting.get("_strengths"):
+			assert(is_equal_approx(strength, 0.62))
 		assert(not menu.get_node("ActionMenu").visible)
 		for index in range(3):
 			var slot := menu.get_node("Characters/" + names[index]) as Control
@@ -73,7 +79,7 @@ func _run() -> void:
 			assert(slot.scale == Vector2.ONE)
 			assert((slot.get_node("Aura") as CanvasItem).modulate.a > 0.70, "Rune columns return after Back")
 	menu.get_node("Characters/Runesinger/HitArea").pressed.emit()
-	await create_timer(0.75).timeout
+	await create_timer(1.05).timeout
 	menu.get_node("ActionMenu/Buttons/NewGame").pressed.emit()
 	await create_timer(1.0).timeout
 	assert(current_scene.scene_file_path == "res://scenes/main.tscn")

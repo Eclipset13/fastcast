@@ -34,6 +34,19 @@ func _capture(label: String) -> void:
 	_check(white_pixels > 400, "FASTCAST lost its pure white lettering")
 
 
+func _check_start_lighting(menu: Control) -> void:
+	var lighting: Control = menu.get_node("SelectionLighting") as Control
+	_check(lighting.visible, "Start lighting is hidden")
+	var strengths: Array = lighting.get("_strengths")
+	var fields: Array = lighting.get("_fields")
+	_check(fields.size() == 3, "Start state must have three light fields")
+	for index: int in range(IDS.size()):
+		_check(is_equal_approx(float(strengths[index]), 0.62), "Start class glows must have equal strengths")
+		var field: ColorRect = fields[index] as ColorRect
+		var slot: Control = menu.call("_slot", IDS[index]) as Control
+		_check(absf(field.position.x + field.size.x * 0.5 - (slot.position.x + 240.0)) < 1.0, "Glow does not follow its character")
+
+
 func _run() -> void:
 	_menu_scene = load("res://scenes/ui/main_menu.tscn") as PackedScene
 	var menu: Control = _menu_scene.instantiate() as Control
@@ -41,24 +54,43 @@ func _run() -> void:
 	current_scene = menu
 	await process_frame
 	await create_timer(0.1).timeout
+	_check_start_lighting(menu)
 	await _capture("character-select")
 	_check((menu.get_node("Header") as CanvasItem).z_index > (menu.get_node("MenuColorGrade") as CanvasItem).z_index, "Header must render after world grading")
 	for id: String in IDS:
 		var hit: Button = menu.call("_slot", id).get_node("HitArea") as Button
 		hit.pressed.emit()
-		await create_timer(0.35).timeout
+		await create_timer(0.20).timeout
+		var lighting: Control = menu.get_node("SelectionLighting") as Control
+		var strengths: Array = lighting.get("_strengths")
+		_check(strengths.min() > 0.30 and strengths.max() < 1.0, "Lighting reset during selection")
+		await create_timer(0.15).timeout
 		# Repeated activation during entrance cannot reverse an in-flight transition.
 		(menu.get_node("ActionMenu/Buttons/Back") as Button).pressed.emit()
 		_check(menu.get("_selected") == id, "Selection changed during entrance")
 		await _capture(id + "-entrance")
 		await create_timer(0.85).timeout
 		var action: Control = menu.get_node("ActionMenu") as Control
-		_check(action.visible and action.position.is_equal_approx(Vector2(1010, 18)), "Panel failed to open for " + id)
+		_check(action.visible and action.position.is_equal_approx(Vector2(1010, 4)), "Panel failed to open for " + id)
 		_check(not bool(menu.get("_transitioning")), "Entrance did not finish")
 		_check(root.get_node("GameSession").get("selected_class") == id, "Session class mismatch")
 		var accent: Color = menu.get("_action_accent")
-		var panel_material: ShaderMaterial = (action.get_node("Panel") as TextureRect).material as ShaderMaterial
+		var panel_material: ShaderMaterial = (action.get_node("PanelFrame") as NinePatchRect).material as ShaderMaterial
 		_check(panel_material.get_shader_parameter("accent") == accent, "Panel accent mismatch")
+		var frame: NinePatchRect = action.get_node("PanelFrame") as NinePatchRect
+		var glass: ColorRect = action.get_node("PanelBackground") as ColorRect
+		_check(action.size.y == 802.0 and action.position.y <= 8.0 and action.position.y + action.size.y >= 802.0, "Panel is not full height")
+		_check(frame.scale.x == frame.scale.y and frame.axis_stretch_vertical == NinePatchRect.AXIS_STRETCH_MODE_TILE, "Frame decorations are stretched")
+		_check(glass.color.a >= 0.70 and glass.color.a <= 0.85, "Panel glass opacity is out of range")
+		var frame_image: Image = frame.texture.get_image()
+		_check(frame_image.get_pixel(frame_image.get_width() / 2, frame_image.get_height() / 2).a == 0.0, "Frame interior is not transparent")
+		for y: int in range(600, 1250, 40):
+			for x: int in range(210, 560, 40):
+				_check(frame_image.get_pixel(x, y).a < 0.01, "Scenery remains in the frame interior")
+		strengths = lighting.get("_strengths")
+		for class_index: int in range(IDS.size()):
+			var expected: float = 1.0 if IDS[class_index] == id else 0.31
+			_check(is_equal_approx(float(strengths[class_index]), expected), "Selected lighting strength mismatch")
 		await _capture(id + "-selected")
 		var saves: Button = action.get_node("Buttons/Saves") as Button
 		saves.mouse_entered.emit()
@@ -76,6 +108,8 @@ func _run() -> void:
 			_check((slot.get_node("HitArea") as Button).disabled, "Selection unlocked during return")
 		await create_timer(0.65).timeout
 		_check(menu.get("_selected") == "" and not action.visible, "BACK did not restore selection")
+		_check_start_lighting(menu)
+		await _capture(id + "-back")
 		for slot_id: String in IDS:
 			var slot: Control = menu.call("_slot", slot_id) as Control
 			var homes: Dictionary = menu.get("_slot_home")

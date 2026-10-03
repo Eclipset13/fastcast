@@ -8,94 +8,90 @@ const CLASS_COLORS := {
 	"wayfarer": Color("4fcaff"),
 }
 const SLOT_IDS: Array[String] = ["runesinger", "berserker", "wayfarer"]
-const ZONE_RECTS: Array[Rect2] = [
-	Rect2(-38.0, 24.0, 640.0, 766.0),
-	Rect2(455.0, 218.0, 350.0, 560.0),
-	Rect2(715.0, 218.0, 350.0, 560.0),
-]
-const ZONE_INTENSITIES: Array[float] = [1.0, 0.31, 0.31]
-const PARTICLES_PER_ZONE: Array[int] = [96, 30, 30]
-
-var selection_alpha: float = 0.0:
-	set(value):
-		selection_alpha = clampf(value, 0.0, 1.0)
-		_apply_alpha()
+const START_INTENSITY: float = 0.62
+const SECONDARY_INTENSITY: float = 0.31
+const PARTICLES_PER_CLASS: int = 72
+const FIELD_SIZE: Vector2 = Vector2(516.0, 618.0)
+const FOOT_ANCHOR: Vector2 = Vector2(240.0, 604.0)
 
 var _selected_id: String = ""
-var _zone_ids: Array[String] = ["runesinger", "berserker", "wayfarer"]
+var _slots: Array[Control] = []
 var _fields: Array[ColorRect] = []
+var _strengths: Array[float] = [START_INTENSITY, START_INTENSITY, START_INTENSITY]
 var _particles: Array[Dictionary] = []
-var _fade_tween: Tween = null
+var _strength_tween: Tween = null
 var _time: float = 0.0
-var _rng := RandomNumberGenerator.new()
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	visible = false
 	_rng.seed = 0x51EC710
-
-	var additive := CanvasItemMaterial.new()
+	var additive: CanvasItemMaterial = CanvasItemMaterial.new()
 	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	material = additive
-
-	for zone_index in range(ZONE_RECTS.size()):
-		var field := ColorRect.new()
-		field.name = ["PrimaryGlow", "SecondaryGlowA", "SecondaryGlowB"][zone_index]
-		field.position = ZONE_RECTS[zone_index].position
-		field.size = ZONE_RECTS[zone_index].size
+	for index: int in range(SLOT_IDS.size()):
+		var slot_name: String = ["Runesinger", "Berserker", "Wayfarer"][index]
+		_slots.append(get_parent().get_node("Characters/" + slot_name) as Control)
+		var field: ColorRect = ColorRect.new()
+		field.name = slot_name + "Glow"
 		field.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-		var field_material := ShaderMaterial.new()
+		var field_material: ShaderMaterial = ShaderMaterial.new()
 		field_material.shader = LIGHT_SHADER
-		field_material.set_shader_parameter("glow_color", Color.WHITE)
-		field_material.set_shader_parameter("intensity", ZONE_INTENSITIES[zone_index])
-		field_material.set_shader_parameter("seed", float(zone_index) * 4.17 + 0.73)
+		field_material.set_shader_parameter("glow_color", CLASS_COLORS[SLOT_IDS[index]])
+		field_material.set_shader_parameter("intensity", START_INTENSITY)
+		field_material.set_shader_parameter("seed", float(index) * 4.17 + 0.73)
 		field.material = field_material
 		add_child(field)
 		_fields.append(field)
-
+	_update_fields()
+	for zone_index: int in range(SLOT_IDS.size()):
+		for particle_index: int in range(PARTICLES_PER_CLASS):
+			_particles.append(_make_particle(zone_index, true))
+	visible = true
 	set_process(true)
 
 
 func show_selection(selected_id: String) -> void:
 	_selected_id = selected_id
-	_zone_ids = [selected_id]
-	for slot_id in SLOT_IDS:
-		if slot_id != selected_id:
-			_zone_ids.append(slot_id)
-
-	for zone_index in range(_fields.size()):
-		var field_material := _fields[zone_index].material as ShaderMaterial
-		field_material.set_shader_parameter(
-			"glow_color",
-			CLASS_COLORS.get(_zone_ids[zone_index], Color("c987ff"))
-		)
-
-	_rebuild_particles()
-	visible = true
-	selection_alpha = 0.0
-	_kill_fade_tween()
-	_fade_tween = create_tween()
-	_fade_tween.tween_property(self, "selection_alpha", 1.0, 0.46).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_transition_strengths()
 
 
-func hide_selection() -> void:
-	_kill_fade_tween()
-	_fade_tween = create_tween()
-	_fade_tween.tween_property(self, "selection_alpha", 0.0, 0.34).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	_fade_tween.finished.connect(func() -> void:
-		if selection_alpha <= 0.001:
-			visible = false
-			_selected_id = ""
-			_particles.clear()
-	)
+func show_start() -> void:
+	_selected_id = ""
+	_transition_strengths()
+
+
+func _transition_strengths() -> void:
+	if _strength_tween != null:
+		_strength_tween.kill()
+	_strength_tween = create_tween().set_parallel(true)
+	for index: int in range(SLOT_IDS.size()):
+		var target: float = START_INTENSITY
+		if not _selected_id.is_empty():
+			target = 1.0 if SLOT_IDS[index] == _selected_id else SECONDARY_INTENSITY
+		_strength_tween.tween_method(_set_strength.bind(index), _strengths[index], target, 0.50).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+
+
+func _set_strength(value: float, index: int) -> void:
+	_strengths[index] = value
+	var field_material: ShaderMaterial = _fields[index].material as ShaderMaterial
+	field_material.set_shader_parameter("intensity", value)
+
+
+func _update_fields() -> void:
+	# Each class keeps its field and particles for the entire menu lifetime.
+	# Follow the real slot transform so the light never jumps between fixed zones.
+	for index: int in range(_slots.size()):
+		var slot: Control = _slots[index]
+		var scale_factor: Vector2 = slot.scale
+		var foot: Vector2 = slot.position + slot.pivot_offset * (Vector2.ONE - scale_factor) + FOOT_ANCHOR * scale_factor
+		_fields[index].size = FIELD_SIZE * scale_factor
+		_fields[index].position = foot + Vector2(0.0, 26.0) * scale_factor - _fields[index].size * Vector2(0.5, 0.79)
 
 
 func _process(delta: float) -> void:
-	if not visible:
-		return
-
+	_update_fields()
 	_time += delta
 	for index in range(_particles.size()):
 		var particle: Dictionary = _particles[index]
@@ -109,22 +105,21 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	if selection_alpha <= 0.001:
-		return
-
 	for particle in _particles:
 		var zone_index := int(particle["zone"])
-		var class_id := _zone_ids[zone_index]
+		var class_id: String = SLOT_IDS[zone_index]
 		var base_color: Color = CLASS_COLORS.get(class_id, Color("c987ff"))
 		var phase := float(particle["phase"])
 		var x := float(particle["x"]) + sin(_time * float(particle["drift_speed"]) + phase) * float(particle["drift"])
 		var y := float(particle["y"])
-		var position := Vector2(round(x), round(y))
+		var field: ColorRect = _fields[zone_index]
+		var world_position: Vector2 = field.position + Vector2(x, y) * field.size
+		var position: Vector2 = world_position.round()
 		var life_ratio := clampf(float(particle["life"]) / float(particle["max_life"]), 0.0, 1.0)
 		var life_fade := smoothstep(0.0, 0.16, life_ratio) * smoothstep(0.0, 0.18, 1.0 - life_ratio)
 		var twinkle := 0.74 + sin(_time * float(particle["twinkle_speed"]) + phase) * 0.26
-		var alpha := float(particle["alpha"]) * life_fade * twinkle * selection_alpha
-		var zone_strength := 1.0 if zone_index == 0 else 0.42
+		var alpha: float = float(particle["alpha"]) * life_fade * twinkle
+		var zone_strength: float = _strengths[zone_index]
 		var color := Color(base_color.r, base_color.g, base_color.b, alpha * zone_strength)
 		var particle_size := float(particle["size"])
 		var shape := int(particle["shape"])
@@ -134,7 +129,7 @@ func _draw() -> void:
 			draw_rect(Rect2(position - Vector2.ONE * (particle_size + 3.0) * 0.5, Vector2.ONE * (particle_size + 3.0)), halo)
 			draw_rect(Rect2(position - Vector2.ONE * particle_size * 0.5, Vector2.ONE * particle_size), color)
 		elif shape == 1:
-			var streak_length := particle_size * (5.5 if zone_index == 0 else 3.8)
+			var streak_length: float = particle_size * 4.5
 			draw_line(
 				position + Vector2(0.0, streak_length),
 				position - Vector2(0.0, streak_length),
@@ -149,54 +144,30 @@ func _draw() -> void:
 			draw_rect(Rect2(position - Vector2.ONE, Vector2(2.0, 2.0)), core)
 
 
-func _rebuild_particles() -> void:
-	_particles.clear()
-	for zone_index in range(ZONE_RECTS.size()):
-		for particle_index in range(PARTICLES_PER_ZONE[zone_index]):
-			_particles.append(_make_particle(zone_index, true))
-
-
 func _make_particle(zone_index: int, initial: bool) -> Dictionary:
-	var zone := ZONE_RECTS[zone_index]
-	var center_x := zone.position.x + zone.size.x * 0.5
-	var spread := zone.size.x * (0.34 if zone_index == 0 else 0.27)
-	var bottom := zone.position.y + zone.size.y * (0.90 if zone_index == 0 else 0.91)
-	var top := zone.position.y + zone.size.y * (0.16 if zone_index == 0 else 0.28)
-	var max_life := _rng.randf_range(2.3, 5.4) if zone_index == 0 else _rng.randf_range(2.0, 4.2)
-	var shape_roll := _rng.randf()
-	var shape := 0
+	# Positions and velocities are normalized within the moving light field.
+	var top: float = 0.16
+	var bottom: float = 0.90
+	var max_life: float = _rng.randf_range(2.3, 5.4)
+	var shape_roll: float = _rng.randf()
+	var shape: int = 0
 	if shape_roll > 0.94:
 		shape = 2
 	elif shape_roll > 0.76:
 		shape = 1
-
-	var particle_y := _rng.randf_range(top, bottom) if initial else bottom + _rng.randf_range(0.0, 32.0)
-	var life := _rng.randf_range(0.25, max_life) if initial else max_life
 	return {
 		"zone": zone_index,
-		"x": center_x + _rng.randfn(0.0, spread),
-		"y": particle_y,
+		"x": clampf(0.5 + _rng.randfn(0.0, 0.22), 0.04, 0.96),
+		"y": _rng.randf_range(top, bottom) if initial else bottom + _rng.randf_range(0.0, 0.04),
 		"top": top,
-		"speed": _rng.randf_range(30.0, 76.0) if zone_index == 0 else _rng.randf_range(22.0, 48.0),
-		"size": _rng.randf_range(1.3, 3.1) if zone_index == 0 else _rng.randf_range(1.0, 2.2),
-		"alpha": _rng.randf_range(0.40, 0.92),
+		"speed": _rng.randf_range(30.0, 76.0) / FIELD_SIZE.y,
+		"size": _rng.randf_range(1.3, 2.7),
+		"alpha": _rng.randf_range(0.40, 0.85),
 		"phase": _rng.randf_range(0.0, TAU),
-		"drift": _rng.randf_range(2.0, 13.0),
+		"drift": _rng.randf_range(2.0, 13.0) / FIELD_SIZE.x,
 		"drift_speed": _rng.randf_range(0.32, 0.88),
 		"twinkle_speed": _rng.randf_range(0.8, 2.1),
-		"life": life,
+		"life": _rng.randf_range(0.25, max_life) if initial else max_life,
 		"max_life": max_life,
 		"shape": shape,
 	}
-
-
-func _apply_alpha() -> void:
-	for field in _fields:
-		field.modulate.a = selection_alpha
-	queue_redraw()
-
-
-func _kill_fade_tween() -> void:
-	if _fade_tween != null:
-		_fade_tween.kill()
-		_fade_tween = null

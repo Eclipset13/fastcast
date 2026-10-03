@@ -12,8 +12,8 @@ const SELECTED_SLOT_POSITION := Vector2(55.0, -8.0)
 const SELECTED_SLOT_SCALE := Vector2(1.24, 1.24)
 const BACK_SLOT_POSITIONS := [Vector2(390.0, 64.0), Vector2(650.0, 64.0)]
 const BACK_SLOT_SCALE := Vector2(0.62, 0.62)
-const ACTION_MENU_OPEN_POSITION := Vector2(1010.0, 18.0)
-const ACTION_MENU_CLOSED_POSITION := Vector2(1452.0, 18.0)
+const ACTION_MENU_OPEN_POSITION := Vector2(1010.0, 4.0)
+const ACTION_MENU_CLOSED_POSITION := Vector2(1452.0, 4.0)
 const CLASS_ACCENTS := {
 	"runesinger": Color("cb91ff"),
 	"berserker": Color("ff624d"),
@@ -27,8 +27,8 @@ const CLASS_ACCENTS := {
 @onready var _selection_lighting: Control = $SelectionLighting
 @onready var _action_menu: Control = $ActionMenu
 @onready var _action_title: Label = $ActionMenu/ClassName
-@onready var _action_panel: TextureRect = $ActionMenu/Panel
-@onready var _action_decor: TextureRect = $ActionMenu/Decoration
+@onready var _action_panel: NinePatchRect = $ActionMenu/PanelFrame
+@onready var _action_decor: NinePatchRect = $ActionMenu/PanelGlow
 @onready var _action_rule: ColorRect = $ActionMenu/Rule
 @onready var _action_buttons: VBoxContainer = $ActionMenu/Buttons
 @onready var _status: Label = $ActionMenu/Status
@@ -194,6 +194,7 @@ func _select_character(slot_id: String) -> void:
 	await get_tree().create_timer(0.08).timeout
 	_focus_background(slot_id)
 	await get_tree().create_timer(0.06).timeout
+	_selection_lighting.call("show_selection", slot_id)
 	_move_slot(slot_id, SELECTED_SLOT_POSITION, true, SELECTED_SLOT_SCALE)
 	var background_index: int = 0
 	for id: String in SLOT_IDS:
@@ -201,11 +202,9 @@ func _select_character(slot_id: String) -> void:
 			_move_slot(id, BACK_SLOT_POSITIONS[background_index], false, BACK_SLOT_SCALE)
 			background_index += 1
 
-	await get_tree().create_timer(0.12).timeout
-	_selection_lighting.call("show_selection", slot_id)
-	await get_tree().create_timer(0.06).timeout
+	await get_tree().create_timer(0.18).timeout
 	_action_menu.position = ACTION_MENU_CLOSED_POSITION
-	_action_menu.pivot_offset = Vector2(430, 387)
+	_action_menu.pivot_offset = Vector2(430, 401)
 	_action_menu.scale = Vector2(0.985, 1.0)
 	_action_menu.modulate.a = 0.0
 	_action_decor.modulate.a = 0.0
@@ -281,7 +280,7 @@ func _back_to_character_select() -> void:
 
 	# Restore the world once the panel has started leaving, with hit areas locked.
 	await get_tree().create_timer(0.22).timeout
-	_selection_lighting.call("hide_selection")
+	_selection_lighting.call("show_start")
 	_clear_background_focus()
 	var return_tween: Tween = create_tween().set_parallel(true)
 	for slot_id: String in SLOT_IDS:
@@ -293,7 +292,7 @@ func _back_to_character_select() -> void:
 		return_tween.tween_property(slot.get_node("Platform"), "modulate", Color.WHITE, 0.36).set_trans(Tween.TRANS_SINE)
 		var rim: CanvasItem = slot.get_node_or_null("CharacterRim") as CanvasItem
 		if rim != null:
-			return_tween.tween_property(rim, "modulate:a", 0.0, 0.28).set_trans(Tween.TRANS_SINE)
+			return_tween.tween_property(rim, "modulate:a", 0.42, 0.48).set_trans(Tween.TRANS_SINE)
 	await return_tween.finished
 	_action_menu.visible = false
 	_selected = ""
@@ -335,7 +334,7 @@ func _create_character_rim(slot_id: String, character: TextureRect) -> TextureRe
 	rim.stretch_mode = character.stretch_mode
 	rim.texture_filter = character.texture_filter
 	rim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rim.modulate.a = 0.0
+	rim.modulate.a = 0.42
 
 	var material := ShaderMaterial.new()
 	material.shader = SELECTION_GLOW_SHADER
@@ -372,7 +371,7 @@ func _apply_action_theme(slot_id: String) -> void:
 	exit_button.queue_redraw()
 	_action_title.add_theme_color_override("font_color", _action_accent.lightened(0.28))
 	_status.add_theme_color_override("font_color", _action_accent.lightened(0.18))
-	for art: TextureRect in [_action_panel, _action_decor]:
+	for art: NinePatchRect in [_action_panel, _action_decor]:
 		var shader_material: ShaderMaterial = art.material as ShaderMaterial
 		shader_material.set_shader_parameter("accent", _action_accent)
 	for child: Node in _action_buttons.get_children():

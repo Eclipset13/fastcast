@@ -18,14 +18,14 @@
 [ext_resource type="Script" path="res://scripts/ui/character_selection_lighting.gd" id="17_selection_lighting"]
 [ext_resource type="Shader" path="res://shaders/ui/main_menu_color_grade.gdshader" id="18_color_grade"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/main-menu/action-menu-panel.png" id="19_panel_art"]
+[ext_resource type="Texture2D" path="res://assets/ui/main-menu/action-menu-frame.png" id="19_panel_art"]
 [ext_resource type="Shader" path="res://shaders/ui/action_menu_panel.gdshader" id="20_panel_shader"]
 [ext_resource type="Shader" path="res://shaders/ui/action_menu_glow.gdshader" id="21_panel_glow"]
 [ext_resource type="Script" path="res://scripts/ui/action_menu_button.gd" id="22_button_script"]
 
 [sub_resource type="AtlasTexture" id="Texture_panel_trimmed"]
 atlas = ExtResource("19_panel_art")
-region = Rect2(80, 8, 778, 1636)
+region = Rect2(78, 0, 780, 1654)
 
 [sub_resource type="ShaderMaterial" id="Material_panel"]
 shader = ExtResource("20_panel_shader")
@@ -391,28 +391,47 @@ visible = false
 z_index = 8
 layout_mode = 0
 offset_right = 430.0
-offset_bottom = 774.0
+offset_bottom = 802.0
 
-[node name="Panel" type="TextureRect" parent="ActionMenu"]
+[node name="PanelBackground" type="ColorRect" parent="ActionMenu"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 0.0
+offset_right = 425.0
+offset_bottom = 802.0
+mouse_filter = 2
+color = Color(0.015, 0.025, 0.055, 0.82)
+
+[node name="PanelFrame" type="NinePatchRect" parent="ActionMenu"]
 material = SubResource("Material_panel")
 layout_mode = 0
-offset_right = 430.0
-offset_bottom = 774.0
+offset_top = -10.0
+offset_right = 780.0
+offset_bottom = 1481.0698
+scale = Vector2(0.55128205, 0.55128205)
 mouse_filter = 2
 texture = SubResource("Texture_panel_trimmed")
-expand_mode = 1
-stretch_mode = 0
+patch_margin_left = 96
+patch_margin_top = 400
+patch_margin_right = 96
+patch_margin_bottom = 260
+axis_stretch_vertical = 1
 texture_filter = 2
 
-[node name="Decoration" type="TextureRect" parent="ActionMenu"]
+[node name="PanelGlow" type="NinePatchRect" parent="ActionMenu"]
 material = SubResource("Material_panel_glow")
 layout_mode = 0
-offset_right = 430.0
-offset_bottom = 774.0
+offset_top = -10.0
+offset_right = 780.0
+offset_bottom = 1481.0698
+scale = Vector2(0.55128205, 0.55128205)
 mouse_filter = 2
 texture = SubResource("Texture_panel_trimmed")
-expand_mode = 1
-stretch_mode = 0
+patch_margin_left = 96
+patch_margin_top = 400
+patch_margin_right = 96
+patch_margin_bottom = 260
+axis_stretch_vertical = 1
 texture_filter = 2
 
 [node name="ClassName" type="Label" parent="ActionMenu"]
@@ -444,10 +463,10 @@ color = Color(0.47, 0.45, 0.63, 0.55)
 [node name="Buttons" type="VBoxContainer" parent="ActionMenu"]
 layout_mode = 0
 offset_left = 38.0
-offset_top = 210.0
+offset_top = 222.0
 offset_right = 392.0
-offset_bottom = 640.0
-theme_override_constants/separation = 4
+offset_bottom = 700.0
+theme_override_constants/separation = 10
 
 [node name="NewGame" type="Button" parent="ActionMenu/Buttons"]
 custom_minimum_size = Vector2(354, 66)
@@ -459,7 +478,7 @@ theme_override_font_sizes/font_size = 17
 text = "NEW GAME"
 
 [node name="Saves" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 72)
+custom_minimum_size = Vector2(354, 74)
 layout_mode = 2
 script = ExtResource("22_button_script")
 focus_mode = 2
@@ -468,7 +487,7 @@ theme_override_font_sizes/font_size = 16
 text = "SAVES"
 
 [node name="Settings" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 72)
+custom_minimum_size = Vector2(354, 74)
 layout_mode = 2
 script = ExtResource("22_button_script")
 focus_mode = 2
@@ -477,7 +496,7 @@ theme_override_font_sizes/font_size = 16
 text = "SETTINGS"
 
 [node name="Controls" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 72)
+custom_minimum_size = Vector2(354, 74)
 layout_mode = 2
 script = ExtResource("22_button_script")
 focus_mode = 2
@@ -486,7 +505,7 @@ theme_override_font_sizes/font_size = 16
 text = "CONTROLS"
 
 [node name="Skills" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 72)
+custom_minimum_size = Vector2(354, 74)
 layout_mode = 2
 script = ExtResource("22_button_script")
 focus_mode = 2
@@ -495,7 +514,7 @@ theme_override_font_sizes/font_size = 16
 text = "SKILLS"
 
 [node name="Back" type="Button" parent="ActionMenu/Buttons"]
-custom_minimum_size = Vector2(354, 72)
+custom_minimum_size = Vector2(354, 74)
 layout_mode = 2
 script = ExtResource("22_button_script")
 focus_mode = 2
@@ -506,9 +525,9 @@ text = "BACK"
 [node name="Status" type="Label" parent="ActionMenu"]
 layout_mode = 0
 offset_left = 28.0
-offset_top = 704.0
+offset_top = 708.0
 offset_right = 402.0
-offset_bottom = 740.0
+offset_bottom = 738.0
 theme_override_fonts/font = ExtResource("9_regular")
 theme_override_colors/font_color = Color(0.68, 0.72, 0.81, 1)
 theme_override_font_sizes/font_size = 12
